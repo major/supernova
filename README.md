@@ -8,7 +8,7 @@ You may like *supernova* if you regularly have the following problems:
 * You get your terminals confused and do the wrong things in the wrong nova environment
 * You don't like remembering things
 
-If any of these complains ring true, *supernova* is for you. *supernova* manages multiple nova environments without sourcing novarc's or mucking with environment variables.
+If any of these complaints ring true, *supernova* is for you. *supernova* manages multiple nova environments without sourcing novarc's or mucking with environment variables.
 
 ### Installation
 
