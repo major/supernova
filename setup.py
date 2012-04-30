@@ -23,7 +23,7 @@ def read(fname):
 
 setup(
     name='supernova',
-    version='0.5.0',
+    version='0.5.1',
     author='Major Hayden',
     author_email='major@mhtx.net',
     description="novaclient wrapper for multiple nova environments",
