@@ -40,7 +40,7 @@ When you use *supernova*, you'll refer to these environments as **production** a
 
 ### Usage
 
-    supernova [environment] [novaclient arguments...]
+    supernova [debug] [environment] [novaclient arguments...]
 
 For example, if you wanted to run a list in the **production** environment:
 
@@ -50,7 +50,13 @@ Show a particular instance's data in the preprod environment:
 
     supernova preprod show 3edb6dac-5a75-486a-be1b-3b15fd5b4ab0a
 
-The first argument is the environment argument and it is expected to be a single word without spaces. Any text after the environment argument is passed directly to novaclient.
+The first argument is generally the environment argument and it is expected to be a single word without spaces. Any text after the environment argument is passed directly to novaclient.
+
+You may optionally pass in the literal string "debug" as the first argument
+(before the environment argument) to inject the NOVACLIENT_DEBUG=1 option into
+the process environment to see additional debug information about the requests
+being made to the API.  As before, any text after the environment argument is
+passed directly to novaclient.
 
 #### A brief note about environment variables
 
