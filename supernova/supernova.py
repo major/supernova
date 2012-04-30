@@ -27,19 +27,33 @@ def data_file(fname):
 
 # Pick up the user's credentials and environments
 user_creds = ConfigParser.RawConfigParser()
-user_creds.read(os.path.expanduser("~/.supernova"))
+user_creds.read([os.path.expanduser("~/.supernova"), '.supernova'])
 
 
 def bin_helper():
     # Parse any options the user might have passed
     args = sys.argv
     args.pop(0)  # get rid of the PROG arg
-    try:
-        nova_env = args.pop(0)  # environment argument for supernova
-    except:
-        print "You must specify a valid nova environment as " \
-            "the first argument."
-        print "Available environments: %r" % user_creds.sections()
+    while True:
+        try:
+            nova_env = args.pop(0)  # environment argument for supernova
+        except IndexError:
+            print "You must specify a valid nova environment as " \
+                "the first argument."
+            print "Available environments: %r" % nova_envs.sections()
+            sys.exit()
+        # make the sneakies on "supernova debug nova_env list"
+        if nova_env == 'debug':
+            # note this doesn't "export" the var, it only effects this process
+            os.environ['NOVACLIENT_DEBUG'] = '1'
+        else:
+            break
+
+    # Does the user have a configuration block for this environment?
+    if nova_env not in user_creds.sections():
+        print "You asked for the %r environment but it doesn't " \
+            "have a configuration section starting with [%s] in %s." % (
+            nova_env, nova_env, os.path.expanduser("~/.supernova"))
         sys.exit()
 
     # Our remaining arguments should be the stuff we pass through to
@@ -51,17 +65,8 @@ def bin_helper():
     else:
         nova_args = args
 
-    # Does the user have a configuration block for this environment?
-    if nova_env not in user_creds.sections():
-        print "You asked for the %r environment but it doesn't " \
-            "have a configuration section starting with [%s] in %s." % (
-            nova_env, nova_env, os.path.expanduser("~/.supernova"))
-        sys.exit()
-
     # Do we have any login credentials for the environment specified?
-    try:
-        dict(user_creds.items(nova_env))['nova_url']
-    except KeyError:
+    if not any(k for (k, v) in user_creds.items(nova_env) if k.endswith('_url')):
         print """
 You may be missing authentication credentials for the %r environment in your
 %s file.  Newer versions of supernova require all of your novaclient
