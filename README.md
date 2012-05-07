@@ -12,7 +12,7 @@ If any of these complaints ring true, *supernova* is for you. *supernova* manage
 
 ### Installation
 
-    git clone git://github.rackspace.com/major-hayden/supernova.git
+    git clone git://github.com/rackerhacker/supernova.git
     cd supernova
     python setup.py install
 
