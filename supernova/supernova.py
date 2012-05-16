@@ -40,7 +40,7 @@ def bin_helper():
         except IndexError:
             print "You must specify a valid nova environment as " \
                 "the first argument."
-            print "Available environments: %r" % nova_envs.sections()
+            print "Available environments: %r" % user_creds.sections()
             sys.exit()
         # make the sneakies on "supernova debug nova_env list"
         if nova_env == 'debug':
