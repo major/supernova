@@ -14,34 +14,52 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-from optparse import OptionParser
+import optparse
+import supernova
 import sys
-from supernova import SuperNova
-# from pprint import pprint as pp
 
 
 def gwrap(some_string):
-    """ Returns green text """
+    """
+    Returns green text
+    """
     return "\033[92m%s\033[0m" % some_string
 
 
 def rwrap(some_string):
-    """ Returns red text """
+    """
+    Returns red text
+    """
     return "\033[91m%s\033[0m" % some_string
 
 
 def print_valid_envs(valid_envs):
+    """
+    Prints the available environments.
+    """
     print "[%s] Your valid environments are:" % (gwrap('Found environments'))
     print "%r" % valid_envs
 
 
+def print_banner():
+    print "[%s] Fork me at: http://rackerhacker.github.com/supernova/" % (
+        gwrap("supernova v%s" % supernova.__version__))
+
+
 def run_supernova():
-    s = SuperNova()
-    parser = OptionParser()
-    parser.disable_interspersed_args()
+    """
+    Handles all of the prep work and error checking for the
+    supernova executable.
+    """
+    print_banner()
+    s = supernova.SuperNova()
+    parser = optparse.OptionParser()
     parser.add_option('--debug', action="store_true",
             dest="debug", default=False,
             help='show novaclient debug output (overrides NOVACLIENT_DEBUG)')
+
+    # Allow for passing --options all the way through to novaclient
+    parser.disable_interspersed_args()
     (opts, args) = parser.parse_args()
 
     # Did we get a valid environment?

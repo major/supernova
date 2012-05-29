@@ -20,6 +20,9 @@ import re
 import subprocess
 
 
+__version__ = '0.5.2'
+
+
 class SuperNova:
 
     def __init__(self):
@@ -29,12 +32,21 @@ class SuperNova:
         pass
 
     def check_deprecated_options(self):
+        """
+        Hunts for deprecated configuration options from previous SuperNova
+        versions.
+        """
         creds = self.get_nova_creds()
         if creds.has_option(self.nova_env, 'insecure'):
             print "WARNING: the 'insecure' option is deprecated. " \
                   "Consider using NOVACLIENT_DEBUG=1 instead."
 
     def get_nova_creds(self):
+        """
+        Reads the supernova config file from the current directory or the
+        user's home directory.  If the config file has already been read, the
+        cached copy is immediately returned.
+        """
         if self.nova_creds:
             return self.nova_creds
 
@@ -44,10 +56,18 @@ class SuperNova:
         return self.nova_creds
 
     def is_valid_environment(self):
+        """
+        Checks to see if the configuration file contains a section for our
+        requested environment.
+        """
         valid_envs = self.get_nova_creds().sections()
         return self.nova_env in valid_envs
 
     def prep_nova_creds(self):
+        """
+        Finds relevant config options in the supernova config and cleans them
+        up for novaclient.
+        """
         self.check_deprecated_options()
         creds = self.get_nova_creds().items(self.nova_env)
         nova_re = re.compile(r"(^nova_|^os_|^novaclient)")
@@ -55,10 +75,17 @@ class SuperNova:
             for x in creds if nova_re.match(x[0])]
 
     def prep_shell_environment(self):
+        """
+        Appends new variables to the current shell environment temporarily.
+        """
         for k, v in self.prep_nova_creds():
             self.env[k] = v
 
     def run_novaclient(self, nova_args):
+        """
+        Sets the environment variables for novaclient, runs novaclient, and
+        prints the output.
+        """
         self.prep_shell_environment()
         p = subprocess.Popen(['nova'] + nova_args,
             stdout=subprocess.PIPE,

@@ -14,24 +14,19 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-import os
 from setuptools import setup
+from supernova import supernova
 
-
-def read(fname):
-    return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup(
     name='supernova',
-    version='0.5.2',
+    version=supernova.__version__,
     author='Major Hayden',
     author_email='major@mhtx.net',
     description="novaclient wrapper for multiple nova environments",
     packages=['supernova'],
     url='https://github.com/rackerhacker/supernova',
-    include_package_data=True,
-    long_description=read('README.md'),
     entry_points={
-        'console_scripts': ['supernova = supernova.supernova:bin_helper']
+        'console_scripts': ['supernova = supernova.executable:run_supernova']
         }
     )
