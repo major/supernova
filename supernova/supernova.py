@@ -20,11 +20,6 @@ import subprocess
 import sys
 
 
-# Helps us find non-python files installed by setuptools
-def data_file(fname):
-    """Return the path to a data file of ours."""
-    return os.path.join(os.path.split(__file__)[0], fname)
-
 # Pick up the user's credentials and environments
 user_creds = ConfigParser.RawConfigParser()
 user_creds.read([os.path.expanduser("~/.supernova"), '.supernova'])
@@ -66,7 +61,8 @@ def bin_helper():
         nova_args = args
 
     # Do we have any login credentials for the environment specified?
-    if not any(k for (k, v) in user_creds.items(nova_env) if k.endswith('_url')):
+    if not any(k for (k, v) in user_creds.items(nova_env) if k.endswith(
+            '_url')):
         print """
 You may be missing authentication credentials for the %r environment in your
 %s file.  Newer versions of supernova require all of your novaclient
