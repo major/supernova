@@ -81,12 +81,14 @@ class SuperNova:
         for k, v in self.prep_nova_creds():
             self.env[k] = v
 
-    def run_novaclient(self, nova_args):
+    def run_novaclient(self, nova_args, force_debug=False):
         """
         Sets the environment variables for novaclient, runs novaclient, and
         prints the output.
         """
         self.prep_shell_environment()
+        if force_debug:
+            self.env['NOVACLIENT_DEBUG'] = '1'
         p = subprocess.Popen(['nova'] + nova_args,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,

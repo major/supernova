@@ -87,4 +87,4 @@ def run_supernova():
 
     # All of the remaining arguments should be handed off to nova
     novaclient_args = args[1:]
-    s.run_novaclient(novaclient_args)
+    s.run_novaclient(novaclient_args, opts.debug)
