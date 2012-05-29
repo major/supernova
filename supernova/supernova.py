@@ -16,80 +16,54 @@
 #
 import ConfigParser
 import os
+import re
 import subprocess
-import sys
 
 
-# Pick up the user's credentials and environments
-user_creds = ConfigParser.RawConfigParser()
-user_creds.read([os.path.expanduser("~/.supernova"), '.supernova'])
+class SuperNova:
 
+    def __init__(self):
+        self.nova_creds = None
+        self.nova_env = None
+        self.env = os.environ
+        pass
 
-def bin_helper():
-    # Parse any options the user might have passed
-    args = sys.argv
-    args.pop(0)  # get rid of the PROG arg
-    while True:
-        try:
-            nova_env = args.pop(0)  # environment argument for supernova
-        except IndexError:
-            print "You must specify a valid nova environment as " \
-                "the first argument."
-            print "Available environments: %r" % user_creds.sections()
-            sys.exit()
-        # make the sneakies on "supernova debug nova_env list"
-        if nova_env == 'debug':
-            # note this doesn't "export" the var, it only effects this process
-            os.environ['NOVACLIENT_DEBUG'] = '1'
-        else:
-            break
+    def check_deprecated_options(self):
+        creds = self.get_nova_creds()
+        if creds.has_option(self.nova_env, 'insecure'):
+            print "WARNING: the 'insecure' option is deprecated. " \
+                  "Consider using NOVACLIENT_DEBUG=1 instead."
 
-    # Does the user have a configuration block for this environment?
-    if nova_env not in user_creds.sections():
-        print "You asked for the %r environment but it doesn't " \
-            "have a configuration section starting with [%s] in %s." % (
-            nova_env, nova_env, os.path.expanduser("~/.supernova"))
-        sys.exit()
+    def get_nova_creds(self):
+        if self.nova_creds:
+            return self.nova_creds
 
-    # Our remaining arguments should be the stuff we pass through to
-    # novaclient
-    if len(args) < 1:
-        print "You didn't provide any arguments to pass through " \
-            "to novaclient."
-        sys.exit()
-    else:
-        nova_args = args
+        possible_configs = [os.path.expanduser("~/.supernova"), '.supernova']
+        self.nova_creds = ConfigParser.RawConfigParser()
+        self.nova_creds.read(possible_configs)
+        return self.nova_creds
 
-    # Do we have any login credentials for the environment specified?
-    if not any(k for (k, v) in user_creds.items(nova_env) if k.endswith(
-            '_url')):
-        print """
-You may be missing authentication credentials for the %r environment in your
-%s file.  Newer versions of supernova require all of your novaclient
-environment variables to be present in %s.
-""" % (nova_env, os.path.expanduser("~/.supernova"),
-            os.path.expanduser("~/.supernova"))
+    def is_valid_environment(self):
+        valid_envs = self.get_nova_creds().sections()
+        return self.nova_env in valid_envs
 
-    # Get our environment variables ready
-    # novaclient compatibility note - if your values are surrounded by ""
-    # or '', those characters will be stripped automatically below
-    env = os.environ
-    for key, value in user_creds.items(nova_env):
-        if key == "insecure":
-            continue
-        env[key.upper()] = value.strip("\"'")
+    def prep_nova_creds(self):
+        self.check_deprecated_options()
+        creds = self.get_nova_creds().items(self.nova_env)
+        nova_re = re.compile(r"(^nova_|^os_|^novaclient)")
+        return [(x[0].upper().strip("\"'"), x[1].strip("\"'"))
+            for x in creds if nova_re.match(x[0])]
 
-    # Do we need to call nova with --insecure for this environment?
-    if user_creds.has_option(nova_env, 'insecure'):
-        nova_args = ['--insecure'] + nova_args
+    def prep_shell_environment(self):
+        for k, v in self.prep_nova_creds():
+            self.env[k] = v
 
-    # Call novaclient
-    p = subprocess.Popen(['nova'] + nova_args,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        env=env
-    )
-
-    # Print novaclient's output
-    for line in p.stdout:
-        print line.rstrip("\n")
+    def run_novaclient(self, nova_args):
+        self.prep_shell_environment()
+        p = subprocess.Popen(['nova'] + nova_args,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            env=self.env
+        )
+        for line in p.stdout:
+            print line.rstrip("\n")
