@@ -41,17 +41,11 @@ def print_valid_envs(valid_envs):
     print "%r" % valid_envs
 
 
-def print_banner():
-    print "[%s] Fork me at: http://rackerhacker.github.com/supernova/" % (
-        gwrap("supernova v%s" % supernova.__version__))
-
-
 def run_supernova():
     """
     Handles all of the prep work and error checking for the
     supernova executable.
     """
-    print_banner()
     s = supernova.SuperNova()
     parser = optparse.OptionParser()
     parser.add_option('--debug', action="store_true",
