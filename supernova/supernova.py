@@ -39,7 +39,7 @@ class SuperNova:
         creds = self.get_nova_creds()
         if creds.has_option(self.nova_env, 'insecure'):
             print "WARNING: the 'insecure' option is deprecated. " \
-                  "Consider using NOVACLIENT_DEBUG=1 instead."
+                  "Consider using NOVACLIENT_INSECURE=1 instead."
 
     def get_nova_creds(self):
         """
