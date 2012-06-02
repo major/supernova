@@ -56,12 +56,17 @@ def run_supernova():
     parser.disable_interspersed_args()
     (opts, args) = parser.parse_args()
 
+    # Is the config file missing or empty?
+    if s.get_nova_creds() == None:
+        print "[%s] Unable to find your supernova configuration file or your " \
+              "configuration file is malformed." % (
+                    rwrap("Configuration missing"))
+        sys.exit()
+
     # Did we get a valid environment?
     try:
         s.nova_env = args[0]
-        if s.is_valid_environment():
-            pass
-        else:
+        if not s.is_valid_environment():
             print "[%s] Unable to find the %r environment in your " \
                   "configuration file.\n" % (
                     rwrap('Invalid environment'), args[0])

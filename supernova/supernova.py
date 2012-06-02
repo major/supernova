@@ -53,6 +53,8 @@ class SuperNova:
         possible_configs = [os.path.expanduser("~/.supernova"), '.supernova']
         self.nova_creds = ConfigParser.RawConfigParser()
         self.nova_creds.read(possible_configs)
+        if len(self.nova_creds.sections()) < 1:
+            return None
         return self.nova_creds
 
     def is_valid_environment(self):
