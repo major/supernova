@@ -48,9 +48,12 @@ def run_supernova():
     """
     s = supernova.SuperNova()
     parser = optparse.OptionParser()
-    parser.add_option('--debug', action="store_true",
+    parser.add_option('-d', '--debug', action="store_true",
             dest="debug", default=False,
             help='show novaclient debug output (overrides NOVACLIENT_DEBUG)')
+    parser.add_option('-l', '--list', action="store_true",
+            dest="listenvs", default=False,
+            help='list all configured environments')
 
     # Allow for passing --options all the way through to novaclient
     parser.disable_interspersed_args()
@@ -58,9 +61,18 @@ def run_supernova():
 
     # Is the config file missing or empty?
     if s.get_nova_creds() == None:
-        print "[%s] Unable to find your supernova configuration file or your " \
-              "configuration file is malformed." % (
+        print "[%s] Unable to find your supernova configuration file or " \
+              "your configuration file is malformed." % (
                     rwrap("Configuration missing"))
+        sys.exit()
+
+    # Should we just list the available environments and exit?
+    if opts.listenvs:
+        for nova_env in s.get_nova_creds().sections():
+            envheader = "-- %s " % gwrap(nova_env)
+            print envheader.ljust(86, '-')
+            for param, value in sorted(s.get_nova_creds().items(nova_env)):
+                print "  %s: %s" % (param.upper().ljust(21), value)
         sys.exit()
 
     # Did we get a valid environment?

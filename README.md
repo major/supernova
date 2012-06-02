@@ -40,9 +40,14 @@ When you use *supernova*, you'll refer to these environments as **production** a
 
 ### Usage
 
-    supernova [--debug] [environment] [novaclient arguments...]
+    supernova [--debug] [--list] [environment] [novaclient arguments...]
 
-For example, if you wanted to run a list in the **production** environment:
+    Options:
+    -h, --help   show this help message and exit
+    -d, --debug  show novaclient debug output (overrides NOVACLIENT_DEBUG)
+    -l, --list   list all configured environments
+
+For example, if you wanted to list all instances within the **production** environment:
 
     supernova production list
 
@@ -56,7 +61,9 @@ You may optionally pass `--debug` as the first argument (before the environment 
 
     supernova --debug production list
 
-As before, any text after the environment argument is passed directly to novaclient:
+As before, any text after the environment argument is passed directly to novaclient.
+
+You can list all of your configured environments by using the `--list` argument.
 
 #### A brief note about environment variables
 
