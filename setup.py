@@ -27,6 +27,8 @@ setup(
     packages=['supernova'],
     url='https://github.com/rackerhacker/supernova',
     entry_points={
-        'console_scripts': ['supernova = supernova.executable:run_supernova']
+        'console_scripts': [
+            'supernova = supernova.executable:run_supernova',
+            'supernova-keyring = supernova.executable:run_supernova_keyring'],
         }
     )

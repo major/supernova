@@ -15,6 +15,7 @@
 #   limitations under the License.
 #
 import ConfigParser
+import keyring
 import os
 import re
 import subprocess
@@ -29,7 +30,6 @@ class SuperNova:
         self.nova_creds = None
         self.nova_env = None
         self.env = os.environ
-        pass
 
     def check_deprecated_options(self):
         """
@@ -64,6 +64,27 @@ class SuperNova:
         """
         valid_envs = self.get_nova_creds().sections()
         return self.nova_env in valid_envs
+
+    def password_get(self, username=None):
+        """
+        Retrieves a password from the keychain based on the environment and
+        configuration parameter pair.
+        """
+        try:
+            return keyring.get_password('supernova', username)
+        except:
+            return False
+
+    def password_set(self, username=None, password=None):
+        """
+        Stores a password in a keychain for a particular environment and
+        configuration parameter pair.
+        """
+        try:
+            keyring.set_password('supernova', username, password)
+            return True
+        except:
+            return False
 
     def prep_nova_creds(self):
         """
