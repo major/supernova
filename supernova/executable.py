@@ -168,7 +168,7 @@ def run_supernova_keyring():
 
     if opts.get_password:
         print "[%s] If this operation is successful, the credential " \
-              "stored \n for %s will be displayed in your terminal as " \
+              "stored \nfor %s will be displayed in your terminal as " \
               "plain text." % (rwrap("Warning"), username)
         print "\nIf you really want to proceed, type yes and press enter:",
         confirm = raw_input('')
