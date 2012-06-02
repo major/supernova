@@ -15,6 +15,7 @@
 #   limitations under the License.
 #
 import ConfigParser
+import keyring
 import os
 import re
 import subprocess
@@ -29,7 +30,6 @@ class SuperNova:
         self.nova_creds = None
         self.nova_env = None
         self.env = os.environ
-        pass
 
     def check_deprecated_options(self):
         """
@@ -65,16 +65,62 @@ class SuperNova:
         valid_envs = self.get_nova_creds().sections()
         return self.nova_env in valid_envs
 
+    def password_get(self, username=None):
+        """
+        Retrieves a password from the keychain based on the environment and
+        configuration parameter pair.
+        """
+        try:
+            return keyring.get_password('supernova', username)
+        except:
+            return False
+
+    def password_set(self, username=None, password=None):
+        """
+        Stores a password in a keychain for a particular environment and
+        configuration parameter pair.
+        """
+        try:
+            keyring.set_password('supernova', username, password)
+            return True
+        except:
+            return False
+
     def prep_nova_creds(self):
         """
         Finds relevant config options in the supernova config and cleans them
         up for novaclient.
         """
         self.check_deprecated_options()
-        creds = self.get_nova_creds().items(self.nova_env)
+        raw_creds = self.get_nova_creds().items(self.nova_env)
         nova_re = re.compile(r"(^nova_|^os_|^novaclient)")
-        return [(x[0].upper().strip("\"'"), x[1].strip("\"'"))
-            for x in creds if nova_re.match(x[0])]
+
+        creds = []
+        for param, value in raw_creds:
+
+            # Skip parameters we're unfamiliar with
+            if not nova_re.match(param):
+                continue
+
+            param = param.upper()
+
+            # Get values from the keyring if we find a USE_KEYRING constant
+            if value == "USE_KEYRING":
+                username = "%s:%s" % (self.nova_env, param)
+                value = self.password_get(username)
+            else:
+                value = value.strip("\"'")
+
+            # Make sure we got something valid from the configuration file or
+            # the keyring
+            if not value:
+                msg = "Attempted to retrieve a credential for %s but " \
+                      "couldn't find it within the keyring." % username
+                raise Exception(msg)
+
+            creds.append((param, value))
+
+        return creds
 
     def prep_shell_environment(self):
         """
