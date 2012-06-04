@@ -19,6 +19,7 @@ import keyring
 import os
 import re
 import subprocess
+import sys
 
 
 __version__ = '0.7.1'
@@ -142,5 +143,10 @@ class SuperNova:
             stderr=subprocess.STDOUT,
             env=self.env
         )
-        for line in p.stdout:
-            print line.rstrip("\n")
+        while True:
+            line = p.stdout.readline()
+            if line != '':
+                print line.rstrip()
+                sys.stdout.flush()
+            else:
+                break
