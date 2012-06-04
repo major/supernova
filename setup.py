@@ -24,7 +24,8 @@ setup(
     author='Major Hayden',
     author_email='major@mhtx.net',
     description="novaclient wrapper for multiple nova environments",
-    packages=['supernova', 'keyring'],
+    install_requires=['keyring'],
+    packages=['supernova'],
     url='https://github.com/rackerhacker/supernova',
     entry_points={
         'console_scripts': [
