@@ -22,7 +22,7 @@ import subprocess
 import sys
 
 
-__version__ = '0.7.2'
+__version__ = '0.7.3'
 
 
 class SuperNova:
@@ -140,7 +140,7 @@ class SuperNova:
 
         # Check for a debug override
         if force_debug:
-            self.env['NOVACLIENT_DEBUG'] = '1'
+            nova_args.insert(0, '--debug')
 
         # Call novaclient and connect stdout/stderr to the current terminal
         # so that any unicode characters from novaclient's list will be
