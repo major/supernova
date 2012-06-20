@@ -22,7 +22,7 @@ import subprocess
 import sys
 
 
-__version__ = '0.7.1'
+__version__ = '0.7.2'
 
 
 class SuperNova:
@@ -30,7 +30,7 @@ class SuperNova:
     def __init__(self):
         self.nova_creds = None
         self.nova_env = None
-        self.env = os.environ
+        self.env = os.environ.copy()
 
     def check_deprecated_options(self):
         """
@@ -135,18 +135,23 @@ class SuperNova:
         Sets the environment variables for novaclient, runs novaclient, and
         prints the output.
         """
+        # Get the environment variables ready
         self.prep_shell_environment()
+
+        # Check for a debug override
         if force_debug:
             self.env['NOVACLIENT_DEBUG'] = '1'
+
+        # Call novaclient and connect stdout/stderr to the current terminal
+        # so that any unicode characters from novaclient's list will be
+        # displayed appropriately.
+        #
+        # In other news, I hate how python 2.6 does unicode.
         p = subprocess.Popen(['nova'] + nova_args,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
+            stdout=sys.stdout,
+            stderr=sys.stderr,
             env=self.env
         )
-        while True:
-            line = p.stdout.readline()
-            if line != '':
-                print line.rstrip()
-                sys.stdout.flush()
-            else:
-                break
+
+        # Don't exit until we're sure the subprocess has exited
+        p.wait()
