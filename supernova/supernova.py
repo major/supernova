@@ -22,7 +22,7 @@ import subprocess
 import sys
 
 
-__version__ = '0.7.3'
+__version__ = '0.7.4'
 
 
 class SuperNova:
@@ -106,20 +106,25 @@ class SuperNova:
             param = param.upper()
 
             # Get values from the keyring if we find a USE_KEYRING constant
-            if value == "USE_KEYRING":
-                username = "%s:%s" % (self.nova_env, param)
-                value = self.password_get(username)
+            if value.startswith("USE_KEYRING"):
+                if value == "USE_KEYRING":
+                    username = "%s:%s" % (self.nova_env, param)
+                else:
+                    global_identifier = re.match(
+                        "USE_KEYRING\['(.*)'\]",value).group(1)
+                    username = "%s:%s" % ('global', global_identifier)
+                credential = self.password_get(username)
             else:
-                value = value.strip("\"'")
+                credential = value.strip("\"'")
 
             # Make sure we got something valid from the configuration file or
             # the keyring
-            if not value:
+            if not credential:
                 msg = "Attempted to retrieve a credential for %s but " \
                       "couldn't find it within the keyring." % username
                 raise Exception(msg)
 
-            creds.append((param, value))
+            creds.append((param, credential))
 
         return creds
 

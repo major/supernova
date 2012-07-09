@@ -83,16 +83,29 @@ To get started, you'll need to choose an environment and a configuration option.
 
     supernova-keyring --set production NOVA_API_KEY
 
-You'll be asked to confirm the location of the data to be stored within the keyring and you'll be prompted for the sensitive data.  Once it's stored, you can test a retrieval:
+**TIP**: If you need to use the same data for multiple environments, you can use a global credential item very easily:
 
+    supernova-keyring --set global MyCompanyLDAPPassword
+
+Once it's stored, you can test a retrieval:
+
+    # Normal, per-environment storage
     supernova-keyring --get production NOVA_API_KEY
+
+    # Global storage
+    supernova-keyring --get global MyCompanyLDAPPassword
 
 You'll need to confirm that you want the data from your keychain displayed in plain text (to hopefully thwart shoulder surfers).
 
 Once you've stored your sensitive data, simply adjust your *supernova* configuration file:
 
     #NOVA_API_KEY = really_sensitive_api_key_here
+    
+    # If using storage per environment
     NOVA_API_KEY = USE_KEYRING
+    
+    # If using global storage
+    NOVA_API_KEY = USE_KEYRING['MyCompanyLDAPPassword']
 
 When *supernova* reads your configuration file and spots a value of `USE_KEYRING`, it will look for credentials stored under `NOVA_API_KEY` for that environment automatically.  If your keyring doesn't have a corresponding credential, you'll get an exception.
 
