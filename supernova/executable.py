@@ -162,7 +162,7 @@ def run_supernova_keyring():
                   "supernova service." % (gwrap("Success"), username)
         else:
             print "\n[%s] Unable to store credentials for %s under the " \
-                  "supernova service." % rwrap("Failed", username)
+                  "supernova service." % rwrap("Failed"), username)
 
         sys.exit()
 
