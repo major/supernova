@@ -15,7 +15,7 @@
 #   limitations under the License.
 #
 import getpass
-import optparse
+import argparse
 import supernova
 import sys
 
@@ -42,64 +42,73 @@ def print_valid_envs(valid_envs):
     print "%r" % valid_envs
 
 
+
+def check_supernova_conf(s):
+    """Checks to make sure supernova can read it's config file."""
+    if s.get_nova_creds() == None:
+        msg = ('[%s] Unable to find your supernova configuration file or your '
+               'configuration file is malformed.')
+        print msg % rwrap('Configuration missing')
+        sys.exit()
+
+
+def setup_supernova_env(s, env):
+    """Set supernova object's nova_env and ensure validity."""
+    s.nova_env = env
+    if not s.is_valid_environment():
+        msg = ('[%s] Unable to find the %r environment in your '
+               'configuration file.')
+        print msg % (rwrap('Invalid environment'), env)
+        print_valid_envs(sorted(s.get_nova_creds().sections()))
+        sys.exit()
+
+
+# Note(tr3buchet): this is necessary to prevent argparse from requiring the
+#                  the 'env' parameter when using -l or --list
+class _ListAction(argparse._HelpAction):
+    """ListAction used for the -l and --list arguments."""
+    def __call__(self, parser, *args, **kwargs):
+        """Lists are configured supernova environments."""
+        s = supernova.SuperNova()
+        for nova_env in s.get_nova_creds().sections():
+            envheader = '-- %s ' % gwrap(nova_env)
+            print envheader.ljust(86, '-')
+            for param, value in sorted(s.get_nova_creds().items(nova_env)):
+                print '  %s: %s' % (param.upper().ljust(21), value)
+        parser.exit()
+
+
 def run_supernova():
     """
     Handles all of the prep work and error checking for the
     supernova executable.
     """
     s = supernova.SuperNova()
-    parser = optparse.OptionParser()
-    parser.add_option('-d', '--debug', action="store_true",
-            dest="debug", default=False,
+    check_supernova_conf(s)
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-l', '--list', action=_ListAction,
+                       dest='listenvs',
+                       help='list all configured environments')
+    parser.add_argument('-d', '--debug', action='store_true',
             help='show novaclient debug output (overrides NOVACLIENT_DEBUG)')
-    parser.add_option('-l', '--list', action="store_true",
-            dest="listenvs", default=False,
-            help='list all configured environments')
+    parser.add_argument('env',
+                   help=('environment to run nova against. valid options: %s' %
+                         sorted(s.get_nova_creds().sections())))
 
     # Allow for passing --options all the way through to novaclient
-    parser.disable_interspersed_args()
-    (opts, args) = parser.parse_args()
-
-    # Is the config file missing or empty?
-    if s.get_nova_creds() == None:
-        print "[%s] Unable to find your supernova configuration file or " \
-              "your configuration file is malformed." % (
-                    rwrap("Configuration missing"))
-        sys.exit()
-
-    # Should we just list the available environments and exit?
-    if opts.listenvs:
-        for nova_env in s.get_nova_creds().sections():
-            envheader = "-- %s " % gwrap(nova_env)
-            print envheader.ljust(86, '-')
-            for param, value in sorted(s.get_nova_creds().items(nova_env)):
-                print "  %s: %s" % (param.upper().ljust(21), value)
-        sys.exit()
-
-    # Did we get a valid environment?
-    try:
-        s.nova_env = args[0]
-        if not s.is_valid_environment():
-            print "[%s] Unable to find the %r environment in your " \
-                  "configuration file.\n" % (
-                    rwrap('Invalid environment'), args[0])
-            print_valid_envs(sorted(s.get_nova_creds().sections()))
-            sys.exit()
-    except IndexError:
-        print "[%s] A valid nova environment is required as the first " \
-              "argument.\n" % (rwrap("Environment missing"))
-        print_valid_envs(sorted(s.get_nova_creds().sections()))
-        sys.exit()
+    supernova_args, nova_args = parser.parse_known_args()
 
     # Did we get any arguments to pass on to nova?
-    if len(args) <= 1:
-        print "[%s] No arguments were provided to pass along to nova." % (
-            rwrap('Missing novaclient arguments'))
+    if not nova_args:
+        msg = '[%s] No arguments were provided to pass along to nova.'
+        print msg % rwrap('Missing novaclient arguments')
         sys.exit()
 
+    setup_supernova_env(s, supernova_args.env)
+
     # All of the remaining arguments should be handed off to nova
-    novaclient_args = args[1:]
-    s.run_novaclient(novaclient_args, opts.debug)
+    s.run_novaclient(nova_args, supernova_args.debug)
 
 
 def run_supernova_keyring():
@@ -108,33 +117,27 @@ def run_supernova_keyring():
     supernova-keyring executable.
     """
     s = supernova.SuperNova()
-    parser = optparse.OptionParser()
-    parser.add_option('-g', '--get', action="store_true",
-            dest="get_password", default=False,
+    parser = argparse.ArgumentParser()
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('-g', '--get', action='store_true',
+            dest='get_password',
             help='retrieves credentials from keychain storage')
-    parser.add_option('-s', '--set', action="store_true",
-            dest="set_password", default=False,
+    group.add_argument('-s', '--set', action='store_true',
+            dest='set_password',
             help='stores credentials in keychain storage')
-    (opts, args) = parser.parse_args()
+    parser.add_argument('env',
+                        help='environment to set parameter in')
+    parser.add_argument('parameter',
+                        help='parameter to set')
+    args = parser.parse_args()
 
-    if opts.get_password and opts.set_password:
-        print "[%s] You asked to get and set a password at the same time. " \
-              "This is not supported." % rwrap("Too many options")
+    username = '%s:%s' % (args.env, args.parameter)
 
-    # No matter what, we need two arguments: environment and a
-    # configuration option
-    if len(args) != 2:
-        print "[%s] Usage: supernova-keyring [--get | --set] " \
-              "environment parameter" % rwrap("Invalid number of arguments")
-        sys.exit()
-
-    username = "%s:%s" % (args[0], args[1])
-
-    if opts.set_password:
+    if args.set_password:
         print "[%s] Preparing to set a password in the keyring for:" % (
             gwrap("Keyring operation"))
-        print "  - Environment  : %s" % args[0]
-        print "  - Parameter    : %s" % args[1]
+        print "  - Environment  : %s" % args.env
+        print "  - Par ameter    : %s" % args.parameter
         print "\n  If this is correct, enter the corresponding credential " \
               "to store in \n  your keyring or press CTRL-D to abort: ",
 
@@ -166,7 +169,7 @@ def run_supernova_keyring():
 
         sys.exit()
 
-    if opts.get_password:
+    if args.get_password:
         print "[%s] If this operation is successful, the credential " \
               "stored \nfor %s will be displayed in your terminal as " \
               "plain text." % (rwrap("Warning"), username)
