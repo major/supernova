@@ -25,18 +25,16 @@ For *supernova* to work properly, each environment must be defined in `~/.supern
 Here's an example of two environments, **production** and **development**:
 
     [production]
-    NOVA_URL=http://production.nova.example.com:8774/v1.1/
-    NOVA_VERSION=1.1
-    NOVA_USERNAME = jsmith
-    NOVA_API_KEY = fd62afe2-4686-469f-9849-ceaa792c55a6
-    NOVA_PROJECT_ID = nova-production
+    OS_AUTH_URL = http://production.nova.example.com:8774/v1.1/
+    OS_USERNAME = jsmith
+    OS_PASSWORD = fd62afe2-4686-469f-9849-ceaa792c55a6
+    OS_TENANT_NAME = nova-production
 
     [development]
-    NOVA_URL=http://dev.nova.example.com:8774/v1.1/
-    NOVA_VERSION=1.1
-    NOVA_USERNAME = jsmith
-    NOVA_API_KEY = 40318069-6069-4d9f-836d-a46df17fc8d1
-    NOVA_PROJECT_ID = nova-production
+    OS_AUTH_URL = http://dev.nova.example.com:8774/v1.1/
+    OS_USERNAME = jsmith
+    OS_PASSWORD = 40318069-6069-4d9f-836d-a46df17fc8d1
+    OS_TENANT_NAME = nova-development
 
 When you use *supernova*, you'll refer to these environments as **production** and **development**.  Every environment is specified by its configuration header name.
 
@@ -63,7 +61,7 @@ The first argument is generally the environment argument and it is expected to b
 
 ##### Debug override
 
-You may optionally pass `--debug` as the first argument (before the environment argument) to inject the `NOVACLIENT_DEBUG=1` option into the process environment to see additional debug information about the requests being made to the API:
+You may optionally pass `--debug` as the first argument (before the environment argument) to see additional debug information about the requests being made to the API:
 
     supernova --debug production list
 
@@ -81,34 +79,34 @@ Due to security policies at certain companies or due to general paranoia, some u
 
 To get started, you'll need to choose an environment and a configuration option.  Here's an example of some data you might not want to keep in plain text:
 
-    supernova-keyring --set production NOVA_API_KEY
+    supernova-keyring --set production OS_PASSWORD
 
 **TIP**: If you need to use the same data for multiple environments, you can use a global credential item very easily:
 
-    supernova-keyring --set global MyCompanyLDAPPassword
+    supernova-keyring --set global MyCompanySSO
 
 Once it's stored, you can test a retrieval:
 
     # Normal, per-environment storage
-    supernova-keyring --get production NOVA_API_KEY
+    supernova-keyring --get production OS_PASSWORD
 
     # Global storage
-    supernova-keyring --get global MyCompanyLDAPPassword
+    supernova-keyring --get global MyCompanySSO
 
 You'll need to confirm that you want the data from your keychain displayed in plain text (to hopefully thwart shoulder surfers).
 
 Once you've stored your sensitive data, simply adjust your *supernova* configuration file:
 
-    #NOVA_API_KEY = really_sensitive_api_key_here
+    #OS_PASSWORD = really_sensitive_api_key_here
     
     # If using storage per environment
-    NOVA_API_KEY = USE_KEYRING
+    OS_PASSWORD = USE_KEYRING
     
     # If using global storage
-    NOVA_API_KEY = USE_KEYRING['MyCompanyLDAPPassword']
+    OS_PASSWORD = USE_KEYRING['MyCompanySSO']
 
-When *supernova* reads your configuration file and spots a value of `USE_KEYRING`, it will look for credentials stored under `NOVA_API_KEY` for that environment automatically.  If your keyring doesn't have a corresponding credential, you'll get an exception.
+When *supernova* reads your configuration file and spots a value of `USE_KEYRING`, it will look for credentials stored under `OS_PASSWORD` for that environment automatically.  If your keyring doesn't have a corresponding credential, you'll get an exception.
 
 #### A brief note about environment variables
 
-*supernova* will only replace and/or append environment variables to the already present variables for the duration of the *nova* execution. If you have `NOVA_USERNAME` set outside the script, it won't be used in the script since the script will pull data from `~/.supernova` and use it to run *nova*. In addition, any variables which are set prior to running *supernova* will be left unaltered when the script exits.
+*supernova* will only replace and/or append environment variables to the already present variables for the duration of the *nova* execution. If you have `OS_USERNAME` set outside the script, it won't be used in the script since the script will pull data from `~/.supernova` and use it to run *nova*. In addition, any variables which are set prior to running *supernova* will be left unaltered when the script exits.
