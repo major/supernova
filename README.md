@@ -75,7 +75,7 @@ You can list all of your configured environments by using the `--list` argument.
 Due to security policies at certain companies or due to general paranoia, some users may not want API keys or passwords stored in a plaintext *supernova* configuration file.  Luckily, support is now available (via the [keyring](http://pypi.python.org/pypi/keyring) module) for storing any configuration value within your operating system's keychain.  This has been tested on the following platforms:
 
 * Mac: Keychain Access.app
-* Linux: gnome-keyring, kwallet
+* Linux: gnome-keyring, kwallet (keyring will determine the backend to use based on the system type and configuration. Make sure if you're using linux without Gnome/KDE that you have pycrypto and simplejson/json installed so CryptedFileKeyring is supported or you end up with UncryptedFileKeyring and your keyring won't be encrypted)
 
 To get started, you'll need to choose an environment and a configuration option.  Here's an example of some data you might not want to keep in plain text:
 
