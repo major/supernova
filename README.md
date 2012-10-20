@@ -22,30 +22,40 @@ If any of these complaints ring true, *supernova* is for you. *supernova* manage
 
 For *supernova* to work properly, each environment must be defined in `~/.supernova` (in your user's home directory).  The data in the file is exactly the same as the environment variables which you would normally use when running *nova*.  You can copy/paste from your novarc files directly into configuration sections within `~/.supernova`.
 
-Here's an example of two environments, **production** and **development**:
+Here's an example of three environments, **production**, **development**, and **staging**:
+
+    [staging]
+    OS_AUTH_URL = http://staging.nova.example.com:8774/v1.1/
+    OS_USERNAME = jsmith
+    OS_PASSWORD = fd62afe2-4686-469f-9849-ceaa792c55a6
+    OS_TENANT_NAME = nova-staging
+    GROUP=dev,all
 
     [production]
     OS_AUTH_URL = http://production.nova.example.com:8774/v1.1/
     OS_USERNAME = jsmith
     OS_PASSWORD = fd62afe2-4686-469f-9849-ceaa792c55a6
     OS_TENANT_NAME = nova-production
+    GROUP=all
 
     [development]
     OS_AUTH_URL = http://dev.nova.example.com:8774/v1.1/
     OS_USERNAME = jsmith
     OS_PASSWORD = 40318069-6069-4d9f-836d-a46df17fc8d1
     OS_TENANT_NAME = nova-development
+    GROUP=dev,all
 
-When you use *supernova*, you'll refer to these environments as **production** and **development**.  Every environment is specified by its configuration header name.
+When you use *supernova*, you'll refer to these environments as **production**, **development**, and **staging**.  Every environment is specified by its configuration header name.
 
 ### Usage
 
-    supernova [--debug] [--list] [environment] [novaclient arguments...]
+    supernova [--debug] [--list] [--group] [environment] [novaclient arguments...]
 
     Options:
     -h, --help   show this help message and exit
     -d, --debug  show novaclient debug output (overrides NOVACLIENT_DEBUG)
     -l, --list   list all configured environments
+    -g, --group  run nova on groups of environments
 
 ##### Passing commands to *nova*
 
@@ -53,9 +63,13 @@ For example, if you wanted to list all instances within the **production** envir
 
     supernova production list
 
-Show a particular instance's data in the preprod environment:
+List all of your instances in the "dev" group:
 
-    supernova preprod show 3edb6dac-5a75-486a-be1b-3b15fd5b4ab0a
+    supernova --group dev list
+
+Show a particular instance's data in the **staging** environment:
+
+    supernova staging show 3edb6dac-5a75-486a-be1b-3b15fd5b4ab0a
 
 The first argument is generally the environment argument and it is expected to be a single word without spaces. Any text after the environment argument is passed directly to *nova*.
 
