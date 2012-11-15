@@ -107,11 +107,11 @@ class SuperNova:
 
             # Get values from the keyring if we find a USE_KEYRING constant
             if value.startswith("USE_KEYRING"):
+                rex = "USE_KEYRING\[([\x27\x22])(.*)\\1\]"
                 if value == "USE_KEYRING":
                     username = "%s:%s" % (self.nova_env, param)
                 else:
-                    global_identifier = re.match(
-                        "USE_KEYRING\['(.*)'\]",value).group(1)
+                    global_identifier = re.match(rex, value).group(2)
                     username = "%s:%s" % ('global', global_identifier)
                 credential = self.password_get(username)
             else:
