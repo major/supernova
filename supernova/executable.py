@@ -92,6 +92,8 @@ def run_supernova():
                        help='list all configured environments')
     parser.add_argument('-d', '--debug', action='store_true',
             help='show novaclient debug output (overrides NOVACLIENT_DEBUG)')
+    parser.add_argument('-g', '--group', action='store_true',
+            help='run novaclient on groups of environments')
     parser.add_argument('env',
                    help=('environment to run nova against. valid options: %s' %
                          sorted(s.get_nova_creds().sections())))
@@ -105,10 +107,23 @@ def run_supernova():
         print msg % rwrap('Missing novaclient arguments')
         sys.exit()
 
-    setup_supernova_env(s, supernova_args.env)
+    # (crainte) attempt to search all environments flagged with the correct
+    # GROUP value. For added hackery, the 'env' you provide will be the group
+    # name you search for in the config file!
+    if supernova_args.group:
+        for env in s.get_nova_creds().sections():
+            if s.get_nova_creds().has_option(env,'GROUP'):
+                # allow multiple groups per environment
+                groups = [v.strip() for v in s.get_nova_creds().get(env,'GROUP').split(',')]
+                if supernova_args.env in groups:
+                    print "====== %s " % (env)
+                    setup_supernova_env(s, env)
+                    s.run_novaclient(nova_args, supernova_args.debug)
+    else:
+        setup_supernova_env(s, supernova_args.env)
 
-    # All of the remaining arguments should be handed off to nova
-    s.run_novaclient(nova_args, supernova_args.debug)
+        # All of the remaining arguments should be handed off to nova
+        s.run_novaclient(nova_args, supernova_args.debug)
 
 
 def run_supernova_keyring():
