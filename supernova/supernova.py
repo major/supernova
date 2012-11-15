@@ -22,9 +22,6 @@ import subprocess
 import sys
 
 
-__version__ = '0.7.4'
-
-
 class SuperNova:
 
     def __init__(self):

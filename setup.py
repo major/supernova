@@ -15,12 +15,11 @@
 #   limitations under the License.
 #
 from setuptools import setup
-from supernova import supernova
 
 
 setup(
     name='supernova',
-    version=supernova.__version__,
+    version='0.7.5',
     author='Major Hayden',
     author_email='major@mhtx.net',
     description="novaclient wrapper for multiple nova environments",

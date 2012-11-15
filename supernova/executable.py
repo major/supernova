@@ -42,10 +42,9 @@ def print_valid_envs(valid_envs):
     print "%r" % valid_envs
 
 
-
 def check_supernova_conf(s):
     """Checks to make sure supernova can read it's config file."""
-    if s.get_nova_creds() == None:
+    if s.get_nova_creds() is None:
         msg = ('[%s] Unable to find your supernova configuration file or your '
                'configuration file is malformed.')
         print msg % rwrap('Configuration missing')
@@ -88,13 +87,14 @@ def run_supernova():
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-l', '--list', action=_ListAction,
-                       dest='listenvs',
-                       help='list all configured environments')
+                        dest='listenvs',
+                        help='list all configured environments')
     parser.add_argument('-d', '--debug', action='store_true',
-            help='show novaclient debug output (overrides NOVACLIENT_DEBUG)')
+                        help='show novaclient debug output')
     parser.add_argument('env',
-                   help=('environment to run nova against. valid options: %s' %
-                         sorted(s.get_nova_creds().sections())))
+                        help=('environment to run nova against. '
+                              'valid options: %s' %
+                              sorted(s.get_nova_creds().sections())))
 
     # Allow for passing --options all the way through to novaclient
     supernova_args, nova_args = parser.parse_known_args()
@@ -120,11 +120,11 @@ def run_supernova_keyring():
     parser = argparse.ArgumentParser()
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('-g', '--get', action='store_true',
-            dest='get_password',
-            help='retrieves credentials from keychain storage')
+                       dest='get_password',
+                       help='retrieves credentials from keychain storage')
     group.add_argument('-s', '--set', action='store_true',
-            dest='set_password',
-            help='stores credentials in keychain storage')
+                       dest='set_password',
+                       help='stores credentials in keychain storage')
     parser.add_argument('env',
                         help='environment to set parameter in')
     parser.add_argument('parameter',
@@ -191,6 +191,6 @@ def run_supernova_keyring():
                 gwrap("Success"), username, password)
         else:
             print "\n[%s] Unable to retrieve credentials for %s.\nThere are " \
-                  "probably no credentials stored for this environment/" \
-                  "parameter combination (try --set)." % (
+                "probably no credentials stored for this environment/" \
+                "parameter combination (try --set)." % (
                     rwrap("Failed"), username)
