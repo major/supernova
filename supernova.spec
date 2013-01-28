@@ -2,7 +2,7 @@
 
 Name:           supernova
 Version:        0.7.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Use novaclient with multiple OpenStack nova environments the easy way
 
 License:        ASLv2
@@ -15,6 +15,7 @@ Requires:       python-keyring
 Requires:       python-novaclient
 Requires:       pycryptopp
 Requires:       python-simplejson
+Requires:       python-iso8601
 
 %description
 supernova manages multiple nova environments without sourcing
@@ -37,5 +38,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/supernova-keyring
 
 %changelog
+* Mon Jan 28 2013 Greg Swift <gregswift@gmail.com> - 0.7.5-2
+-Added iso8601 dependency
+
 * Mon Jan 28 2013 Greg Swift <gregswift@gmail.com> - 0.7.5-1
 - Initial creation of spec file
