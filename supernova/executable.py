@@ -137,7 +137,7 @@ def run_supernova_keyring():
         print "[%s] Preparing to set a password in the keyring for:" % (
             gwrap("Keyring operation"))
         print "  - Environment  : %s" % args.env
-        print "  - Par ameter    : %s" % args.parameter
+        print "  - Parameter    : %s" % args.parameter
         print "\n  If this is correct, enter the corresponding credential " \
               "to store in \n  your keyring or press CTRL-D to abort: ",
 
