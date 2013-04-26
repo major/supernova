@@ -69,7 +69,7 @@ class SuperNova:
         configuration parameter pair.
         """
         try:
-            return keyring.get_password('supernova', username)
+            return keyring.get_password('supernova', username).encode('ascii')
         except:
             return False
 
