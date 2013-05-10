@@ -103,12 +103,12 @@ def run_supernova():
     if not nova_args:
         msg = '[%s] No arguments were provided to pass along to nova.'
         print msg % rwrap('Missing novaclient arguments')
-        sys.exit()
+        sys.exit(1)
 
     setup_supernova_env(s, supernova_args.env)
 
     # All of the remaining arguments should be handed off to nova
-    s.run_novaclient(nova_args, supernova_args.debug)
+    return s.run_novaclient(nova_args, supernova_args.debug)
 
 
 def run_supernova_keyring():
