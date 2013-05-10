@@ -30,5 +30,7 @@ setup(
         'console_scripts': [
             'supernova = supernova.executable:run_supernova',
             'supernova-keyring = supernova.executable:run_supernova_keyring'],
-        }
+        },
+    data_files=[('/etc/bash_completion.d/',
+                 ['contrib/supernova-completion.bash'])]
     )
