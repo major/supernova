@@ -156,4 +156,4 @@ class SuperNova:
         )
 
         # Don't exit until we're sure the subprocess has exited
-        p.wait()
+        return p.wait()
