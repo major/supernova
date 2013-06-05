@@ -10,11 +10,11 @@ You may like *supernova* if you regularly have the following problems:
 
 If any of these complaints ring true, *supernova* is for you. *supernova* manages multiple nova environments without sourcing novarc's or mucking with environment variables.
 
-![First world problems - nova style](http://lolcdn.mhtx.net/firstworldproblems-multiplenovaenvironments-20120316-072224.jpg)
+![First world problems - nova style](https://skitch.mhtx.net/firstworldproblems-multiplenovaenvironments-20120316-072224.jpg)
 
 ### Installation
 
-    git clone git://github.com/rackerhacker/supernova.git
+    git clone git://github.com/major/supernova.git
     cd supernova
     python setup.py install
 
