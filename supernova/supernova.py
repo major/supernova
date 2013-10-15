@@ -48,7 +48,9 @@ class SuperNova:
         if self.nova_creds:
             return self.nova_creds
 
-        possible_configs = [os.path.expanduser("~/.supernova"), '.supernova']
+        possible_configs = [os.path.expandvars("${XDG_CONFIG_HOME}/supernova"),
+                            os.path.expanduser("~/.supernova"),
+                            '.supernova']
         self.nova_creds = ConfigParser.RawConfigParser()
         self.nova_creds.read(possible_configs)
         if len(self.nova_creds.sections()) < 1:
