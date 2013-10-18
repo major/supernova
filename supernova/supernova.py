@@ -16,7 +16,9 @@
 #
 import ConfigParser
 import keyring
+from novaclient import client as novaclient
 import os
+import rackspace_auth_plugin
 import re
 import subprocess
 import sys
@@ -157,3 +159,37 @@ class SuperNova:
 
         # Don't exit until we're sure the subprocess has exited
         return p.wait()
+
+    def get_novaclient(self, env):
+        """
+        Returns python novaclient object authenticated with supernova config.
+        """
+        self.nova_env = env
+        assert self.is_valid_environment(), "Env %s not found in config." % env
+        return novaclient.Client(**self.prep_python_creds())
+
+    def prep_python_creds(self):
+        """
+        Prepare credentials for python Client instantiation.
+        """
+        creds = {self._rmp(k[0].lower()):k[1] for k in self.prep_nova_creds()}
+        if creds.get('auth_system') == 'rackspace':
+            creds['auth_plugin'] = rackspace_auth_plugin
+        if creds.get('url'):
+            creds['auth_url'] = creds.pop('url')
+        if creds.get('tenant_name'):
+            creds['project_id'] = creds.pop('tenant_name')
+        return creds
+
+    def _rmp(self, name):
+        """
+        Removes nova_ os_ novaclient_ prefix from string.
+        """
+        if name.startswith('nova_'):
+            return name[5:]
+        elif name.startswith('novaclient_'):
+            return name[11:]
+        elif name.startswith('os_'):
+            return name[3:]
+        else:
+            return name
