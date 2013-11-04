@@ -12,7 +12,12 @@ If any of these complaints ring true, *supernova* is for you. *supernova* manage
 
 ![First world problems - nova style](https://skitch.mhtx.net/firstworldproblems-multiplenovaenvironments-20120316-072224.jpg)
 
-### Installation
+### Quick Install from pip
+
+    pip install keyring
+    pip install supernova
+    
+### Install from Git
 
     git clone git://github.com/major/supernova.git
     cd supernova
