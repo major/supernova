@@ -5,6 +5,7 @@ RPMBUILD = rpmbuild --define "_topdir %(pwd)/rpmbuild" \
 	--define "_rpmdir %(pwd)/rpms" \
 	--define "_srcrpmdir %{_rpmdir}" \
 	--define "_sourcedir  %{_topdir}"
+PREFIX = ${DESTDIR}/usr
 
 all: rpms
 
@@ -17,7 +18,7 @@ build: clean
 	python setup.py build -f
 
 install: build
-	python setup.py install -f
+	python setup.py install -f --prefix ${PREFIX}
 
 reinstall: uninstall install
 
@@ -25,8 +26,8 @@ install_rpms:
 	yum install rpms/${ARCH}/${PACKAGE}*.rpm
 
 uninstall: clean
-	rm -f /usr/bin/${PACKAGE}
-	rm -rf /usr/lib/python2.*/site-packages/${PACKAGE}
+	rm -f ${PREFIX}/bin/${PACKAGE}
+	rm -rf ${PREFIX}/lib/python2.*/site-packages/${PACKAGE}
 
 uninstall_rpms: clean
 	rpm -e ${PACKAGE}
