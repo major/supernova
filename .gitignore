@@ -1,4 +1,6 @@
 *.pyc
 build
 dist
+rpmbuild
+rpms
 *egg*
