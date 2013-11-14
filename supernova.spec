@@ -38,8 +38,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/supernova-keyring
 
 %changelog
+* Wed Nov 13 2013 Greg Swift <gregswift@gmail.com> - 0.8.0-1
+- New release
+
 * Mon Jan 28 2013 Greg Swift <gregswift@gmail.com> - 0.7.5-2
--Added iso8601 dependency
+- Added iso8601 dependency
 
 * Mon Jan 28 2013 Greg Swift <gregswift@gmail.com> - 0.7.5-1
 - Initial creation of spec file
