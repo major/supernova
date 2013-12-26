@@ -20,7 +20,7 @@ If any of these complaints ring true, *supernova* is for you. *supernova* manage
 
 ### Configuration
 
-For *supernova* to work properly, each environment must be defined in `~/.supernova` (in your user's home directory).  The data in the file is exactly the same as the environment variables which you would normally use when running *nova*.  You can copy/paste from your novarc files directly into configuration sections within `~/.supernova`.
+For *supernova* to work properly, each environment must be defined in `~/.supernova` (a file in your user's home directory).  The data in the file is exactly the same as the environment variables which you would normally use when running *nova*.  You can copy/paste from your `.novarc` files directly into configuration sections within `~/.supernova` file.
 
 Here's an example of two environments, **production** and **development**:
 
