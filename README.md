@@ -38,6 +38,15 @@ Here's an example of two environments, **production** and **development**:
 
 When you use *supernova*, you'll refer to these environments as **production** and **development**.  Every environment is specified by its configuration header name.
 
+### Configuration Groups
+
+Configuration groups allow you to run the same command across multiple environments.  This is defined in your `.supernova` config file as well.
+
+Here's an example of how you would define an [all] group for the above example:
+
+    [all]
+    GROUP=['production', 'development']
+
 ### Usage
 
     supernova [--debug] [--list] [environment] [novaclient arguments...]
@@ -66,6 +75,19 @@ You may optionally pass `--debug` as the first argument (before the environment 
     supernova --debug production list
 
 As before, any text after the environment argument is passed directly to *nova*.
+
+##### Logging
+
+File logging is enabled by default and will save a `supernova.log` file to the current directory.  Logging can be configured by defining a `[log]` section in your `.supernova` config file with level, handler and filename(path) as config options.
+
+Here's an example of specifying an alternative file location and log level:
+
+    [log]
+    handler=FileHandler
+    level=debug
+    filename=log/supernova.log
+
+Setting the handler to **NullHandler** will disable logging as well.
 
 ##### Listing your configured environments
 
@@ -98,10 +120,10 @@ You'll need to confirm that you want the data from your keychain displayed in pl
 Once you've stored your sensitive data, simply adjust your *supernova* configuration file:
 
     #OS_PASSWORD = really_sensitive_api_key_here
-    
+
     # If using storage per environment
     OS_PASSWORD = USE_KEYRING
-    
+
     # If using global storage
     OS_PASSWORD = USE_KEYRING['MyCompanySSO']
 
@@ -110,3 +132,13 @@ When *supernova* reads your configuration file and spots a value of `USE_KEYRING
 #### A brief note about environment variables
 
 *supernova* will only replace and/or append environment variables to the already present variables for the duration of the *nova* execution. If you have `OS_USERNAME` set outside the script, it won't be used in the script since the script will pull data from `~/.supernova` and use it to run *nova*. In addition, any variables which are set prior to running *supernova* will be left unaltered when the script exits.
+
+#### Python Integration
+
+Supernova can also be used to return a python-novaclient object.  This can allow supernova to manage your credentials for multi-env python apps etc.
+
+Here's an example of retrieving a image object for the [production] environment from above:
+
+    import supernova.supernova as supernova
+    nova_obj = supernova.SuperNova().get_novaclient('production')
+    image = nova_obj.images.get('aaaaaaaa-bbbb-abab-cccc-dddddddd')
