@@ -16,12 +16,15 @@
 #
 import ConfigParser
 import keyring
+import logging
 from novaclient import client as novaclient
 import os
 import rackspace_auth_plugin
 import re
 import subprocess
 import sys
+
+LOG = logging.getLogger(__name__)
 
 
 class SuperNova:
@@ -38,8 +41,10 @@ class SuperNova:
         """
         creds = self.get_nova_creds()
         if creds.has_option(self.nova_env, 'insecure'):
-            print "WARNING: the 'insecure' option is deprecated. " \
+            msg = "WARNING: the 'insecure' option is deprecated. " \
                   "Consider using NOVACLIENT_INSECURE=1 instead."
+            print msg
+            LOG.warning(msg)
 
     def get_nova_creds(self):
         """
@@ -121,6 +126,7 @@ class SuperNova:
             if not credential:
                 msg = "Attempted to retrieve a credential for %s but " \
                       "couldn't find it within the keyring." % username
+                LOG.error(msg)
                 raise Exception(msg)
 
             creds.append((param, credential))
@@ -151,11 +157,14 @@ class SuperNova:
         # displayed appropriately.
         #
         # In other news, I hate how python 2.6 does unicode.
+        LOG.info('Running nova client in env %r with args %r',
+                 self.nova_env, nova_args)
+        print '-- %s --' % self.nova_env
         p = subprocess.Popen(['nova'] + nova_args,
-            stdout=sys.stdout,
-            stderr=sys.stderr,
-            env=self.env
-        )
+                             stdout=sys.stdout,
+                             stderr=sys.stderr,
+                             env=self.env
+                             )
 
         # Don't exit until we're sure the subprocess has exited
         return p.wait()
@@ -172,8 +181,8 @@ class SuperNova:
         """
         Prepare credentials for python Client instantiation.
         """
-        creds = dict((rm_prefix(k[0].lower()), k[1]) 
-                    for k in self.prep_nova_creds())
+        creds = dict((rm_prefix(k[0].lower()), k[1])
+                     for k in self.prep_nova_creds())
         if creds.get('auth_system') == 'rackspace':
             creds['auth_plugin'] = rackspace_auth_plugin
         if creds.get('url'):
@@ -185,13 +194,11 @@ class SuperNova:
 
 def rm_prefix(name):
     """
-    Removes nova_ os_ novaclient_ prefix from string.
+    Removes NOVA_ OS_ NOVACLIENT_ prefix from string.
     """
-    if name.startswith('nova_'):
-        return name[5:]
-    elif name.startswith('novaclient_'):
-        return name[11:]
-    elif name.startswith('os_'):
-        return name[3:]
-    else:
-        return name
+    names = name.split('_')
+    for prefix in ['NOVA', 'NOVACLIENT', 'OS']:
+        if names[0].upper() == prefix:
+            del names[0]
+            return "_".join(names).lower()
+    return name.lower()

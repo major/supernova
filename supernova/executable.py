@@ -14,10 +14,15 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-import getpass
 import argparse
+import getpass
+import log_config
+import logging
 import supernova
 import sys
+
+log_config.setup_logging()
+LOG = logging.getLogger(__name__)
 
 
 def gwrap(some_string):
@@ -39,27 +44,45 @@ def print_valid_envs(valid_envs):
     Prints the available environments.
     """
     print "[%s] Your valid environments are:" % (gwrap('Found environments'))
-    print "%r" % valid_envs
+    print "%r" % [x for x in valid_envs if x != 'log']
 
 
 def check_supernova_conf(s):
     """Checks to make sure supernova can read it's config file."""
     if s.get_nova_creds() is None:
-        msg = ('[%s] Unable to find your supernova configuration file or your '
-               'configuration file is malformed.')
-        print msg % rwrap('Configuration missing')
+        msg = '[%s] Unable to find your supernova configuration file or your '\
+            'configuration file is malformed.' % rwrap('Configuration missing')
+        print msg
+        LOG.error(msg)
         sys.exit()
+
+
+def format_envs(envs):
+    """Cleans and casts group envs to list."""
+    for param, value in envs:
+        if isinstance(value, basestring) and param.lower() == 'group':
+            for x in ['[', ']', '"', "'", ' ']:
+                value = value.replace(x, '')
+            return value.split(',')
 
 
 def setup_supernova_env(s, env):
     """Set supernova object's nova_env and ensure validity."""
-    s.nova_env = env
-    if not s.is_valid_environment():
-        msg = ('[%s] Unable to find the %r environment in your '
-               'configuration file.')
-        print msg % (rwrap('Invalid environment'), env)
-        print_valid_envs(sorted(s.get_nova_creds().sections()))
-        sys.exit()
+    # Did we specify a config group?
+    if s.get_nova_creds().has_option(env, 'group'):
+        envs = format_envs(s.get_nova_creds().items(env))
+    else:
+        envs = [env]
+    for e in envs:
+        s.nova_env = e
+        if not s.is_valid_environment():
+            msg = '[%s] Unable to find the %r environment in your '\
+                'configuration file.' % (rwrap('Invalid environment'), env)
+            print msg
+            LOG.error(msg)
+            print_valid_envs(sorted(s.get_nova_creds().sections()))
+            sys.exit()
+    return envs
 
 
 # Note(tr3buchet): this is necessary to prevent argparse from requiring the
@@ -101,14 +124,18 @@ def run_supernova():
 
     # Did we get any arguments to pass on to nova?
     if not nova_args:
-        msg = '[%s] No arguments were provided to pass along to nova.'
-        print msg % rwrap('Missing novaclient arguments')
+        msg = '[%s] No arguments were provided to pass along to nova.' % \
+            rwrap('Missing novaclient arguments')
+        print msg
+        LOG.error(msg)
         sys.exit(1)
 
-    setup_supernova_env(s, supernova_args.env)
+    envs = setup_supernova_env(s, supernova_args.env)
 
     # All of the remaining arguments should be handed off to nova
-    return s.run_novaclient(nova_args, supernova_args.debug)
+    for env in envs:
+        s.nova_env = env
+        s.run_novaclient(nova_args, supernova_args.debug)
 
 
 def run_supernova_keyring():
@@ -150,8 +177,10 @@ def run_supernova_keyring():
 
         # Did we get a password from the prompt?
         if not password or len(password) < 1:
-            print "\n[%s] No data was altered in your keyring." % (
+            msg = "\n[%s] No data was altered in your keyring." % (
                 rwrap("Canceled"))
+            print msg
+            LOG.warning(msg)
             sys.exit()
 
         # Try to store the password
@@ -161,11 +190,15 @@ def run_supernova_keyring():
             store_ok = False
 
         if store_ok:
-            print "\n[%s] Successfully stored credentials for %s under the " \
+            msg = "\n[%s] Successfully stored credentials for %s under the " \
                   "supernova service." % (gwrap("Success"), username)
+            print msg
+            LOG.info(msg)
         else:
-            print "\n[%s] Unable to store credentials for %s under the " \
+            msg = "\n[%s] Unable to store credentials for %s under the " \
                   "supernova service." % (rwrap("Failed"), username)
+            print msg
+            LOG.warning(msg)
 
         sys.exit()
 
@@ -190,8 +223,10 @@ def run_supernova_keyring():
             print "\n[%s] Found credentials for %s: %s" % (
                 gwrap("Success"), username, password)
         else:
-            print "\n[%s] Unable to retrieve credentials for %s.\nThere are " \
+            msg = "\n[%s] Unable to retrieve credentials for %s.\nThere are " \
                   "probably no credentials stored for this environment/" \
                   "parameter combination (try --set)." % (
-                  rwrap("Failed"), username)
+                      rwrap("Failed"), username)
+            print msg
+            LOG.warning(msg)
             sys.exit(1)
