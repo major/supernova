@@ -134,7 +134,7 @@ class SuperNova:
         for k, v in self.prep_nova_creds():
             self.env[k] = v
 
-    def run_novaclient(self, nova_args, force_debug=False):
+    def run_novaclient(self, nova_args, supernova_args):
         """
         Sets the environment variables for novaclient, runs novaclient, and
         prints the output.
@@ -143,7 +143,7 @@ class SuperNova:
         self.prep_shell_environment()
 
         # Check for a debug override
-        if force_debug:
+        if supernova_args.debug:
             nova_args.insert(0, '--debug')
 
         # Call novaclient and connect stdout/stderr to the current terminal
@@ -151,7 +151,7 @@ class SuperNova:
         # displayed appropriately.
         #
         # In other news, I hate how python 2.6 does unicode.
-        p = subprocess.Popen(['nova'] + nova_args,
+        p = subprocess.Popen([supernova_args.executable] + nova_args,
             stdout=sys.stdout,
             stderr=sys.stderr,
             env=self.env

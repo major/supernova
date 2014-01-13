@@ -86,6 +86,8 @@ def run_supernova():
     check_supernova_conf(s)
 
     parser = argparse.ArgumentParser()
+    parser.add_argument('-x', '--executable', default='nova',
+                        help='command to run instead of nova')
     parser.add_argument('-l', '--list', action=_ListAction,
                         dest='listenvs',
                         help='list all configured environments')
@@ -108,7 +110,7 @@ def run_supernova():
     setup_supernova_env(s, supernova_args.env)
 
     # All of the remaining arguments should be handed off to nova
-    return s.run_novaclient(nova_args, supernova_args.debug)
+    return s.run_novaclient(nova_args, supernova_args)
 
 
 def run_supernova_keyring():
