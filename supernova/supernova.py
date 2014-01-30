@@ -145,8 +145,8 @@ class SuperNova:
         # Check for a debug override
         if supernova_args.debug:
             nova_args.insert(0, '--debug')
-   
-        # Check for an OS_EXECUTABLE but prefer the executable passed to CLI
+
+        # Check for OS_EXECUTABLE
         try:
             if self.env['OS_EXECUTABLE']:
                 supernova_args.executable = self.env['OS_EXECUTABLE']

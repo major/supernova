@@ -10,7 +10,7 @@ You may like *supernova* if you regularly have the following problems:
 
 If any of these complaints ring true, *supernova* is for you. *supernova* manages multiple nova environments without sourcing novarc's or mucking with environment variables.
 
-![First world problems - nova style](https://skitch.mhtx.net/firstworldproblems-multiplenovaenvironments-20120316-072224.jpg)
+![First world problems - nova style](http://i.imgur.com/BQzoH2y.jpg)
 
 ### Installation
 
@@ -106,6 +106,10 @@ Once you've stored your sensitive data, simply adjust your *supernova* configura
     OS_PASSWORD = USE_KEYRING['MyCompanySSO']
 
 When *supernova* reads your configuration file and spots a value of `USE_KEYRING`, it will look for credentials stored under `OS_PASSWORD` for that environment automatically.  If your keyring doesn't have a corresponding credential, you'll get an exception.
+
+### Use with applications other than nova
+
+You can configure other executables to work with, e.g., `glance`/`neutron`/`keystone` with the -x flag or `OS_EXECUTABLE` in your `.supernova` file.
 
 #### A brief note about environment variables
 
