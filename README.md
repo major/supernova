@@ -8,7 +8,9 @@ You may like *supernova* if you regularly have the following problems:
 * You want to keep sensitive API keys and passwords out of plain text configuration files (see the "Working with keyrings" section toward the end)
 * You need to share common skeleton environment variables for *nova* with your teams
 
-If any of these complaints ring true, *supernova* is for you. *supernova* manages multiple nova environments without sourcing novarc's or mucking with environment variables.
+If any of these complaints ring true, *supernova* is for you. *supernova* manages multiple nova environments without sourcing novarc files or mucking with environment variables.
+
+![First world problems - nova style](https://skitch.mhtx.net/firstworldproblems-multiplenovaenvironments-20120316-072224.jpg)
 
 ### Installation
 
