@@ -10,8 +10,6 @@ You may like *supernova* if you regularly have the following problems:
 
 If any of these complaints ring true, *supernova* is for you. *supernova* manages multiple nova environments without sourcing novarc's or mucking with environment variables.
 
-![First world problems - nova style](https://skitch.mhtx.net/firstworldproblems-multiplenovaenvironments-20120316-072224.jpg)
-
 ### Installation
 
     git clone git://github.com/major/supernova.git
@@ -22,21 +20,32 @@ If any of these complaints ring true, *supernova* is for you. *supernova* manage
 
 For *supernova* to work properly, each environment must be defined in `~/.supernova` (in your user's home directory).  The data in the file is exactly the same as the environment variables which you would normally use when running *nova*.  You can copy/paste from your novarc files directly into configuration sections within `~/.supernova`.
 
-Here's an example of two environments, **production** and **development**:
+Here's an example of how to use supernova with [Rackspace Cloud Servers](http://www.rackspace.com/cloud/servers/) in different datacenters:
 
-    [production]
-    OS_AUTH_URL = http://production.nova.example.com:8774/v1.1/
-    OS_USERNAME = jsmith
-    OS_PASSWORD = fd62afe2-4686-469f-9849-ceaa792c55a6
-    OS_TENANT_NAME = nova-production
+    [iad]
+	OS_AUTH_URL=https://identity.api.rackspacecloud.com/v2.0/
+	NOVA_RAX_AUTH=1
+	OS_AUTH_SYSTEM=rackspace
+	OS_REGION_NAME=IAD
+	OS_TENANT_NAME=your_rackspace_cloud_username
+	OS_USERNAME=your_rackspace_cloud_username
+	OS_PASSWORD=your_rackspace_api_key
+	OS_PROJECT_ID=your_rackspace_cloud_account_number
 
-    [development]
-    OS_AUTH_URL = http://dev.nova.example.com:8774/v1.1/
-    OS_USERNAME = jsmith
-    OS_PASSWORD = 40318069-6069-4d9f-836d-a46df17fc8d1
-    OS_TENANT_NAME = nova-development
+    [ord]
+	OS_AUTH_URL=https://identity.api.rackspacecloud.com/v2.0/
+	NOVA_RAX_AUTH=1
+	OS_AUTH_SYSTEM=rackspace
+	OS_REGION_NAME=ORD
+	OS_TENANT_NAME=your_rackspace_cloud_username
+	OS_USERNAME=your_rackspace_cloud_username
+	OS_PASSWORD=your_rackspace_api_key
+	OS_PROJECT_ID=your_rackspace_cloud_account_number
 
-When you use *supernova*, you'll refer to these environments as **production** and **development**.  Every environment is specified by its configuration header name.
+
+When you use *supernova*, you'll refer to these environments as **iad** and **ord**.  Every environment is specified by its configuration header name.  See the *Usage* section below for some examples.
+
+**Don't know your Rackspace Cloud account number?** Just log into the [control panel](https://mycloud.rackspace.com/) and look for the number next to your username.  You should see it in the top dark grey bar all the way on the right side.
 
 ### Usage
 
@@ -49,13 +58,13 @@ When you use *supernova*, you'll refer to these environments as **production** a
 
 ##### Passing commands to *nova*
 
-For example, if you wanted to list all instances within the **production** environment:
+For example, if you wanted to list all instances within the **iad** environment:
 
-    supernova production list
+    supernova iad list
 
-Show a particular instance's data in the preprod environment:
+Show a particular instance's data in the **ord** environment:
 
-    supernova preprod show 3edb6dac-5a75-486a-be1b-3b15fd5b4ab0a
+    supernova ord show 3edb6dac-5a75-486a-be1b-3b15fd5b4ab0a
 
 The first argument is generally the environment argument and it is expected to be a single word without spaces. Any text after the environment argument is passed directly to *nova*.
 
@@ -63,7 +72,7 @@ The first argument is generally the environment argument and it is expected to b
 
 You may optionally pass `--debug` as the first argument (before the environment argument) to see additional debug information about the requests being made to the API:
 
-    supernova --debug production list
+    supernova --debug iad list
 
 As before, any text after the environment argument is passed directly to *nova*.
 
@@ -79,7 +88,7 @@ Due to security policies at certain companies or due to general paranoia, some u
 
 To get started, you'll need to choose an environment and a configuration option.  Here's an example of some data you might not want to keep in plain text:
 
-    supernova-keyring --set production OS_PASSWORD
+    supernova-keyring --set iad OS_PASSWORD
 
 **TIP**: If you need to use the same data for multiple environments, you can use a global credential item very easily:
 
