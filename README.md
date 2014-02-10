@@ -10,7 +10,7 @@ You may like *supernova* if you regularly have the following problems:
 
 If any of these complaints ring true, *supernova* is for you. *supernova* manages multiple nova environments without sourcing novarc files or mucking with environment variables.
 
-![First world problems - nova style](https://skitch.mhtx.net/firstworldproblems-multiplenovaenvironments-20120316-072224.jpg)
+![First world problems - nova style](http://i.imgur.com/CLYY05E.jpg)
 
 ### Installation
 
