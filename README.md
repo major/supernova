@@ -8,7 +8,9 @@ You may like *supernova* if you regularly have the following problems:
 * You want to keep sensitive API keys and passwords out of plain text configuration files (see the "Working with keyrings" section toward the end)
 * You need to share common skeleton environment variables for *nova* with your teams
 
-If any of these complaints ring true, *supernova* is for you. *supernova* manages multiple nova environments without sourcing novarc's or mucking with environment variables.
+If any of these complaints ring true, *supernova* is for you. *supernova* manages multiple nova environments without sourcing novarc files or mucking with environment variables.
+
+![First world problems - nova style](http://i.imgur.com/CLYY05E.jpg)
 
 ### Installation
 
@@ -29,7 +31,7 @@ For use with Rackspace Cloud:
 
 ### Configuration
 
-For *supernova* to work properly, each environment must be defined in `~/.supernova` (in your user's home directory).  The data in the file is exactly the same as the environment variables which you would normally use when running *nova*.  You can copy/paste from your novarc files directly into configuration sections within `~/.supernova`.
+For *supernova* to work properly, each environment must be defined in `~/.supernova` (a file in your user's home directory).  The data in the file is exactly the same as the environment variables which you would normally use when running *nova*.  You can copy/paste from your `.novarc` files directly into configuration sections within your `~/.supernova` file.
 
 Here's an example of how to use supernova with [Rackspace Cloud Servers](http://www.rackspace.com/cloud/servers/) in different datacenters:
 
