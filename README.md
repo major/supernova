@@ -12,9 +12,20 @@ If any of these complaints ring true, *supernova* is for you. *supernova* manage
 
 ### Installation
 
+You will need to have a specific version of the [keyring](https://pypi.python.org/pypi/keyring) python module installed for *supernova* to work but it should be installed automatically when you install *supernova* using the instructions below.
+
+For generic OpenStack environments:
+
     git clone git://github.com/major/supernova.git
     cd supernova
     python setup.py install
+
+For use with Rackspace Cloud:
+
+    git clone git://github.com/major/supernova.git
+    cd supernova
+    python setup.py install
+    pip install rackspace-novaclient
 
 ### Configuration
 
