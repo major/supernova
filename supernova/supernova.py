@@ -152,10 +152,9 @@ class SuperNova:
         #
         # In other news, I hate how python 2.6 does unicode.
         p = subprocess.Popen([supernova_args.executable] + nova_args,
-            stdout=sys.stdout,
-            stderr=sys.stderr,
-            env=self.env
-        )
+                             stdout=sys.stdout,
+                             stderr=sys.stderr,
+                             env=self.env)
 
         # Don't exit until we're sure the subprocess has exited
         return p.wait()
@@ -172,8 +171,8 @@ class SuperNova:
         """
         Prepare credentials for python Client instantiation.
         """
-        creds = dict((rm_prefix(k[0].lower()), k[1]) 
-                    for k in self.prep_nova_creds())
+        creds = dict((rm_prefix(k[0].lower()), k[1])
+                     for k in self.prep_nova_creds())
         if creds.get('auth_system') == 'rackspace':
             creds['auth_plugin'] = rackspace_auth_plugin
         if creds.get('url'):

@@ -194,6 +194,6 @@ def run_supernova_keyring():
         else:
             print "\n[%s] Unable to retrieve credentials for %s.\nThere are " \
                   "probably no credentials stored for this environment/" \
-                  "parameter combination (try --set)." % (
-                  rwrap("Failed"), username)
+                  "parameter combination (try --set)." % (rwrap("Failed"),
+                                                          username)
             sys.exit(1)
