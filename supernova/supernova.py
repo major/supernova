@@ -146,6 +146,13 @@ class SuperNova:
         if supernova_args.debug:
             nova_args.insert(0, '--debug')
 
+        # Check for OS_EXECUTABLE
+        try:
+            if self.env['OS_EXECUTABLE']:
+                supernova_args.executable = self.env['OS_EXECUTABLE']
+        except KeyError:
+            pass
+
         # Call novaclient and connect stdout/stderr to the current terminal
         # so that any unicode characters from novaclient's list will be
         # displayed appropriately.
