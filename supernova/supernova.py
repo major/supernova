@@ -93,7 +93,7 @@ class SuperNova:
         """
         self.check_deprecated_options()
         raw_creds = self.get_nova_creds().items(self.nova_env)
-        nova_re = re.compile(r"(^nova_|^os_|^novaclient)")
+        nova_re = re.compile(r"(^nova_|^os_|^novaclient|^trove_)")
 
         creds = []
         for param, value in raw_creds:
@@ -172,7 +172,7 @@ class SuperNova:
         """
         Prepare credentials for python Client instantiation.
         """
-        creds = dict((rm_prefix(k[0].lower()), k[1]) 
+        creds = dict((rm_prefix(k[0].lower()), k[1])
                     for k in self.prep_nova_creds())
         if creds.get('auth_system') == 'rackspace':
             creds['auth_plugin'] = rackspace_auth_plugin
