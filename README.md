@@ -129,6 +129,10 @@ Once you've stored your sensitive data, simply adjust your *supernova* configura
 
 When *supernova* reads your configuration file and spots a value of `USE_KEYRING`, it will look for credentials stored under `OS_PASSWORD` for that environment automatically.  If your keyring doesn't have a corresponding credential, you'll get an exception.
 
+### Use with applications other than nova
+
+You can configure other executables to work with, e.g., `glance`/`neutron`/`keystone` with the -x flag or `OS_EXECUTABLE` in your `.supernova` file.
+
 #### A brief note about environment variables
 
 *supernova* will only replace and/or append environment variables to the already present variables for the duration of the *nova* execution. If you have `OS_USERNAME` set outside the script, it won't be used in the script since the script will pull data from `~/.supernova` and use it to run *nova*. In addition, any variables which are set prior to running *supernova* will be left unaltered when the script exits.

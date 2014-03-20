@@ -93,7 +93,7 @@ class SuperNova:
         """
         self.check_deprecated_options()
         raw_creds = self.get_nova_creds().items(self.nova_env)
-        nova_re = re.compile(r"(^nova_|^os_|^novaclient)")
+        nova_re = re.compile(r"(^nova_|^os_|^novaclient|^trove_)")
 
         creds = []
         for param, value in raw_creds:
@@ -145,6 +145,13 @@ class SuperNova:
         # Check for a debug override
         if supernova_args.debug:
             nova_args.insert(0, '--debug')
+
+        # Check for OS_EXECUTABLE
+        try:
+            if self.env['OS_EXECUTABLE']:
+                supernova_args.executable = self.env['OS_EXECUTABLE']
+        except KeyError:
+            pass
 
         # Call novaclient and connect stdout/stderr to the current terminal
         # so that any unicode characters from novaclient's list will be
