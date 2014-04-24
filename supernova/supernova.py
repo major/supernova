@@ -172,7 +172,7 @@ class SuperNova:
         """
         self.nova_env = env
         assert self.is_valid_environment(), "Env %s not found in config." % env
-        return novaclient.Client(**self.prep_python_creds())
+        return novaclient.Client('3', **self.prep_python_creds())
 
     def prep_python_creds(self):
         """
@@ -186,6 +186,8 @@ class SuperNova:
             creds['auth_url'] = creds.pop('url')
         if creds.get('tenant_name'):
             creds['project_id'] = creds.pop('tenant_name')
+        if creds.get('rax_auth'):
+            creds.pop('rax_auth')
         return creds
 
 
