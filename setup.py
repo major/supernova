@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# Copyright 2012 Major Hayden
+# Copyright 2014 Major Hayden
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ from setuptools import setup
 
 setup(
     name='supernova',
-    version='0.9.0',
+    version='0.9.5',
     author='Major Hayden',
     author_email='major@mhtx.net',
     description="novaclient wrapper for multiple nova environments",
