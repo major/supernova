@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright 2012 Major Hayden
+# Copyright 2014 Major Hayden
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -86,6 +86,8 @@ def run_supernova():
     check_supernova_conf(s)
 
     parser = argparse.ArgumentParser()
+    parser.add_argument('-x', '--executable', default='nova',
+                        help='command to run instead of nova')
     parser.add_argument('-l', '--list', action=_ListAction,
                         dest='listenvs',
                         help='list all configured environments')
@@ -108,7 +110,7 @@ def run_supernova():
     setup_supernova_env(s, supernova_args.env)
 
     # All of the remaining arguments should be handed off to nova
-    return s.run_novaclient(nova_args, supernova_args.debug)
+    return s.run_novaclient(nova_args, supernova_args)
 
 
 def run_supernova_keyring():
@@ -192,6 +194,6 @@ def run_supernova_keyring():
         else:
             print "\n[%s] Unable to retrieve credentials for %s.\nThere are " \
                   "probably no credentials stored for this environment/" \
-                  "parameter combination (try --set)." % (
-                  rwrap("Failed"), username)
+                  "parameter combination (try --set)." % (rwrap("Failed"),
+                                                          username)
             sys.exit(1)

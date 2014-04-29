@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright 2012 Major Hayden
+# Copyright 2014 Major Hayden
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -93,7 +93,7 @@ class SuperNova:
         """
         self.check_deprecated_options()
         raw_creds = self.get_nova_creds().items(self.nova_env)
-        nova_re = re.compile(r"(^nova_|^os_|^novaclient)")
+        nova_re = re.compile(r"(^nova_|^os_|^novaclient|^trove_)")
 
         creds = []
         for param, value in raw_creds:
@@ -134,7 +134,7 @@ class SuperNova:
         for k, v in self.prep_nova_creds():
             self.env[k] = v
 
-    def run_novaclient(self, nova_args, force_debug=False):
+    def run_novaclient(self, nova_args, supernova_args):
         """
         Sets the environment variables for novaclient, runs novaclient, and
         prints the output.
@@ -143,19 +143,25 @@ class SuperNova:
         self.prep_shell_environment()
 
         # Check for a debug override
-        if force_debug:
+        if supernova_args.debug:
             nova_args.insert(0, '--debug')
+
+        # Check for OS_EXECUTABLE
+        try:
+            if self.env['OS_EXECUTABLE']:
+                supernova_args.executable = self.env['OS_EXECUTABLE']
+        except KeyError:
+            pass
 
         # Call novaclient and connect stdout/stderr to the current terminal
         # so that any unicode characters from novaclient's list will be
         # displayed appropriately.
         #
         # In other news, I hate how python 2.6 does unicode.
-        p = subprocess.Popen(['nova'] + nova_args,
-            stdout=sys.stdout,
-            stderr=sys.stderr,
-            env=self.env
-        )
+        p = subprocess.Popen([supernova_args.executable] + nova_args,
+                             stdout=sys.stdout,
+                             stderr=sys.stderr,
+                             env=self.env)
 
         # Don't exit until we're sure the subprocess has exited
         return p.wait()
@@ -172,7 +178,8 @@ class SuperNova:
         """
         Prepare credentials for python Client instantiation.
         """
-        creds = {rm_prefix(k[0].lower()): k[1] for k in self.prep_nova_creds()}
+        creds = dict((rm_prefix(k[0].lower()), k[1])
+                     for k in self.prep_nova_creds())
         if creds.get('auth_system') == 'rackspace':
             creds['auth_plugin'] = rackspace_auth_plugin
         if creds.get('url'):
