@@ -42,7 +42,6 @@ class SuperNova:
                   "Consider using NOVACLIENT_INSECURE=1 instead."
 
     def check_environment_presets(self):
-        from pprint import pprint
         presets = [x for x in self.env.keys() if x.startswith('NOVA_') or
                    x.startswith('OS_')]
         if len(presets) < 1:
