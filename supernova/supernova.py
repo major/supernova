@@ -41,6 +41,20 @@ class SuperNova:
             print "WARNING: the 'insecure' option is deprecated. " \
                   "Consider using NOVACLIENT_INSECURE=1 instead."
 
+    def check_environment_presets(self):
+        from pprint import pprint
+        presets = [x for x in self.env.keys() if x.startswith('NOVA_') or
+                   x.startswith('OS_')]
+        if len(presets) < 1:
+            pass
+        else:
+            print "_" * 80
+            print "*WARNING* Found existing environment variables that may "\
+                  "cause conflicts:"
+            for preset in presets:
+                print "  - %s" % preset
+            print "_" * 80
+
     def get_nova_creds(self):
         """
         Reads the supernova config file from the current directory or the
@@ -139,6 +153,9 @@ class SuperNova:
         Sets the environment variables for novaclient, runs novaclient, and
         prints the output.
         """
+        # Check for preset environment variables that could cause problems
+        self.check_environment_presets()
+
         # Get the environment variables ready
         self.prep_shell_environment()
 
