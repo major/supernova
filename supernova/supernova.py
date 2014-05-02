@@ -18,7 +18,6 @@ import ConfigParser
 import keyring
 from novaclient import client as novaclient
 import os
-import rackspace_auth_plugin
 import re
 import subprocess
 import sys
@@ -196,8 +195,6 @@ class SuperNova:
         """
         creds = dict((rm_prefix(k[0].lower()), k[1])
                      for k in self.prep_nova_creds())
-        if creds.get('auth_system') == 'rackspace':
-            creds['auth_plugin'] = rackspace_auth_plugin
         if creds.get('url'):
             creds['auth_url'] = creds.pop('url')
         if creds.get('tenant_name'):
