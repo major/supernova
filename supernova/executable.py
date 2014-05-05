@@ -43,7 +43,7 @@ def print_valid_envs(valid_envs):
 
 
 def check_supernova_conf(s):
-    """Checks to make sure supernova can read it's config file."""
+    """Checks to make sure supernova can read its config file."""
     if s.get_nova_creds() is None:
         msg = ('[%s] Unable to find your supernova configuration file or your '
                'configuration file is malformed.')
