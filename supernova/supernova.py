@@ -132,9 +132,15 @@ class SuperNova:
             # Make sure we got something valid from the configuration file or
             # the keyring
             if not credential:
-                msg = "Attempted to retrieve a credential for %s but " \
-                      "couldn't find it within the keyring." % username
-                raise Exception(msg)
+                msg = """
+While connecting to %s, supernova attempted to retrieve a credential
+for %s but couldn't find it within the keyring.  If you haven't stored
+credentials for %s yet, try running:
+
+    supernova-keyring -s %s
+""" % (self.nova_env, username, username, username)
+                print msg
+                sys.exit(1)
 
             creds.append((param, credential))
 
