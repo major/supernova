@@ -34,6 +34,9 @@ class SuperNova:
         self.nova_env = None
         self.env = os.environ.copy()
 
+        # Check for preset environment variables that could cause problems
+        self.check_environment_presets()
+
     def check_deprecated_options(self):
         """
         Hunts for deprecated configuration options from previous SuperNova
@@ -56,6 +59,15 @@ class SuperNova:
             for preset in presets:
                 print "  - %s" % preset
             print "_" * 80
+
+    def get_envs_in_group(self, group_name):
+        envs = []
+        for section in self.nova_creds.sections():
+            if (self.nova_creds.has_option(section, 'SUPERNOVA_GROUP') and
+                    self.nova_creds.get(section,
+                                        'SUPERNOVA_GROUP') == group_name):
+                envs.append(section)
+        return envs
 
     def get_nova_creds(self):
         """
@@ -80,6 +92,22 @@ class SuperNova:
         """
         valid_envs = self.get_nova_creds().sections()
         return self.nova_env in valid_envs
+
+    def is_valid_group(self, group_name):
+        """
+        Checks to see if the configuration file contains a SUPERNOVA_GROUP
+        configuration option.
+        """
+        valid_groups = []
+        for section in self.nova_creds.sections():
+            if self.nova_creds.has_option(section, 'SUPERNOVA_GROUP'):
+                valid_groups.append(self.nova_creds.get(section,
+                                                        'SUPERNOVA_GROUP'))
+        valid_groups = list(set(valid_groups))
+        if group_name in valid_groups:
+            return True
+        else:
+            return False
 
     def prep_nova_creds(self):
         """
@@ -132,6 +160,7 @@ credentials for %s yet, try running:
         """
         Appends new variables to the current shell environment temporarily.
         """
+        self.env = os.environ.copy()
         for k, v in self.prep_nova_creds():
             self.env[k] = v
 
@@ -140,9 +169,6 @@ credentials for %s yet, try running:
         Sets the environment variables for novaclient, runs novaclient, and
         prints the output.
         """
-        # Check for preset environment variables that could cause problems
-        self.check_environment_presets()
-
         # Get the environment variables ready
         self.prep_shell_environment()
 
@@ -156,6 +182,11 @@ credentials for %s yet, try running:
                 supernova_args.executable = self.env['OS_EXECUTABLE']
         except KeyError:
             pass
+
+        # Print a small message for the user
+        msg = "Running %s against %s..." % (supernova_args.executable,
+                                            self.nova_env)
+        print "[SUPERNOVA] %s " % msg
 
         # Call novaclient and connect stdout/stderr to the current terminal
         # so that any unicode characters from novaclient's list will be

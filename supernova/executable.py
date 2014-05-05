@@ -110,10 +110,17 @@ def run_supernova():
         print msg % rwrap('Missing novaclient arguments')
         sys.exit(1)
 
-    setup_supernova_env(s, supernova_args.env)
-
-    # All of the remaining arguments should be handed off to nova
-    return s.run_novaclient(nova_args, supernova_args)
+    # Is our environment argument a single environment or a supernova group?
+    if s.is_valid_group(supernova_args.env):
+        # We were handed a valid supernova group
+        envs = s.get_envs_in_group(supernova_args.env)
+        for env in envs:
+            setup_supernova_env(s, env)
+            s.run_novaclient(nova_args, supernova_args)
+    else:
+        # It's not a group -- let's assume we were passed a single environment
+        setup_supernova_env(s, supernova_args.env)
+        s.run_novaclient(nova_args, supernova_args)
 
 
 def run_supernova_keyring():
