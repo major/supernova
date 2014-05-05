@@ -14,10 +14,13 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-import getpass
 import argparse
-import supernova
+import getpass
 import sys
+
+
+import credentials
+import supernova
 
 
 def gwrap(some_string):
@@ -158,7 +161,7 @@ def run_supernova_keyring():
 
         # Try to store the password
         try:
-            store_ok = s.password_set(username, password)
+            store_ok = credentials.password_set(username, password)
         except:
             store_ok = False
 
@@ -184,7 +187,7 @@ def run_supernova_keyring():
             sys.exit()
 
         try:
-            password = s.password_get(username)
+            password = credentials.password_get(username)
         except:
             password = None
 

@@ -24,6 +24,9 @@ import subprocess
 import sys
 
 
+import credentials
+
+
 class SuperNova:
 
     def __init__(self):
@@ -78,27 +81,6 @@ class SuperNova:
         valid_envs = self.get_nova_creds().sections()
         return self.nova_env in valid_envs
 
-    def password_get(self, username=None):
-        """
-        Retrieves a password from the keychain based on the environment and
-        configuration parameter pair.
-        """
-        try:
-            return keyring.get_password('supernova', username).encode('ascii')
-        except:
-            return False
-
-    def password_set(self, username=None, password=None):
-        """
-        Stores a password in a keychain for a particular environment and
-        configuration parameter pair.
-        """
-        try:
-            keyring.set_password('supernova', username, password)
-            return True
-        except:
-            return False
-
     def prep_nova_creds(self):
         """
         Finds relevant config options in the supernova config and cleans them
@@ -125,7 +107,7 @@ class SuperNova:
                 else:
                     global_identifier = re.match(rex, value).group(2)
                     username = "%s:%s" % ('global', global_identifier)
-                credential = self.password_get(username)
+                credential = credentials.password_get(username)
             else:
                 credential = value.strip("\"'")
 
@@ -138,7 +120,7 @@ for %s but couldn't find it within the keyring.  If you haven't stored
 credentials for %s yet, try running:
 
     supernova-keyring -s %s
-""" % (self.nova_env, username, username, username)
+""" % (self.nova_env, username, username, ' '.join(username.split(':')))
                 print msg
                 sys.exit(1)
 
