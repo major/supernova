@@ -200,13 +200,14 @@ credentials for %s yet, try running:
         # Don't exit until we're sure the subprocess has exited
         return p.wait()
 
-    def get_novaclient(self, env):
+    def get_novaclient(self, env, client_version=3):
         """
         Returns python novaclient object authenticated with supernova config.
         """
         self.nova_env = env
         assert self.is_valid_environment(), "Env %s not found in config." % env
-        return novaclient.Client(**self.prep_python_creds())
+        print "Getting novaclient!"
+        return novaclient.Client(client_version, **self.prep_python_creds())
 
     def prep_python_creds(self):
         """
