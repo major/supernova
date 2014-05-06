@@ -62,8 +62,8 @@ This tells supernova to look up the *OS_PASSWORD* value for the *dfw* environmen
 This was one of the first methods of keyring storage available in supernova and it's the least robust.  It's recommended to consider using global keyring storage instead.
 
 
-Plain text
-----------
+Plain text storage
+------------------
 
 This is obviously the easiest method, but it's generally not recommended.  Any user with access to your home directory would have access to your credentials and could use them against your accounts.  **Don't use plain text credential storage unless you know what you're doing.**
 
