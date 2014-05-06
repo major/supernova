@@ -31,3 +31,4 @@ Documentation
    passingcommands
    listingenvs
    groupedenvs
+   otherexecutables
