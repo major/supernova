@@ -1,14 +1,12 @@
 supernova documentation
 =======================
 
-Getting started
-----------------
-
 .. toctree::
    :maxdepth: 2
 
    raxquickstart
    installation
+   keyring.rst
 
 
 
