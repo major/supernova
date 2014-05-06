@@ -28,7 +28,4 @@ Documentation
    raxquickstart
    installation
    keyring
-   passingcommands
-   listingenvs
-   groupedenvs
-   otherexecutables
+   usingsupernova
