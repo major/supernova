@@ -29,6 +29,7 @@ Documentation
    installation
    keyring
    passingcommands
+   listingenvs
 
 
 
