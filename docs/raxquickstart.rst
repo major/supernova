@@ -16,7 +16,7 @@ We start by installing supernova as well as rackspace-novaclient (which is requi
 
     pip install supernova rackspace-novaclient
 
-There's a sample Rackspace supernova configuration file in the main repository and we can store that in our home directory as `.supernova`::
+There's a `Rackspace example configuration <http://bit.ly/raxsupernova>`_ file in the main repository and we can store that in our home directory as `.supernova`::
 
     wget -O ~/.supernova http://bit.ly/raxsupernova
 

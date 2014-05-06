@@ -30,6 +30,7 @@ Documentation
    keyring
    passingcommands
    listingenvs
+   groupedenvs
 
 
 
