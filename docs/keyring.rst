@@ -14,7 +14,7 @@ Global keyring storage
 
 Storing a credential as a global credential allows you to use it across multiple environments.  The greatest benefit of this option is that you only need to set credentials in one place within your keyring.  If you need to change credentials frequently, this can be a big time saver.
 
-Here's how we're already doing that in the `Rackspace example configuration <http://bit.ly/raxsupernova>`_:::
+Here's how we're already doing that in the `Rackspace example configuration <http://bit.ly/raxsupernova>`_::
 
     [dfw]
     ... snip ...
@@ -34,11 +34,11 @@ Here's how we're already doing that in the `Rackspace example configuration <htt
     OS_USERNAME=USE_KEYRING['RackspaceAccountUser']
     OS_TENANT_NAME=USE_KEYRING['RackspaceAccountDDI']
 
-You can get global credentials with supernova-keyring:::
+You can get global credentials with supernova-keyring::
 
     supernova-keyring -s global RackspaceAccountAPIKey
 
-Retrieving a credential you stored previously is easy as well:::
+Retrieving a credential you stored previously is easy as well::
 
     supernova-keyring -g global RackspaceAccountAPIKey
 
@@ -47,7 +47,7 @@ Retrieving a credential you stored previously is easy as well:::
 Environment-specific keyring storage
 ------------------------------------
 
-An older method of storing keyring data is to store it specifically for one environment.  Using the `Rackspace example configuration <http://bit.ly/raxsupernova>`_, your DFW configuration might look like this:::
+An older method of storing keyring data is to store it specifically for one environment.  Using the `Rackspace example configuration <http://bit.ly/raxsupernova>`_, your DFW configuration might look like this::
 
     [dfw]
     ... snip ...
@@ -55,7 +55,7 @@ An older method of storing keyring data is to store it specifically for one envi
     OS_USERNAME=my_username
     OS_TENANT_NAME=my_account_number
 
-This tells supernova to look up the *OS_PASSWORD* value for the *dfw* environment.  Setting that credential is done with supernova-keyring:
+This tells supernova to look up the *OS_PASSWORD* value for the *dfw* environment.  Setting that credential is done with supernova-keyring::
 
     supernova-keyring -s dfw OS_PASSWORD
 
@@ -67,7 +67,7 @@ Plain text storage
 
 This is obviously the easiest method, but it's generally not recommended.  Any user with access to your home directory would have access to your credentials and could use them against your accounts.  **Don't use plain text credential storage unless you know what you're doing.**
 
-Using the `Rackspace example configuration <http://bit.ly/raxsupernova>`_, plain text credential storage would look like this:::
+Using the `Rackspace example configuration <http://bit.ly/raxsupernova>`_, plain text credential storage would look like this::
 
     [dfw]
     OS_AUTH_URL=https://identity.api.rackspacecloud.com/v2.0/
