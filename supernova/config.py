@@ -43,7 +43,7 @@ def check_environment_presets():
     presets = [x for x in os.environ.copy().keys() if x.startswith('NOVA_') or
                x.startswith('OS_')]
     if len(presets) < 1:
-        pass
+        return True
     else:
         print "_" * 80
         print "*WARNING* Found existing environment variables that may "\
@@ -51,6 +51,7 @@ def check_environment_presets():
         for preset in presets:
             print "  - %s" % preset
         print "_" * 80
+        return False
 
 
 def load_supernova_config():
