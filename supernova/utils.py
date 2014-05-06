@@ -14,6 +14,9 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+"""
+Contains many of the shared utility functions
+"""
 import argparse
 import sys
 
@@ -34,6 +37,10 @@ def check_deprecated_options(self):
 
 
 def get_envs_in_group(group_name):
+    """
+    Takes a group_name and finds any environments that have a SUPERNOVA_GROUP
+    configuration line that matches the group_name.
+    """
     envs = []
     for section in config.nova_creds.sections():
         if (config.nova_creds.has_option(section, 'SUPERNOVA_GROUP') and
@@ -43,13 +50,13 @@ def get_envs_in_group(group_name):
     return envs
 
 
-def is_valid_environment(self):
+def is_valid_environment(env):
     """
     Checks to see if the configuration file contains a section for our
     requested environment.
     """
     valid_envs = config.nova_creds.sections()
-    return self.nova_env in valid_envs
+    return env in valid_envs
 
 
 def is_valid_group(group_name):
@@ -78,6 +85,10 @@ def print_valid_envs(valid_envs):
 
 
 def warn_missing_nova_args():
+    """
+    Provides a friendly warning for users who forget to provide commands to
+    be passed on to nova.
+    """
     msg = """
 [%s] No arguments were provided to pass along to nova.
 The supernova script expects to get commands structured like this:

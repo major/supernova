@@ -14,6 +14,9 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+"""
+A little color in the terminal never hurt anybody (I think)
+"""
 
 
 def gwrap(some_string):

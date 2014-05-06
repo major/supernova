@@ -14,6 +14,9 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+"""
+Handles all of the interactions with the operating system's keyring
+"""
 import getpass
 import keyring
 import re
@@ -24,6 +27,10 @@ from colors import gwrap, rwrap
 
 
 def get_user_password(args):
+    """
+    Allows the user to print the credential for a particular keyring entry
+    to the screen
+    """
     username = '%s:%s' % (args.env, args.parameter)
 
     warnstring = rwrap("__ WARNING ".ljust(80, '_'))
@@ -52,7 +59,7 @@ CTRL-C right now.
     if confirm != 'yes':
         print "\n[%s] Your keyring was not read or altered." % (
             rwrap("Canceled"))
-        pass
+        return False
 
     try:
         password = password_get(username)
@@ -64,6 +71,7 @@ CTRL-C right now.
 [%s] Found credentials for %s: %s
 """ % (
             gwrap("Success"), username, password)
+        return True
     else:
         print """
 [%s] Unable to retrieve credentials for %s.
@@ -73,17 +81,21 @@ parameter combination.  If you want to set a credential, just run this command:
 
   supernova-keyring -s %s %s
 """ % (rwrap("Failed"), username, args.env, args.parameter)
-    pass
+        return False
 
 
-def pull_env_credential(value):
+def pull_env_credential(env, param, value):
+    """
+    Dissects a keyring credential lookup string from the supernova config file
+    and returns the username/password combo
+    """
     rex = "USE_KEYRING\[([\x27\x22])(.*)\\1\]"
     if value == "USE_KEYRING":
-        username = "%s:%s" % (self.nova_env, param)
+        username = "%s:%s" % (env, param)
     else:
         global_identifier = re.match(rex, value).group(2)
         username = "%s:%s" % ('global', global_identifier)
-    return password_get(username)
+    return (username, password_get(username))
 
 
 def password_get(username=None):
@@ -98,6 +110,9 @@ def password_get(username=None):
 
 
 def set_user_password(args):
+    """
+    Sets a user's password in the keyring storage
+    """
     print """
 [%s] Preparing to set a password in the keyring for:
 

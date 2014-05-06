@@ -14,23 +14,32 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-import argparse
+"""
+Takes care of the basic setup of the config files and does some preliminary
+sanity checks
+"""
 import ConfigParser
 import os
 import sys
 
-from colors import gwrap, rwrap
+from colors import rwrap
 
 nova_creds = None
 
 
 def run_config():
+    """
+    Runs sanity checks and prepares the global nova_creds variable
+    """
     global nova_creds
     check_environment_presets()
     nova_creds = load_supernova_config()
 
 
 def check_environment_presets():
+    """
+    Checks for environment variables that can cause problems with supernova
+    """
     presets = [x for x in os.environ.copy().keys() if x.startswith('NOVA_') or
                x.startswith('OS_')]
     if len(presets) < 1:
@@ -45,12 +54,15 @@ def check_environment_presets():
 
 
 def load_supernova_config():
+    """
+    Pulls the supernova configuration file and reads it
+    """
     possible_configs = [os.path.expanduser('~/.supernova'), '.supernova']
-    nova_creds = ConfigParser.RawConfigParser()
+    supernova_config = ConfigParser.RawConfigParser()
 
     # Can we successfully read the configuration file?
     try:
-        nova_creds.read(possible_configs)
+        supernova_config.read(possible_configs)
     except:
         msg = """
 [%s] A valid supernova configuration file is required.
@@ -60,4 +72,4 @@ Ensure that you have a properly configured supernova configuration file called
         print msg
         sys.exit(1)
 
-    return nova_creds
+    return supernova_config

@@ -14,12 +14,15 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+"""
+Contains the functions needed for supernova and supernova-keyring commands
+to run
+"""
 import argparse
-import getpass
 import sys
 
 
-from colors import gwrap, rwrap
+from colors import gwrap
 import config
 import credentials
 import utils
@@ -73,10 +76,10 @@ def run_supernova():
     else:
         envs = [supernova_args.env]
 
-    s = SuperNova()
+    snobj = SuperNova()
     for env in envs:
-        s.nova_env = env
-        s.run_novaclient(nova_args, supernova_args)
+        snobj.nova_env = env
+        snobj.run_novaclient(nova_args, supernova_args)
 
 
 def run_supernova_keyring():

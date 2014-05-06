@@ -14,8 +14,10 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-import ConfigParser
-import keyring
+"""
+Contains the actual class that runs novaclient (or the executable chosen by
+the user)
+"""
 from novaclient import client as novaclient
 import os
 import re
@@ -27,7 +29,10 @@ import config
 import credentials
 
 
-class SuperNova:
+class SuperNova(object):
+    """
+    Gathers information for novaclient and eventually runs it
+    """
 
     def __init__(self):
         config.run_config()
@@ -53,7 +58,8 @@ class SuperNova:
 
             # Get values from the keyring if we find a USE_KEYRING constant
             if value.startswith("USE_KEYRING"):
-                credential = credentials.pull_env_credential(value)
+                username, credential = credentials.pull_env_credential(
+                    self.nova_env, param, value)
             else:
                 credential = value.strip("\"'")
 
@@ -79,8 +85,8 @@ credentials for %s yet, try running:
         Appends new variables to the current shell environment temporarily.
         """
         # self.env = os.environ.copy()
-        for k, v in self.prep_nova_creds():
-            self.env[k] = v
+        for key, value in self.prep_nova_creds():
+            self.env[key] = value
 
     def run_novaclient(self, nova_args, supernova_args):
         """
@@ -111,20 +117,21 @@ credentials for %s yet, try running:
         # displayed appropriately.
         #
         # In other news, I hate how python 2.6 does unicode.
-        p = subprocess.Popen([supernova_args.executable] + nova_args,
-                             stdout=sys.stdout,
-                             stderr=sys.stderr,
-                             env=self.env)
+        process = subprocess.Popen([supernova_args.executable] + nova_args,
+                                   stdout=sys.stdout,
+                                   stderr=sys.stderr,
+                                   env=self.env)
 
         # Don't exit until we're sure the subprocess has exited
-        return p.wait()
+        return process.wait()
 
     def get_novaclient(self, env, client_version=3):
         """
         Returns python novaclient object authenticated with supernova config.
         """
         self.nova_env = env
-        assert self.is_valid_environment(), "Env %s not found in config." % env
+        assert utils.is_valid_environment(env), "Env %s not found in "\
+            "supernova configuration file." % env
         print "Getting novaclient!"
         return novaclient.Client(client_version, **self.prep_python_creds())
 
