@@ -1,12 +1,12 @@
-Welcome to supernova's documentation!
-=====================================
+supernova documentation
+=======================
 
 Contents:
 
 .. toctree::
    :maxdepth: 2
 
-   testing
+   raxquickstart
 
 
 
