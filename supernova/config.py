@@ -23,10 +23,12 @@ from colors import gwrap, rwrap
 
 nova_creds = None
 
+
 def run_config():
     global nova_creds
     check_environment_presets()
     nova_creds = load_supernova_config()
+
 
 def check_environment_presets():
     presets = [x for x in os.environ.copy().keys() if x.startswith('NOVA_') or
@@ -40,6 +42,7 @@ def check_environment_presets():
         for preset in presets:
             print "  - %s" % preset
         print "_" * 80
+
 
 def load_supernova_config():
     possible_configs = [os.path.expanduser('~/.supernova'), '.supernova']

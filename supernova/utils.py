@@ -38,9 +38,10 @@ def get_envs_in_group(group_name):
     for section in config.nova_creds.sections():
         if (config.nova_creds.has_option(section, 'SUPERNOVA_GROUP') and
                 config.nova_creds.get(section,
-                                    'SUPERNOVA_GROUP') == group_name):
+                                      'SUPERNOVA_GROUP') == group_name):
             envs.append(section)
     return envs
+
 
 def is_valid_environment(self):
     """
@@ -49,6 +50,7 @@ def is_valid_environment(self):
     """
     valid_envs = config.nova_creds.sections()
     return self.nova_env in valid_envs
+
 
 def is_valid_group(group_name):
     """
@@ -59,12 +61,13 @@ def is_valid_group(group_name):
     for section in config.nova_creds.sections():
         if config.nova_creds.has_option(section, 'SUPERNOVA_GROUP'):
             valid_groups.append(config.nova_creds.get(section,
-                                                    'SUPERNOVA_GROUP'))
+                                                      'SUPERNOVA_GROUP'))
     valid_groups = list(set(valid_groups))
     if group_name in valid_groups:
         return True
     else:
         return False
+
 
 def print_valid_envs(valid_envs):
     """
@@ -72,6 +75,7 @@ def print_valid_envs(valid_envs):
     """
     print "[%s] Your valid environments are:" % (gwrap('Found environments'))
     print "%r" % valid_envs
+
 
 def warn_missing_nova_args():
     msg = """
@@ -87,6 +91,7 @@ Here are some example commands that may help you get started:
   supernova prod keypair-list
 """
     print msg % rwrap('Missing arguments')
+
 
 def rm_prefix(name):
     """

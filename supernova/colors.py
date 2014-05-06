@@ -15,6 +15,7 @@
 #   limitations under the License.
 #
 
+
 def gwrap(some_string):
     """
     Returns green text

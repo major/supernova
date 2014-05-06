@@ -19,6 +19,7 @@ import keyring
 import re
 import sys
 
+
 from colors import gwrap, rwrap
 
 
@@ -83,6 +84,7 @@ def pull_env_credential(value):
         global_identifier = re.match(rex, value).group(2)
         username = "%s:%s" % ('global', global_identifier)
     return password_get(username)
+
 
 def password_get(username=None):
     """
