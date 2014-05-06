@@ -1,4 +1,5 @@
-## supernova - use novaclient with multiple nova environments the easy way
+## supernova
+**use novaclient (and other executables) with multiple nova environments the easy way**
 
 You may like *supernova* if you regularly have the following problems:
 
@@ -12,22 +13,32 @@ If any of these complaints ring true, *supernova* is for you. *supernova* manage
 
 ![First world problems - nova style](http://i.imgur.com/CLYY05E.jpg)
 
-### Installation
+### Quick Start with Rackspace
 
-You will need to have a specific version of the [keyring](https://pypi.python.org/pypi/keyring) python module installed for *supernova* to work but it should be installed automatically when you install *supernova* using the instructions below.
+    pip install supernova rackspace-novaclient
+    wget -O ~/.supernova http://bit.ly/raxsupernova
+    supernova-keyring -s global RackspaceAccountUser
+	supernova-keyring -s global RackspaceAccountAPIKey
+	supernova-keyring -s global RackspaceAccountDDI
+	supernova dfw list
+
+You now have supernova installed with all of the Rackspace Cloud Server environments configured!
+
+NOTE: The `RackspaceAccountDDI` is your cloud account number.  You can get it by accessing the [Rackspace Cloud Control Panel](https://mycloud.rackspace.com/) and looking for the number in the top right corner next to your username.
+
+### Installation
 
 For generic OpenStack environments:
 
-    git clone git://github.com/major/supernova.git
-    cd supernova
-    python setup.py install
+    pip install supernova
 
 For use with Rackspace Cloud:
 
-    git clone git://github.com/major/supernova.git
-    cd supernova
-    python setup.py install
-    pip install rackspace-novaclient
+    pip install supernova rackspace-novaclient
+
+If you want to run the bleeding edge supernova code, you can install directly from GitHub using pip:
+
+    pip install git+git://github.com/major/supernova
 
 ### Configuration
 
