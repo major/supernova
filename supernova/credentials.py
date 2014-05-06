@@ -14,8 +14,75 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+import getpass
 import keyring
+import re
+import sys
 
+from colors import gwrap, rwrap
+
+
+def get_user_password(args):
+    username = '%s:%s' % (args.env, args.parameter)
+
+    warnstring = rwrap("__ WARNING ".ljust(80, '_'))
+    print """
+%s
+
+If this operation is successful, the credential stored for this username will
+be displayed in your terminal as PLAIN TEXT:
+
+  %s
+
+Seriously.  It will just be hanging out there for anyone to see.  If you have
+any concerns about having this credential displayed on your screen, press
+CTRL-C right now.
+
+%s
+""" % (warnstring, username, warnstring)
+    print "If you are completely sure you want to display it, type 'yes' and "\
+          "press enter:",
+    try:
+        confirm = raw_input('')
+    except:
+        print ""
+        sys.exit()
+
+    if confirm != 'yes':
+        print "\n[%s] Your keyring was not read or altered." % (
+            rwrap("Canceled"))
+        pass
+
+    try:
+        password = password_get(username)
+    except:
+        password = None
+
+    if password:
+        print """
+[%s] Found credentials for %s: %s
+""" % (
+            gwrap("Success"), username, password)
+    else:
+        print """
+[%s] Unable to retrieve credentials for %s.
+
+It's likely that there aren't any credentials stored for this environment and
+parameter combination.  If you want to set a credential, just run this command:
+
+  supernova-keyring -s %s %s
+""" % (rwrap("Failed"), username, args.env, args.parameter)
+    pass
+
+
+def pull_env_credential(value):
+    rex = "USE_KEYRING\[([\x27\x22])(.*)\\1\]"
+    if value == "USE_KEYRING":
+        username = "%s:%s" % (self.nova_env, param)
+    else:
+        global_identifier = re.match(rex, value).group(2)
+        username = "%s:%s" % ('global', global_identifier)
+    return password_get(username)
 
 def password_get(username=None):
     """
@@ -26,6 +93,45 @@ def password_get(username=None):
         return keyring.get_password('supernova', username).encode('ascii')
     except:
         return False
+
+
+def set_user_password(args):
+    print """
+[%s] Preparing to set a password in the keyring for:
+
+  - Environment  : %s
+  - Parameter    : %s
+
+If this is correct, enter the corresponding credential to store in your keyring
+or press CTRL-D to abort:""" % (gwrap("Keyring operation"), args.env,
+                                args.parameter)
+
+    # Prompt for a password and catch a CTRL-D
+    try:
+        password = getpass.getpass('')
+    except:
+        password = None
+        print
+
+    # Did we get a password from the prompt?
+    if not password or len(password) < 1:
+        print "\n[%s] No data was altered in your keyring.\n" % (
+            rwrap("Canceled"))
+        sys.exit()
+
+    # Try to store the password
+    username = '%s:%s' % (args.env, args.parameter)
+    try:
+        store_ok = password_set(username, password)
+    except:
+        store_ok = False
+
+    if store_ok:
+        print "[%s] Successfully stored credentials for %s under the " \
+              "supernova service.\n" % (gwrap("Success"), username)
+    else:
+        print "[%s] Unable to store credentials for %s under the " \
+              "supernova service.\n" % (rwrap("Failed"), username)
 
 
 def password_set(username=None, password=None):
