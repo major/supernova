@@ -58,7 +58,11 @@ def load_supernova_config():
     """
     Pulls the supernova configuration file and reads it
     """
-    possible_configs = [os.path.expanduser('~/.supernova'), '.supernova']
+    xdg_config_home = os.environ.get('XDG_CONFIG_HOME') or \
+                      os.path.expanduser('~/.config')
+    possible_configs = [os.path.join(xdg_config_home, "supernova"),
+                        os.path.expanduser("~/.supernova"),
+                        ".supernova"]
     supernova_config = ConfigParser.RawConfigParser()
 
     # Can we successfully read the configuration file?
