@@ -1,5 +1,18 @@
-Working with keyring storage
+Configuring supernova
 =====================================
+
+The following locations are valid configuraiton files for supernova.
+
+* ${XDG_CONFIG_HOME_}/supernova
+* ~/.supernova
+* ./.supernova
+
+A complete list of nova environment variables can be located here_.
+
+.. _keyring:
+
+Working with keyring storage
+----------------------------
 
 With supernova, there are three ways you can store credentials:
 
@@ -81,3 +94,8 @@ Using the `Rackspace example configuration <http://bit.ly/raxsupernova>`_, plain
     OS_TENANT_NAME=123456
 
 When supernova runs, it will take the configuration options and pass them directly to nova (or the executable of your choice) in a subprocess.
+
+
+.. _XDG_CONFIG_HOME: http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
+
+.. _here: http://docs.rackspace.com/servers/api/v2/cn-gettingstarted/content/gs_env_vars_summary.html
