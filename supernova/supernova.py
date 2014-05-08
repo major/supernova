@@ -25,6 +25,7 @@ import subprocess
 import sys
 
 
+from colors import gwrap
 import config
 import credentials
 
@@ -110,7 +111,7 @@ credentials for %s yet, try running:
         # Print a small message for the user (very helpful for groups)
         msg = "Running %s against %s..." % (supernova_args.executable,
                                             self.nova_env)
-        print "[SUPERNOVA] %s " % msg
+        print "[%s] %s " % (gwrap('SUPERNOVA'), msg)
 
         # Call novaclient and connect stdout/stderr to the current terminal
         # so that any unicode characters from novaclient's list will be
