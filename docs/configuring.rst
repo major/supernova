@@ -1,7 +1,7 @@
 Configuring supernova
 =====================================
 
-The following locations are valid configuraiton files for supernova.
+The following locations are valid configuration files for supernova.
 
 * ${XDG_CONFIG_HOME_}/supernova
 * ~/.supernova
