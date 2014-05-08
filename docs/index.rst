@@ -8,7 +8,7 @@ You may like supernova if you regularly have the following problems:
 * You hate trying to source multiple novarc files when using nova
 * You get your terminals confused and do the wrong things in the wrong nova environment
 * You don't like remembering things
-* You want to keep sensitive API keys and passwords out of plain text configuration files (see the :doc:`keyring` section)
+* You want to keep sensitive API keys and passwords out of plain text configuration files (see the :ref:`keyring` section)
 * You need to share common skeleton environment variables for nova with your teams
 
 If any of these complaints ring true, **supernova is for you**. supernova manages multiple nova environments without sourcing novarc files or mucking with environment variables.
@@ -27,5 +27,5 @@ Documentation
 
    raxquickstart
    installation
-   keyring
+   configuring
    usingsupernova
