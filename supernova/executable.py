@@ -18,15 +18,17 @@
 Contains the functions needed for supernova and supernova-keyring commands
 to run
 """
+from __future__ import print_function
+
 import argparse
 import sys
 
 
-from colors import gwrap
-import config
-import credentials
-import utils
-from supernova import SuperNova
+from . import colors
+from . import config
+from . import credentials
+from . import utils
+from . import supernova
 
 
 # Note(tr3buchet): this is necessary to prevent argparse from requiring the
@@ -36,10 +38,10 @@ class _ListAction(argparse._HelpAction):
     def __call__(self, parser, *args, **kwargs):
         """Lists are configured supernova environments."""
         for nova_env in config.nova_creds.sections():
-            envheader = '-- %s ' % gwrap(nova_env)
-            print envheader.ljust(86, '-')
+            envheader = '-- %s ' % colors.gwrap(nova_env)
+            print(envheader.ljust(86, '-'))
             for param, value in sorted(config.nova_creds.items(nova_env)):
-                print '  %s: %s' % (param.upper().ljust(21), value)
+                print('  %s: %s' % (param.upper().ljust(21), value))
         parser.exit()
 
 
@@ -76,7 +78,7 @@ def run_supernova():
     else:
         envs = [supernova_args.env]
 
-    snobj = SuperNova()
+    snobj = supernova.SuperNova()
     for env in envs:
         snobj.nova_env = env
         snobj.run_novaclient(nova_args, supernova_args)
