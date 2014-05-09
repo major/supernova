@@ -17,12 +17,10 @@
 """
 Contains many of the shared utility functions
 """
-import argparse
-import sys
+from __future__ import print_function
 
-
-from colors import gwrap, rwrap
-import config
+from . import colors
+from . import config
 
 
 def check_deprecated_options(self):
@@ -32,8 +30,8 @@ def check_deprecated_options(self):
     """
     creds = config.nova_creds
     if creds.has_option(self.nova_env, 'insecure'):
-        print "WARNING: the 'insecure' option is deprecated. " \
-              "Consider using NOVACLIENT_INSECURE=1 instead."
+        print("WARNING: the 'insecure' option is deprecated. ",
+              "Consider using NOVACLIENT_INSECURE=1 instead.")
 
 
 def get_envs_in_group(group_name):
@@ -80,8 +78,9 @@ def print_valid_envs(valid_envs):
     """
     Prints the available environments.
     """
-    print "[%s] Your valid environments are:" % (gwrap('Found environments'))
-    print "%r" % valid_envs
+    print("[%s] Your valid environments are:" %
+          (colors.gwrap('Found environments')))
+    print("%r" % valid_envs)
 
 
 def warn_missing_nova_args():
@@ -101,7 +100,7 @@ Here are some example commands that may help you get started:
   supernova prod image-list
   supernova prod keypair-list
 """
-    print msg % rwrap('Missing arguments')
+    print(msg % colors.rwrap('Missing arguments'))
 
 
 def rm_prefix(name):

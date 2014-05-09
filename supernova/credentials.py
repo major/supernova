@@ -17,13 +17,22 @@
 """
 Handles all of the interactions with the operating system's keyring
 """
+from __future__ import print_function
+
 import getpass
 import keyring
 import re
 import sys
 
+try:
+    def _input(a):
+        input(a)
+except:
+    def _input(a):
+        raw_input(a)
 
-from colors import gwrap, rwrap
+
+from . import colors
 
 
 def get_user_password(args):
@@ -33,8 +42,8 @@ def get_user_password(args):
     """
     username = '%s:%s' % (args.env, args.parameter)
 
-    warnstring = rwrap("__ WARNING ".ljust(80, '_'))
-    print """
+    warnstring = colors.rwrap("__ WARNING ".ljust(80, '_'))
+    print("""
 %s
 
 If this operation is successful, the credential stored for this username will
@@ -47,18 +56,18 @@ any concerns about having this credential displayed on your screen, press
 CTRL-C right now.
 
 %s
-""" % (warnstring, username, warnstring)
-    print "If you are completely sure you want to display it, type 'yes' and "\
-          "press enter:",
+""" % (warnstring, username, warnstring))
+    print("If you are completely sure you want to display it, type 'yes' and ",
+          "press enter:")
     try:
-        confirm = raw_input('')
+        confirm = _input('')
     except:
-        print ""
+        print("")
         sys.exit()
 
     if confirm != 'yes':
-        print "\n[%s] Your keyring was not read or altered." % (
-            rwrap("Canceled"))
+        print("\n[%s] Your keyring was not read or altered." % (
+            colors.rwrap("Canceled")))
         return False
 
     try:
@@ -67,20 +76,20 @@ CTRL-C right now.
         password = None
 
     if password:
-        print """
+        print("""
 [%s] Found credentials for %s: %s
 """ % (
-            gwrap("Success"), username, password)
+            colors.gwrap("Success"), username, password))
         return True
     else:
-        print """
+        print("""
 [%s] Unable to retrieve credentials for %s.
 
 It's likely that there aren't any credentials stored for this environment and
 parameter combination.  If you want to set a credential, just run this command:
 
   supernova-keyring -s %s %s
-""" % (rwrap("Failed"), username, args.env, args.parameter)
+""" % (colors.rwrap("Failed"), username, args.env, args.parameter))
         return False
 
 
@@ -113,27 +122,27 @@ def set_user_password(args):
     """
     Sets a user's password in the keyring storage
     """
-    print """
+    print("""
 [%s] Preparing to set a password in the keyring for:
 
   - Environment  : %s
   - Parameter    : %s
 
 If this is correct, enter the corresponding credential to store in your keyring
-or press CTRL-D to abort:""" % (gwrap("Keyring operation"), args.env,
-                                args.parameter)
+or press CTRL-D to abort:""" % (colors.gwrap("Keyring operation"), args.env,
+                                args.parameter))
 
     # Prompt for a password and catch a CTRL-D
     try:
         password = getpass.getpass('')
     except:
         password = None
-        print
+        print()
 
     # Did we get a password from the prompt?
     if not password or len(password) < 1:
-        print "\n[%s] No data was altered in your keyring.\n" % (
-            rwrap("Canceled"))
+        print("\n[%s] No data was altered in your keyring.\n" % (
+            colors.rwrap("Canceled")))
         sys.exit()
 
     # Try to store the password
@@ -144,11 +153,11 @@ or press CTRL-D to abort:""" % (gwrap("Keyring operation"), args.env,
         store_ok = False
 
     if store_ok:
-        print "[%s] Successfully stored credentials for %s under the " \
-              "supernova service.\n" % (gwrap("Success"), username)
+        print("[%s] Successfully stored credentials for %s under the ",
+              "supernova service.\n" % (colors.gwrap("Success"), username))
     else:
-        print "[%s] Unable to store credentials for %s under the " \
-              "supernova service.\n" % (rwrap("Failed"), username)
+        print("[%s] Unable to store credentials for %s under the ",
+              "supernova service.\n" % (colors.rwrap("Failed"), username))
 
 
 def password_set(username=None, password=None):
