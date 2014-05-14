@@ -89,7 +89,6 @@ credentials for %s yet, try running:
         """
         Appends new variables to the current shell environment temporarily.
         """
-        # self.env = os.environ.copy()
         for key, value in self.prep_nova_creds():
             self.env[key] = value
 

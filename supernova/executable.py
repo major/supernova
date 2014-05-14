@@ -78,8 +78,8 @@ def run_supernova():
     else:
         envs = [supernova_args.env]
 
-    snobj = supernova.SuperNova()
     for env in envs:
+        snobj = supernova.SuperNova()
         snobj.nova_env = env
         snobj.run_novaclient(nova_args, supernova_args)
 
