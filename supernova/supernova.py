@@ -18,6 +18,9 @@
 Contains the actual class that runs novaclient (or the executable chosen by
 the user)
 """
+from __future__ import print_function
+
+
 from novaclient import client as novaclient
 import os
 import re
@@ -25,8 +28,10 @@ import subprocess
 import sys
 
 
-import config
-import credentials
+from . import colors
+from . import utils
+from . import config
+from . import credentials
 
 
 class SuperNova(object):
@@ -73,7 +78,7 @@ credentials for %s yet, try running:
 
     supernova-keyring -s %s
 """ % (self.nova_env, username, username, ' '.join(username.split(':')))
-                print msg
+                print(msg)
                 sys.exit(1)
 
             creds.append((param, credential))
@@ -110,7 +115,7 @@ credentials for %s yet, try running:
         # Print a small message for the user (very helpful for groups)
         msg = "Running %s against %s..." % (supernova_args.executable,
                                             self.nova_env)
-        print "[SUPERNOVA] %s " % msg
+        print("[%s] %s " % (colors.gwrap('SUPERNOVA'), msg))
 
         # Call novaclient and connect stdout/stderr to the current terminal
         # so that any unicode characters from novaclient's list will be
@@ -132,7 +137,7 @@ credentials for %s yet, try running:
         self.nova_env = env
         assert utils.is_valid_environment(env), "Env %s not found in "\
             "supernova configuration file." % env
-        print "Getting novaclient!"
+        print("Getting novaclient!")
         return novaclient.Client(client_version, **self.prep_python_creds())
 
     def prep_python_creds(self):
