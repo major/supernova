@@ -153,11 +153,13 @@ or press CTRL-D to abort:""" % (colors.gwrap("Keyring operation"), args.env,
         store_ok = False
 
     if store_ok:
-        print("[%s] Successfully stored credentials for %s under the ",
-              "supernova service.\n" % (colors.gwrap("Success"), username))
+        msg = ("[%s] Successfully stored credentials for %s under the "
+               "supernova service.\n")
+        print(msg % (colors.gwrap("Success"), username))
     else:
-        print("[%s] Unable to store credentials for %s under the ",
-              "supernova service.\n" % (colors.rwrap("Failed"), username))
+        msg = ("[%s] Unable to store credentials for %s under the "
+               "supernova service.\n")
+        print(msg % (colors.rwrap("Failed"), username))
 
 
 def password_set(username=None, password=None):
