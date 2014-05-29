@@ -4,3 +4,4 @@ dist
 rpmbuild
 rpms
 *egg*
+docs/_build

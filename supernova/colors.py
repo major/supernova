@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 #
 # Copyright 2014 Major Hayden
 #
@@ -14,21 +14,20 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-from setuptools import setup
+"""
+A little color in the terminal never hurt anybody (I think)
+"""
 
 
-setup(
-    name='supernova',
-    version='1.0.0',
-    author='Major Hayden',
-    author_email='major@mhtx.net',
-    description="novaclient wrapper for multiple nova environments",
-    install_requires=['keyring'],
-    packages=['supernova'],
-    url='https://github.com/rackerhacker/supernova',
-    entry_points={
-        'console_scripts': [
-            'supernova = supernova.executable:run_supernova',
-            'supernova-keyring = supernova.executable:run_supernova_keyring'],
-        },
-    )
+def gwrap(some_string):
+    """
+    Returns green text
+    """
+    return "\033[92m%s\033[0m" % some_string
+
+
+def rwrap(some_string):
+    """
+    Returns red text
+    """
+    return "\033[91m%s\033[0m" % some_string

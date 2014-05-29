@@ -14,98 +14,42 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-import ConfigParser
-import keyring
+"""
+Contains the actual class that runs novaclient (or the executable chosen by
+the user)
+"""
+from __future__ import print_function
+
+
 from novaclient import client as novaclient
 import os
-import rackspace_auth_plugin
 import re
 import subprocess
 import sys
 
 
-class SuperNova:
+from . import colors
+from . import utils
+from . import config
+from . import credentials
+
+
+class SuperNova(object):
+    """
+    Gathers information for novaclient and eventually runs it
+    """
 
     def __init__(self):
-        self.nova_creds = None
+        config.run_config()
         self.nova_env = None
         self.env = os.environ.copy()
-
-    def check_deprecated_options(self):
-        """
-        Hunts for deprecated configuration options from previous SuperNova
-        versions.
-        """
-        creds = self.get_nova_creds()
-        if creds.has_option(self.nova_env, 'insecure'):
-            print "WARNING: the 'insecure' option is deprecated. " \
-                  "Consider using NOVACLIENT_INSECURE=1 instead."
-
-    def check_environment_presets(self):
-        presets = [x for x in self.env.keys() if x.startswith('NOVA_') or
-                   x.startswith('OS_')]
-        if len(presets) < 1:
-            pass
-        else:
-            print "_" * 80
-            print "*WARNING* Found existing environment variables that may "\
-                  "cause conflicts:"
-            for preset in presets:
-                print "  - %s" % preset
-            print "_" * 80
-
-    def get_nova_creds(self):
-        """
-        Reads the supernova config file from the current directory or the
-        user's home directory.  If the config file has already been read, the
-        cached copy is immediately returned.
-        """
-        if self.nova_creds:
-            return self.nova_creds
-
-        possible_configs = [os.path.expanduser("~/.supernova"), '.supernova']
-        self.nova_creds = ConfigParser.RawConfigParser()
-        self.nova_creds.read(possible_configs)
-        if len(self.nova_creds.sections()) < 1:
-            return None
-        return self.nova_creds
-
-    def is_valid_environment(self):
-        """
-        Checks to see if the configuration file contains a section for our
-        requested environment.
-        """
-        valid_envs = self.get_nova_creds().sections()
-        return self.nova_env in valid_envs
-
-    def password_get(self, username=None):
-        """
-        Retrieves a password from the keychain based on the environment and
-        configuration parameter pair.
-        """
-        try:
-            return keyring.get_password('supernova', username).encode('ascii')
-        except:
-            return False
-
-    def password_set(self, username=None, password=None):
-        """
-        Stores a password in a keychain for a particular environment and
-        configuration parameter pair.
-        """
-        try:
-            keyring.set_password('supernova', username, password)
-            return True
-        except:
-            return False
 
     def prep_nova_creds(self):
         """
         Finds relevant config options in the supernova config and cleans them
         up for novaclient.
         """
-        self.check_deprecated_options()
-        raw_creds = self.get_nova_creds().items(self.nova_env)
+        raw_creds = config.nova_creds.items(self.nova_env)
         nova_re = re.compile(r"(^nova_|^os_|^novaclient|^trove_)")
 
         creds = []
@@ -119,22 +63,23 @@ class SuperNova:
 
             # Get values from the keyring if we find a USE_KEYRING constant
             if value.startswith("USE_KEYRING"):
-                rex = "USE_KEYRING\[([\x27\x22])(.*)\\1\]"
-                if value == "USE_KEYRING":
-                    username = "%s:%s" % (self.nova_env, param)
-                else:
-                    global_identifier = re.match(rex, value).group(2)
-                    username = "%s:%s" % ('global', global_identifier)
-                credential = self.password_get(username)
+                username, credential = credentials.pull_env_credential(
+                    self.nova_env, param, value)
             else:
                 credential = value.strip("\"'")
 
             # Make sure we got something valid from the configuration file or
             # the keyring
             if not credential:
-                msg = "Attempted to retrieve a credential for %s but " \
-                      "couldn't find it within the keyring." % username
-                raise Exception(msg)
+                msg = """
+While connecting to %s, supernova attempted to retrieve a credential
+for %s but couldn't find it within the keyring.  If you haven't stored
+credentials for %s yet, try running:
+
+    supernova-keyring -s %s
+""" % (self.nova_env, username, username, ' '.join(username.split(':')))
+                print(msg)
+                sys.exit(1)
 
             creds.append((param, credential))
 
@@ -144,17 +89,14 @@ class SuperNova:
         """
         Appends new variables to the current shell environment temporarily.
         """
-        for k, v in self.prep_nova_creds():
-            self.env[k] = v
+        for key, value in self.prep_nova_creds():
+            self.env[key] = value
 
     def run_novaclient(self, nova_args, supernova_args):
         """
         Sets the environment variables for novaclient, runs novaclient, and
         prints the output.
         """
-        # Check for preset environment variables that could cause problems
-        self.check_environment_presets()
-
         # Get the environment variables ready
         self.prep_shell_environment()
 
@@ -169,51 +111,42 @@ class SuperNova:
         except KeyError:
             pass
 
+        # Print a small message for the user (very helpful for groups)
+        msg = "Running %s against %s..." % (supernova_args.executable,
+                                            self.nova_env)
+        print("[%s] %s " % (colors.gwrap('SUPERNOVA'), msg))
+
         # Call novaclient and connect stdout/stderr to the current terminal
         # so that any unicode characters from novaclient's list will be
         # displayed appropriately.
         #
         # In other news, I hate how python 2.6 does unicode.
-        p = subprocess.Popen([supernova_args.executable] + nova_args,
-                             stdout=sys.stdout,
-                             stderr=sys.stderr,
-                             env=self.env)
+        process = subprocess.Popen([supernova_args.executable] + nova_args,
+                                   stdout=sys.stdout,
+                                   stderr=sys.stderr,
+                                   env=self.env)
 
         # Don't exit until we're sure the subprocess has exited
-        return p.wait()
+        return process.wait()
 
-    def get_novaclient(self, env):
+    def get_novaclient(self, env, client_version=3):
         """
         Returns python novaclient object authenticated with supernova config.
         """
         self.nova_env = env
-        assert self.is_valid_environment(), "Env %s not found in config." % env
-        return novaclient.Client(**self.prep_python_creds())
+        assert utils.is_valid_environment(env), "Env %s not found in "\
+            "supernova configuration file." % env
+        print("Getting novaclient!")
+        return novaclient.Client(client_version, **self.prep_python_creds())
 
     def prep_python_creds(self):
         """
         Prepare credentials for python Client instantiation.
         """
-        creds = dict((rm_prefix(k[0].lower()), k[1])
+        creds = dict((utils.rm_prefix(k[0].lower()), k[1])
                      for k in self.prep_nova_creds())
-        if creds.get('auth_system') == 'rackspace':
-            creds['auth_plugin'] = rackspace_auth_plugin
         if creds.get('url'):
             creds['auth_url'] = creds.pop('url')
         if creds.get('tenant_name'):
             creds['project_id'] = creds.pop('tenant_name')
         return creds
-
-
-def rm_prefix(name):
-    """
-    Removes nova_ os_ novaclient_ prefix from string.
-    """
-    if name.startswith('nova_'):
-        return name[5:]
-    elif name.startswith('novaclient_'):
-        return name[11:]
-    elif name.startswith('os_'):
-        return name[3:]
-    else:
-        return name
