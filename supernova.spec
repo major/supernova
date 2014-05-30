@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           supernova
-Version:        0.9.6
+Version:        1.0.0
 Release:        1%{?dist}
 Summary:        Use novaclient with multiple OpenStack nova environments the easy way
 
@@ -38,6 +38,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/supernova-keyring
 
 %changelog
+* Thu May 29 2014 Greg Swift <gregswift@gmail.com> - 1.0.0-1
+- Version bump to 1.0.0
+
 * Mon May 1 2014 Major Hayden <major@mhtx.net> - 0.9.6-1
 - Version bump to 0.9.6
 
