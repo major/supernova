@@ -60,7 +60,7 @@ CTRL-C right now.
     print("If you are completely sure you want to display it, type 'yes' and ",
           "press enter:")
     try:
-        confirm = _input('')
+        confirm = raw_input('')
     except:
         print("")
         sys.exit()
