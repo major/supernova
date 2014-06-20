@@ -24,14 +24,6 @@ import keyring
 import re
 import sys
 
-try:
-    def _input(a):
-        input(a)
-except:
-    def _input(a):
-        raw_input(a)
-
-
 from . import colors
 
 
@@ -60,13 +52,15 @@ CTRL-C right now.
     print("If you are completely sure you want to display it, type 'yes' and ",
           "press enter:")
     try:
-        confirm = raw_input('')
-    except:
-        print("")
-        sys.exit()
-
+        if sys.version_info.major >= 3:
+            confirm = input('')
+        else:
+            confirm = raw_input('')
+    except KeyboardInterrupt:
+        print('')
+        confirm = ''
     if confirm != 'yes':
-        print("\n[%s] Your keyring was not read or altered." % (
+        print("\n[%s] Your keyring was not read or altered.\n" % (
             colors.rwrap("Canceled")))
         return False
 
