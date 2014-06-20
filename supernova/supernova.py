@@ -49,7 +49,12 @@ class SuperNova(object):
         Finds relevant config options in the supernova config and cleans them
         up for novaclient.
         """
-        raw_creds = config.nova_creds.items(self.nova_env)
+        try:
+            raw_creds = config.nova_creds.items(self.nova_env)
+        except:
+            msg = "[%s] Unable to locate section '%s' in your configuration."
+            print(msg % (colors.rwrap("Failed"), self.nova_env))
+            sys.exit(1)
         nova_re = re.compile(r"(^nova_|^os_|^novaclient|^trove_)")
 
         creds = []
