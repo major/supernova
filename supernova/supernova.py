@@ -111,7 +111,6 @@ credentials for %s yet, try running:
         args = []
         for param, value in raw_creds:
             param = param.upper()
-            print ("param: %s | value: %s" % (param, value))
             if param == 'BYPASS_URL':
                 args += ['--bypass-url', value]
 
