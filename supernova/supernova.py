@@ -97,6 +97,26 @@ credentials for %s yet, try running:
         for key, value in self.prep_nova_creds():
             self.env[key] = value
 
+    def prep_extra_args(self):
+        """
+        Return a list of extra args that need to be passed on cmdline to nova.
+        """
+        try:
+            raw_creds = config.nova_creds.items(self.nova_env)
+        except:
+            msg = "[%s] Unable to locate section '%s' in your configuration."
+            print(msg % (colors.rwrap("Failed"), self.nova_env))
+            sys.exit(1)
+
+        args = []
+        for param, value in raw_creds:
+            param = param.upper()
+            print ("param: %s | value: %s" % (param, value))
+            if param == 'BYPASS_URL':
+                args += ['--bypass-url', value]
+
+        return args
+
     def run_novaclient(self, nova_args, supernova_args):
         """
         Sets the environment variables for novaclient, runs novaclient, and
@@ -120,6 +140,8 @@ credentials for %s yet, try running:
         msg = "Running %s against %s..." % (supernova_args.executable,
                                             self.nova_env)
         print("[%s] %s " % (colors.gwrap('SUPERNOVA'), msg))
+
+        nova_args = self.prep_extra_args() + nova_args
 
         # Call novaclient and connect stdout/stderr to the current terminal
         # so that any unicode characters from novaclient's list will be
