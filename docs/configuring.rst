@@ -9,6 +9,8 @@ The following locations are valid configuration files for supernova.
 
 A complete list of nova environment variables can be located here_.
 
+In addition to the nova environment variables the config can include a key of 'BYPASS_URL' that will be passed to nova's --bypass-url command line option.
+
 .. _keyring:
 
 Working with keyring storage
