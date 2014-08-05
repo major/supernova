@@ -50,7 +50,7 @@ def check_environment_presets():
         return True
     else:
         print("_" * 80)
-        print("*WARNING* Found existing environment variables that may ",
+        print("*WARNING* Found existing environment variables that may "
               "cause conflicts:")
         for preset in presets:
             print("  - %s" % preset)
