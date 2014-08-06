@@ -49,7 +49,7 @@ Here's how we're already doing that in the `Rackspace example configuration <htt
     OS_USERNAME=USE_KEYRING['RackspaceAccountUser']
     OS_TENANT_NAME=USE_KEYRING['RackspaceAccountDDI']
 
-You can get global credentials with supernova-keyring::
+You can set global credentials with supernova-keyring::
 
     supernova-keyring -s global RackspaceAccountAPIKey
 
