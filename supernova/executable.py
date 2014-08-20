@@ -81,7 +81,9 @@ def run_supernova():
     for env in envs:
         snobj = supernova.SuperNova()
         snobj.nova_env = env
-        snobj.run_novaclient(nova_args, supernova_args)
+        returncode = snobj.run_novaclient(nova_args, supernova_args)
+
+    sys.exit(returncode)
 
 
 def run_supernova_keyring():

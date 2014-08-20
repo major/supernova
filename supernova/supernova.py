@@ -120,6 +120,11 @@ credentials for %s yet, try running:
         """
         Sets the environment variables for novaclient, runs novaclient, and
         prints the output.
+
+        NOTE(major): The name of this method is a bit misleading.  By using the
+        OS_EXECUTABLE environment variable or the -x argument, a user can
+        specify a different executable to be used other than the default, which
+        is 'nova'.
         """
         # Get the environment variables ready
         self.prep_shell_environment()
@@ -153,7 +158,8 @@ credentials for %s yet, try running:
                                    env=self.env)
 
         # Don't exit until we're sure the subprocess has exited
-        return process.wait()
+        process.wait()
+        return process.returncode
 
     def get_novaclient(self, env, client_version=3):
         """
