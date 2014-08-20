@@ -19,7 +19,7 @@ from setuptools import setup
 
 setup(
     name='supernova',
-    version='1.0.2',
+    version='1.0.3',
     author='Major Hayden',
     author_email='major@mhtx.net',
     description="novaclient wrapper for multiple nova environments",
