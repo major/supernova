@@ -83,6 +83,12 @@ def run_supernova():
         snobj.nova_env = env
         returncode = snobj.run_novaclient(nova_args, supernova_args)
 
+    # NOTE(major): The return code here is the one that comes back from the
+    # OS_EXECUTABLE that supernova runs (by default, 'nova').  When using
+    # supernova groups, the return code is the one returned by the executable
+    # for the last environment in the group.
+    #
+    # It's not ideal, but it's all I can think of for now. ;)
     sys.exit(returncode)
 
 
