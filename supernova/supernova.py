@@ -168,10 +168,10 @@ credentials for %s yet, try running:
         self.nova_env = env
         assert utils.is_valid_environment(env), "Env %s not found in "\
             "supernova configuration file." % env
-        print("Getting novaclient!")
-        return novaclient.Client(client_version, **self.prep_python_creds())
+        version, creds = self.prep_python_creds(client_version)
+        return novaclient.Client(version, **creds)
 
-    def prep_python_creds(self):
+    def prep_python_creds(self, client_version=3):
         """
         Prepare credentials for python Client instantiation.
         """
@@ -181,4 +181,11 @@ credentials for %s yet, try running:
             creds['auth_url'] = creds.pop('url')
         if creds.get('tenant_name'):
             creds['project_id'] = creds.pop('tenant_name')
-        return creds
+        if creds.get('compute_api_version'):
+            client_version = creds.pop('compute_api_version')
+
+        if client_version == '1.1':
+            if creds.get('password'):
+                creds['api_key'] = creds.pop('password')
+
+        return (client_version, creds)
