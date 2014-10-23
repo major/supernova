@@ -81,3 +81,14 @@ You can use the same executable for certain environments every time by adding *O
 If you'd rather make a quick change at runtime, just use ``-x`` or ``--executable``::
 
     supernova -x glance iadglance image-list
+
+Checking the supernova version
+------------------------------
+
+As of supernova 1.0.5, you can use the ``--version`` argument to have supernova's version printed on the command line::
+
+    $ supernova --version
+    supernova 1.0.5
+
+
+
