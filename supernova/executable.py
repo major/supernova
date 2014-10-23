@@ -21,6 +21,7 @@ to run
 from __future__ import print_function
 
 import argparse
+import pkg_resources
 import sys
 
 
@@ -45,6 +46,16 @@ class _ListAction(argparse._HelpAction):
         parser.exit()
 
 
+# Copying tr3buchet's hack to short circuit argparse and display the
+# version number of supernova
+class _ShowVersion(argparse._HelpAction):
+    """_ShowVersion used for the --version argument."""
+    def __call__(self, parser, *args, **kwargs):
+        version = pkg_resources.require("supernova")[0].version
+        print("supernova %s" % version)
+        parser.exit()
+
+
 def run_supernova():
     """
     Handles all of the prep work and error checking for the
@@ -55,6 +66,8 @@ def run_supernova():
     parser = argparse.ArgumentParser()
     parser.add_argument('-x', '--executable', default='nova',
                         help='command to run instead of nova')
+    parser.add_argument('--version', action=_ShowVersion,
+                        help='display supernova version')
     parser.add_argument('-l', '--list', action=_ListAction,
                         help='list all configured environments')
     parser.add_argument('-d', '--debug', action='store_true',
