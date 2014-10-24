@@ -56,15 +56,17 @@ class SuperNova(object):
             print(msg % (colors.rwrap("Failed"), self.nova_env))
             sys.exit(1)
         nova_re = re.compile(r"(^nova_|^os_|^novaclient|^trove_)")
+        proxy_re = re.compile(r"(^http_proxy|^https_proxy)")
 
         creds = []
         for param, value in raw_creds:
 
             # Skip parameters we're unfamiliar with
-            if not nova_re.match(param):
+            if not nova_re.match(param) and not proxy_re.match(param):
                 continue
 
-            param = param.upper()
+            if not proxy_re.match(param):
+                param = param.upper()
 
             # Get values from the keyring if we find a USE_KEYRING constant
             if value.startswith("USE_KEYRING"):
