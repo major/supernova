@@ -5,7 +5,7 @@
 %endif
 
 Name:           supernova
-Version:        1.0.1
+Version:        1.0.7
 Release:        1%{?dist}
 Summary:        Use novaclient with multiple OpenStack nova environments the easy way
 License:        ASLv2
@@ -44,6 +44,9 @@ novarc's or mucking with environment variables.
 
 
 %changelog
+* Tue Oct 28 2014 Jason DeTiberus <jdetiber@redhat.com> - 1.0.7-1
+- version bump to 1.0.7
+
 * Fri Jun 20 2014 Carl George <carl@carlgeorge.us> - 1.0.1-1
 - Version bump to 1.0.1
 - Follow Fedora Python packaging guidelines
