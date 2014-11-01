@@ -1,1 +1,3 @@
+include contrib/*.bash
 recursive-include docs *
+recursive-include example_configs *
