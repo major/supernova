@@ -33,6 +33,8 @@ For debug output, supernova accepts ``--debug`` as a supernova option or as a no
     supernova --debug iad list
     supernova iad list --debug
 
+Be careful with sharing debug output, many clients will print credentials in plain text even if the credentials are not stored in plain text.
+
 Listing available supernova environments
 ----------------------------------------
 
