@@ -3,7 +3,8 @@
 _supernova()
 {
     local cur=${COMP_WORDS[COMP_CWORD]}
-    local possibilities=$(awk '/\[/{ gsub(/\[|\]/,"");print}' ~/.supernova)
+    local configs=$(cat "${XDG_CONFIG_HOME}"/supernova ~/.supernova ./.supernova 2> /dev/null)
+    local possibilities=$(echo "${configs}" | sed -n '/^\[.*\]/ s_\[\(.*\)\]_\1_p' | sort -u)
     COMPREPLY=( $(compgen -W "${possibilities}" -- $cur) )
 }
 complete -F _supernova supernova
