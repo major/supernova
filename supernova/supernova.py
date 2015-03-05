@@ -55,15 +55,10 @@ class SuperNova(object):
             msg = "[%s] Unable to locate section '%s' in your configuration."
             print(msg % (colors.rwrap("Failed"), self.nova_env))
             sys.exit(1)
-        nova_re = re.compile(r"(^nova_|^os_|^novaclient|^trove_)")
         proxy_re = re.compile(r"(^http_proxy|^https_proxy)")
 
         creds = []
         for param, value in raw_creds:
-
-            # Skip parameters we're unfamiliar with
-            if not nova_re.match(param) and not proxy_re.match(param):
-                continue
 
             if not proxy_re.match(param):
                 param = param.upper()
