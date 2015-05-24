@@ -89,13 +89,21 @@ def get_config_file(override_files=False):
 def create_dynamic_configs(config, key='OS_REGION_NAME', delimiter=';'):
     sections = config.sections()
     for section in sections:
+
+        # Check to see if we should generate new sections.
         if config.has_option(section, key) and delimiter in \
                 config.get(section, key):
+
             for new_section_arg in config.get(section, key).split(
                     delimiter):
                 try:
                     new_section = section + '-' + new_section_arg
                     config.add_section(new_section)
+
+                    # We are eventually going to delete the old section.
+                    # Lets use it as a supernova group
+                    config.set(new_section, 'SUPERNOVA_GROUP', section)
+
                     for orig_section_key, orig_section_value in \
                             config.items(section):
                         if orig_section_key.lower() == key.lower():
@@ -108,3 +116,5 @@ def create_dynamic_configs(config, key='OS_REGION_NAME', delimiter=';'):
                     # Skip, in case it already exists or the user has defined
                     # it
                     pass
+            # We are done, lets remove the original section
+            config.remove_section(section)
