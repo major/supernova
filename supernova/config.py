@@ -18,7 +18,13 @@
 Takes care of the basic setup of the config files and does some preliminary
 sanity checks
 """
+try:
+    import ConfigParser
+except:
+    import configparser as ConfigParser
+
 import os
+import sys
 
 
 from configobj import ConfigObj
@@ -43,6 +49,7 @@ def load_config(config_file_override=False):
     Pulls the supernova configuration file and reads it
     """
     supernova_config = get_config_file(config_file_override)
+    create_dynamic_configs(supernova_config)
 
     # Can we successfully read the configuration file?
     try:
@@ -75,3 +82,29 @@ def get_config_file(override_files=False):
             return config_file
 
     raise Exception("Couldn't find a valid configuration file to parse")
+
+    return nova_creds
+
+
+def create_dynamic_configs(config, key='OS_REGION_NAME', delimiter=';'):
+    sections = config.sections()
+    for section in sections:
+        if config.has_option(section, key) and delimiter in \
+                config.get(section, key):
+            for new_section_arg in config.get(section, key).split(
+                    delimiter):
+                try:
+                    new_section = section + '-' + new_section_arg
+                    config.add_section(new_section)
+                    for orig_section_key, orig_section_value in \
+                            config.items(section):
+                        if orig_section_key.lower() == key.lower():
+                            config.set(new_section, orig_section_key,
+                                       new_section_arg)
+                        else:
+                            config.set(new_section, orig_section_key,
+                                       orig_section_value)
+                except ConfigParser.DuplicateSectionError:
+                    # Skip, in case it already exists or the user has defined
+                    # it
+                    pass
