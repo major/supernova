@@ -29,3 +29,4 @@ Documentation
    installation
    configuring
    usingsupernova
+   troubleshooting
