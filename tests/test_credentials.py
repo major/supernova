@@ -33,9 +33,9 @@ class TestCredentials(object):
         keyring.set_keyring(TestKeyring())
         result = credentials.password_get('user')
         if six.PY3:
-            assert result == 'password from TestKeyring'
-        else:
             assert result == b'password from TestKeyring'
+        else:
+            assert result == 'password from TestKeyring'
 
     def test_pull_env_credential(self):
         keyring.set_keyring(TestKeyring())
@@ -47,6 +47,6 @@ class TestCredentials(object):
         assert result[0] == 'global:prodpass'
         assert 'TestKeyring' in result[1]
         if six.PY3:
-            assert result[1] == 'password from TestKeyring'
-        else:
             assert result[1] == b'password from TestKeyring'
+        else:
+            assert result[1] == 'password from TestKeyring'
