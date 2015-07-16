@@ -5,3 +5,5 @@ rpmbuild
 rpms
 *egg*
 docs/_build
+.coverage
+.tox

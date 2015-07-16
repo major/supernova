@@ -17,13 +17,18 @@
 from setuptools import setup
 
 
+required_packages = [
+    "keyring",
+    "python-novaclient",
+]
+
 setup(
     name='supernova',
     version='1.0.8',
     author='Major Hayden',
     author_email='major@mhtx.net',
     description="novaclient wrapper for multiple nova environments",
-    install_requires=['keyring'],
+    install_requires=required_packages,
     packages=['supernova'],
     url='https://github.com/rackerhacker/supernova',
     entry_points={
