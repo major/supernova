@@ -47,11 +47,11 @@ def print_env_list(ctx, param, value):
     if not value or ctx.resilient_parsing:
         return
     config.run_config()
-    for nova_env in config.nova_creds.sections():
+    for nova_env in config.nova_creds.keys():
         envheader = '-- %s ' % colors.gwrap(nova_env)
         print(envheader.ljust(86, '-'))
-        for param, value in sorted(config.nova_creds.items(nova_env)):
-            print('  %s: %s' % (param.upper().ljust(21), value))
+        for param, value in sorted(config.nova_creds[nova_env].items()):
+            print('  %s: %s' % (param.upper().ljust(25), value))
     ctx.exit()
 
 
@@ -81,7 +81,7 @@ def run_supernova(ctx, executable, debug, environment, command):
 
     # Is our environment argument a single environment or a supernova group?
     if utils.is_valid_group(environment):
-        envs = utils.get_envs_in_group(environment)
+        envs = utils.get_envs_in_group(environment, config.nova_creds)
     else:
         envs = [environment]
 

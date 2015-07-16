@@ -1,15 +1,13 @@
 import os
 
 
+import pytest
+
+
 from supernova import config
 
 
 class TestConfig(object):
-
-    # def test_import(self):
-    #     with pytest.raises(ImportError) as excinfo:
-    #         import configtest as ConfigTest
-    #     assert "No module named configtest" in excinfo.value
 
     def test_env_var_warning(self):
         os.environ["OS_LETS_CAUSE_A_WARNING"] = "BOOM"
@@ -23,13 +21,23 @@ class TestConfig(object):
 
     def test_read_valid_configuration(self):
         testcfg = "{0}/tests/configs/rax_without_keyring".format(os.getcwd())
-        result = config.load_supernova_config(config_file_override=testcfg)
+        result = config.load_config(config_file_override=[testcfg])
         assert result is not None
-        assert len(result.sections()) == 5
-        assert 'dfw' in result.sections()
+        assert len(result.keys()) == 5
+        assert 'dfw' in result.keys()
 
-    def test_read_invalid_configuration(self):
-        testcfg = {"invalid": "invalid"}
-        result = config.load_supernova_config(config_file_override=testcfg)
-        assert result is not None
-        assert result.sections() == []
+    def test_read_missing_configuration(self):
+        testcfg = "/tmp/invalid_file"
+        result = None
+        with pytest.raises(Exception) as excinfo:
+            result = config.load_config(config_file_override=[testcfg])
+        assert result is None
+        assert "Couldn't find" in str(excinfo.value)
+
+    def test_override_with_string(self):
+        testcfg = "/tmp/invalid_file"
+        result = None
+        with pytest.raises(Exception) as excinfo:
+            result = config.load_config(config_file_override=testcfg)
+        assert result is None
+        assert "must be a list of paths" in str(excinfo.value)

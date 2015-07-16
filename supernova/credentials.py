@@ -26,6 +26,10 @@ import sys
 
 import keyring
 
+
+import six
+
+
 from . import colors
 
 
@@ -54,11 +58,7 @@ CTRL-C right now.
     print("If you are completely sure you want to display it, type 'yes' and ",
           "press enter:")
     try:
-        try:
-            input = raw_input
-        except NameError:
-            pass
-        confirm = input('')
+        confirm = six.moves.input('')
     except KeyboardInterrupt:
         print('')
         confirm = ''

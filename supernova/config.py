@@ -18,15 +18,10 @@
 Takes care of the basic setup of the config files and does some preliminary
 sanity checks
 """
-# try:
-#     import ConfigParser
-# except:
-#     import configparser as ConfigParser
-
 import os
 
 
-import six.moves.configparser as ConfigParser
+from configobj import ConfigObj
 
 
 nova_creds = None
@@ -38,7 +33,7 @@ def run_config():
     """
     global nova_creds
     check_environment_presets()
-    nova_creds = load_supernova_config()
+    nova_creds = load_config()
 
 
 def check_environment_presets():
@@ -59,12 +54,28 @@ def check_environment_presets():
         return False
 
 
-def load_supernova_config(config_file_override=None):
+def load_config(config_file_override=None):
     """
     Pulls the supernova configuration file and reads it
     """
-    if config_file_override:
-        possible_configs = config_file_override
+    supernova_config = get_config_file(config_file_override)
+
+    # Can we successfully read the configuration file?
+    nova_creds = ConfigObj(supernova_config)
+
+    return nova_creds
+
+
+def get_config_file(override_files=None):
+    """
+    Looks for the most specific configuration file available.  An override
+    can be provided as a string if needed.
+    """
+    if override_files:
+        if isinstance(override_files, list):
+            possible_configs = override_files
+        else:
+            raise Exception("Config file override must be a list of paths")
     else:
         xdg_config_home = os.environ.get('XDG_CONFIG_HOME') or \
             os.path.expanduser('~/.config')
@@ -72,9 +83,8 @@ def load_supernova_config(config_file_override=None):
                             os.path.expanduser("~/.supernova"),
                             ".supernova"]
 
-    supernova_config = ConfigParser.RawConfigParser()
+    for config_file in reversed(possible_configs):
+        if os.path.isfile(config_file):
+            return config_file
 
-    # Can we successfully read the configuration file?
-    supernova_config.read(possible_configs)
-
-    return supernova_config
+    raise Exception("Couldn't find a valid configuration file to parse")

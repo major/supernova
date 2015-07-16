@@ -23,27 +23,15 @@ from . import colors
 from . import config
 
 
-def check_deprecated_options(self):
-    """
-    Hunts for deprecated configuration options from previous SuperNova
-    versions.
-    """
-    creds = config.nova_creds
-    if creds.has_option(self.nova_env, 'insecure'):
-        print("WARNING: the 'insecure' option is deprecated. ",
-              "Consider using NOVACLIENT_INSECURE=1 instead.")
-
-
-def get_envs_in_group(group_name):
+def get_envs_in_group(group_name, nova_creds):
     """
     Takes a group_name and finds any environments that have a SUPERNOVA_GROUP
     configuration line that matches the group_name.
     """
     envs = []
-    for section in config.nova_creds.sections():
-        if (config.nova_creds.has_option(section, 'SUPERNOVA_GROUP') and
-                config.nova_creds.get(section,
-                                      'SUPERNOVA_GROUP') == group_name):
+    for section in nova_creds.keys():
+        if ('SUPERNOVA_GROUP' in nova_creds[section] and
+                nova_creds[section]['SUPERNOVA_GROUP'] == group_name):
             envs.append(section)
     return envs
 
