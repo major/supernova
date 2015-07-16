@@ -18,15 +18,16 @@
 Takes care of the basic setup of the config files and does some preliminary
 sanity checks
 """
-try:
-    import ConfigParser
-except:
-    import configparser as ConfigParser
+# try:
+#     import ConfigParser
+# except:
+#     import configparser as ConfigParser
 
 import os
-import sys
 
-from . import colors
+
+import six.moves.configparser as ConfigParser
+
 
 nova_creds = None
 
@@ -74,15 +75,6 @@ def load_supernova_config(config_file_override=None):
     supernova_config = ConfigParser.RawConfigParser()
 
     # Can we successfully read the configuration file?
-    try:
-        supernova_config.read(possible_configs)
-    except:
-        msg = """
-[%s] A valid supernova configuration file is required.
-Ensure that you have a properly configured supernova configuration file called
-'.supernova' in your home directory or in your current working directory.
-""" % colors.rwrap('Invalid configuration file')
-        print(msg)
-        sys.exit(1)
+    supernova_config.read(possible_configs)
 
     return supernova_config

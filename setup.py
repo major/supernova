@@ -21,6 +21,7 @@ required_packages = [
     "click",
     "keyring",
     "python-novaclient",
+    "six"
 ]
 
 setup(
