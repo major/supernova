@@ -27,13 +27,13 @@ from configobj import ConfigObj
 nova_creds = None
 
 
-def run_config():
+def run_config(config_file_override=None):
     """
     Runs sanity checks and prepares the global nova_creds variable
     """
     global nova_creds
-    check_environment_presets()
-    nova_creds = load_config()
+    nova_creds = load_config(config_file_override)
+    return nova_creds
 
 
 def check_environment_presets():

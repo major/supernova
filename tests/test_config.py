@@ -9,6 +9,13 @@ from supernova import config
 
 class TestConfig(object):
 
+    def test_run_config(self):
+        testcfg = "{0}/tests/configs/rax_without_keyring".format(os.getcwd())
+        result = config.run_config([testcfg])
+        assert result is not None
+        assert len(result.keys()) == 5
+        assert 'dfw' in result.keys()
+
     def test_env_var_warning(self):
         os.environ["OS_LETS_CAUSE_A_WARNING"] = "BOOM"
         result = config.check_environment_presets()

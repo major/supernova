@@ -74,6 +74,8 @@ def run_supernova(ctx, executable, debug, environment, command):
     """
     config.run_config()
 
+    utils.check_environment_presets()
+
     # Did we get any arguments to pass on to nova?
     if not command:
         utils.warn_missing_nova_args()
