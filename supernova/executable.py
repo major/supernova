@@ -44,7 +44,8 @@ def print_version(ctx, param, value):
 
 
 def print_env_list(ctx, param, value):
-    print(value)
+    if not value or ctx.resilient_parsing:
+        return
     config.run_config()
     for nova_env in config.nova_creds.sections():
         envheader = '-- %s ' % colors.gwrap(nova_env)
@@ -57,48 +58,42 @@ def print_env_list(ctx, param, value):
 @click.command()
 @click.option('--executable', '-x', default='nova',
               help='command to run', show_default=True)
-@click.option('--list', '-l', is_flag=True, callback=print_env_list,
-              expose_value=False, is_eager=False)
+@click.option('--debug', '-d', default='False', is_flag=True,
+              help="Enable debugging", show_default=True)
+@click.argument('environment', nargs=1)
+@click.argument('command')
 @click.version_option(prog_name='supernova')
-def run_supernova(executable):
+@click.option('--list', is_flag=True, callback=print_env_list,
+              expose_value=False, is_eager=False, default=False,
+              help="List all configured environments")
+@click.pass_context
+def run_supernova(ctx, executable, debug, environment, command):
     """
     Handles all of the prep work and error checking for the
     supernova executable.
     """
     config.run_config()
 
-    parser = argparse.ArgumentParser()
-    # parser.add_argument('-x', '--executable', default='nova',
-    #                     help='command to run instead of nova')
-    # parser.add_argument('--version', action=_ShowVersion,
-    #                     help='display supernova version')
-    # parser.add_argument('-l', '--list', action=_ListAction,
-    #                     help='list all configured environments')
-    parser.add_argument('-d', '--debug', action='store_true',
-                        help='show novaclient debug output')
-    parser.add_argument('env',
-                        help=('environment to run nova against. '
-                              'valid options: %s' %
-                              sorted(config.nova_creds.sections())))
-
-    # Allow for passing --options all the way through to novaclient
-    supernova_args, nova_args = parser.parse_known_args()
-
     # Did we get any arguments to pass on to nova?
-    if not nova_args:
+    if not command:
         utils.warn_missing_nova_args()
         sys.exit(1)
 
     # Is our environment argument a single environment or a supernova group?
-    if utils.is_valid_group(supernova_args.env):
-        envs = utils.get_envs_in_group(supernova_args.env)
+    if utils.is_valid_group(environment):
+        envs = utils.get_envs_in_group(environment)
     else:
-        envs = [supernova_args.env]
+        envs = [environment]
+
+    supernova_args = {
+        'debug': debug,
+        'executable': executable
+    }
 
     for env in envs:
         snobj = supernova.SuperNova()
         snobj.nova_env = env
-        returncode = snobj.run_novaclient(nova_args, supernova_args)
+        returncode = snobj.run_novaclient(command, supernova_args)
 
     # NOTE(major): The return code here is the one that comes back from the
     # OS_EXECUTABLE that supernova runs (by default, 'nova').  When using

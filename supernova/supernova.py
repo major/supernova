@@ -23,8 +23,12 @@ from __future__ import print_function
 
 import os
 import re
+import shlex
 import subprocess
 import sys
+
+
+import click
 
 
 from novaclient import client as novaclient
@@ -107,11 +111,11 @@ credentials for %s yet, try running:
             print(msg % (colors.rwrap("Failed"), self.nova_env))
             sys.exit(1)
 
-        args = []
+        args = ""
         for param, value in raw_creds:
             param = param.upper()
             if param == 'BYPASS_URL':
-                args += ['--bypass-url', value]
+                args += '--bypass-url {0}'.format(value)
 
         return args
 
@@ -129,7 +133,7 @@ credentials for %s yet, try running:
         self.prep_shell_environment()
 
         # Check for a debug override
-        if supernova_args.debug:
+        if supernova_args.get('debug'):
             nova_args.insert(0, '--debug')
 
         # Check for OS_EXECUTABLE
@@ -140,7 +144,7 @@ credentials for %s yet, try running:
             pass
 
         # Print a small message for the user (very helpful for groups)
-        msg = "Running %s against %s..." % (supernova_args.executable,
+        msg = "Running %s against %s..." % (supernova_args.get('executable'),
                                             self.nova_env)
         print("[%s] %s " % (colors.gwrap('SUPERNOVA'), msg))
 
@@ -151,13 +155,22 @@ credentials for %s yet, try running:
         # displayed appropriately.
         #
         # In other news, I hate how python 2.6 does unicode.
-        process = subprocess.Popen([supernova_args.executable] + nova_args,
+        commandline = "{0} {1}".format(supernova_args.get('executable'),
+                                       nova_args)
+        process = subprocess.Popen(shlex.split(commandline),
                                    stdout=sys.stdout,
-                                   stderr=sys.stderr,
+                                   stderr=subprocess.PIPE,
                                    env=self.env)
 
         # Don't exit until we're sure the subprocess has exited
         process.wait()
+
+        stderr_output = process.stderr.read()
+        if len(stderr_output) > 0:
+            click.secho("\nSome error output was generated:", fg='white',
+                        bold=True)
+            click.echo(stderr_output)
+
         return process.returncode
 
     def get_novaclient(self, env, client_version=3):
