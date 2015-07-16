@@ -19,74 +19,40 @@ Handles all of the interactions with the operating system's keyring
 """
 from __future__ import print_function
 
+
 import getpass
 import re
 import sys
 
 
+import click
+
+
 import keyring
 
 
-import six
-
-
 from . import colors
+from . import utils
 
 
-def get_user_password(args):
+def get_user_password(env, param, force=False):
     """
     Allows the user to print the credential for a particular keyring entry
     to the screen
     """
-    username = '%s:%s' % (args.env, args.parameter)
+    username = utils.assemble_username(env, param)
 
-    warnstring = colors.rwrap("__ WARNING ".ljust(80, '_'))
-    print("""
-%s
+    if force or not utils.confirm_credential_display():
+        return
 
-If this operation is successful, the credential stored for this username will
-be displayed in your terminal as PLAIN TEXT:
-
-  %s
-
-Seriously.  It will just be hanging out there for anyone to see.  If you have
-any concerns about having this credential displayed on your screen, press
-CTRL-C right now.
-
-%s
-""" % (warnstring, username, warnstring))
-    print("If you are completely sure you want to display it, type 'yes' and ",
-          "press enter:")
-    try:
-        confirm = six.moves.input('')
-    except KeyboardInterrupt:
-        print('')
-        confirm = ''
-    if confirm != 'yes':
-        print("\n[%s] Your keyring was not read or altered.\n" % (
-            colors.rwrap("Canceled")))
-        return False
-
-    try:
-        password = password_get(username)
-    except:
-        password = None
+    # Retrieve the credential from the keychain
+    password = password_get(username)
 
     if password:
-        print("""
-[%s] Found credentials for %s: %s
-""" % (
-            colors.gwrap("Success"), username, password))
+        click.echo("\nCredential for {0}: {1}".format(username, password))
         return True
     else:
-        print("""
-[%s] Unable to retrieve credentials for %s.
-
-It's likely that there aren't any credentials stored for this environment and
-parameter combination.  If you want to set a credential, just run this command:
-
-  supernova-keyring -s %s %s
-""" % (colors.rwrap("Failed"), username, args.env, args.parameter))
+        click.echo("\nUnable to find a credential matching the data provided.")
         return False
 
 
@@ -96,11 +62,17 @@ def pull_env_credential(env, param, value):
     and returns the username/password combo
     """
     rex = "USE_KEYRING\[([\x27\x22])(.*)\\1\]"
+
+    # This is the old-style, per-environment keyring credential
     if value == "USE_KEYRING":
-        username = "%s:%s" % (env, param)
+        username = utils.assemble_username(env, param)
+
+    # This is the new-style, global keyring credential that can be applied
+    # to multiple environments
     else:
         global_identifier = re.match(rex, value).group(2)
-        username = "%s:%s" % ('global', global_identifier)
+        username = utils.assemble_username('global', global_identifier)
+
     return (username, password_get(username))
 
 

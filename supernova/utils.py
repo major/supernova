@@ -19,8 +19,24 @@ Contains many of the shared utility functions
 """
 from __future__ import print_function
 
+
+import click
+
+
 from . import colors
 from . import config
+
+
+def assemble_username(env, param):
+    return "{0}:{1}".format(env, param)
+
+
+def confirm_credential_display():
+    msg = """
+    [WARNING] Your credential is about to be displayed on screen.
+    If this is really what you want, type 'y' and press enter."""
+    result = click.confirm(text=msg)
+    return result
 
 
 def get_envs_in_group(group_name, nova_creds):

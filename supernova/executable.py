@@ -20,7 +20,7 @@ to run
 """
 from __future__ import print_function
 
-import argparse
+
 import sys
 
 
@@ -106,27 +106,41 @@ def run_supernova(ctx, executable, debug, environment, command):
     sys.exit(returncode)
 
 
-def run_supernova_keyring():
+@click.command()
+@click.option('--get', '-g', 'action', flag_value='get_credential',
+              help='retrieve a credential from keyring storage')
+@click.option('--set', '-s', 'action', flag_value='set_credential',
+              help='store a credential in keyring storage',)
+@click.argument('environment', nargs=1)
+@click.argument('parameter', nargs=1)
+@click.pass_context
+def run_supernova_keyring(ctx, action, environment, parameter):
     """
-    Handles all of the prep work and error checking for the
-    supernova-keyring executable.
+    Sets or retrieves credentials stored in your system's keyring using the
+    python-keyring module.
+
+    Consider a supernova configuration file with these items:
+
+    \b
+        [prod]
+        OS_PASSWORD=USE_KEYRING['production_sso']
+        ...
+
+    You could retrieve or set the credential using these commands:
+
+    \b
+        supernova -g prod production_sso     <= get the credential
+        supernova -s prod production_sso     <= set the credential
     """
-    parser = argparse.ArgumentParser()
-    group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('-g', '--get', action='store_true',
-                       dest='get_password',
-                       help='retrieves credentials from keychain storage')
-    group.add_argument('-s', '--set', action='store_true',
-                       dest='set_password',
-                       help='stores credentials in keychain storage')
-    parser.add_argument('env',
-                        help='environment to set parameter in')
-    parser.add_argument('parameter',
-                        help='parameter to set')
-    args = parser.parse_args()
+    if action is None:
+        click.secho("ERROR: must specify --get or --set", bold=True)
+        click.echo(ctx.get_help())
+        ctx.exit()
 
-    if args.set_password:
-        credentials.set_user_password(args)
+    if action == 'get_credential':
+        credentials.get_user_password(env=environment, param=parameter)
+        ctx.exit()
 
-    if args.get_password:
-        credentials.get_user_password(args)
+    if action == 'set_credential':
+        credentials.set_user_password(env=environment, param=parameter)
+        ctx.exit()
