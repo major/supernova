@@ -21,6 +21,7 @@ to run
 from __future__ import print_function
 
 import argparse
+import click
 import pkg_resources
 import sys
 
@@ -46,17 +47,17 @@ class _ListAction(argparse._HelpAction):
         parser.exit()
 
 
-# Copying tr3buchet's hack to short circuit argparse and display the
-# version number of supernova
-class _ShowVersion(argparse._HelpAction):
-    """_ShowVersion used for the --version argument."""
-    def __call__(self, parser, *args, **kwargs):
-        version = pkg_resources.require("supernova")[0].version
-        print("supernova %s" % version)
-        parser.exit()
+def print_version(ctx, param, value):
+    version = pkg_resources.require("supernova")[0].version
+    click.echo("supernova %s" % version)
+    ctx.exit()
 
 
-def run_supernova():
+@click.command()
+@click.option('--executable', '-x', default='nova',
+              help='command to run', show_default=True)
+@click.version_option(prog_name='supernova')
+def run_supernova(executable):
     """
     Handles all of the prep work and error checking for the
     supernova executable.
@@ -64,10 +65,10 @@ def run_supernova():
     config.run_config()
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-x', '--executable', default='nova',
-                        help='command to run instead of nova')
-    parser.add_argument('--version', action=_ShowVersion,
-                        help='display supernova version')
+    # parser.add_argument('-x', '--executable', default='nova',
+    #                     help='command to run instead of nova')
+    # parser.add_argument('--version', action=_ShowVersion,
+    #                     help='display supernova version')
     parser.add_argument('-l', '--list', action=_ListAction,
                         help='list all configured environments')
     parser.add_argument('-d', '--debug', action='store_true',
