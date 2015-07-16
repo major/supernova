@@ -31,10 +31,14 @@ def assemble_username(env, param):
     return "{0}:{1}".format(env, param)
 
 
-def confirm_credential_display():
+def confirm_credential_display(force=False):
+    if force:
+        return True
+
     msg = """
     [WARNING] Your credential is about to be displayed on screen.
     If this is really what you want, type 'y' and press enter."""
+
     result = click.confirm(text=msg)
     return result
 

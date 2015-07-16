@@ -39,7 +39,7 @@ def get_user_password(env, param, force=False):
     """
     username = utils.assemble_username(env, param)
 
-    if force or not utils.confirm_credential_display():
+    if not utils.confirm_credential_display(force):
         return
 
     # Retrieve the credential from the keychain

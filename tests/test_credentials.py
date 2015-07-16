@@ -4,7 +4,7 @@ import keyring.backend
 import six
 
 
-from supernova import credentials
+from supernova import credentials, utils
 
 
 class TestKeyring(keyring.backend.KeyringBackend):
@@ -27,6 +27,27 @@ class TestCredentials(object):
     def test_get_user_password(self):
         keyring.set_keyring(TestKeyring())
         result = credentials.get_user_password('prod', 'prodpass', force=True)
+        assert result[0] == 'prod:prodpass'
+        if six.PY3:
+            assert result[1] == b'password from TestKeyring'
+        else:
+            assert result[1] == 'password from TestKeyring'
+
+    def test_get_user_password_failure(self, monkeypatch):
+        def mockreturn(path):
+            return False
+        # monkeypatch.setattr(utils, "confirm_credential_display", mockreturn)
+        monkeypatch.setattr(credentials, "password_get", mockreturn)
+        keyring.set_keyring(TestKeyring())
+        result = credentials.get_user_password('prod', 'prodpass', force=True)
+        assert not result
+
+    def test_reject_confirmation(self, monkeypatch):
+        def mockreturn(path):
+            return False
+        monkeypatch.setattr(utils, "confirm_credential_display", mockreturn)
+        keyring.set_keyring(TestKeyring())
+        result = credentials.get_user_password('prod', 'prodpass')
         assert result is None
 
     def test_password_get(self):
@@ -45,7 +66,6 @@ class TestCredentials(object):
                                                  )
         assert isinstance(result, tuple)
         assert result[0] == 'global:prodpass'
-        assert 'TestKeyring' in result[1]
         if six.PY3:
             assert result[1] == b'password from TestKeyring'
         else:
