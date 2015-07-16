@@ -26,6 +26,13 @@ class TestConfig(object):
         result = config.check_environment_presets()
         assert result
 
+    # NOTE: This test uses the .supernova testing config file in the root
+    # of the repository.  It's hacky but it's what I've got. :/
+    def test_get_config_file(self):
+        result = config.get_config_file()
+        assert result is not None
+        assert result == '.supernova'
+
     def test_read_valid_configuration(self):
         testcfg = "{0}/tests/configs/rax_without_keyring".format(os.getcwd())
         result = config.load_config(config_file_override=[testcfg])
