@@ -58,15 +58,19 @@ def check_environment_presets():
         return False
 
 
-def load_supernova_config():
+def load_supernova_config(config_file_override=None):
     """
     Pulls the supernova configuration file and reads it
     """
-    xdg_config_home = os.environ.get('XDG_CONFIG_HOME') or \
-        os.path.expanduser('~/.config')
-    possible_configs = [os.path.join(xdg_config_home, "supernova"),
-                        os.path.expanduser("~/.supernova"),
-                        ".supernova"]
+    if config_file_override:
+        possible_configs = config_file_override
+    else:
+        xdg_config_home = os.environ.get('XDG_CONFIG_HOME') or \
+            os.path.expanduser('~/.config')
+        possible_configs = [os.path.join(xdg_config_home, "supernova"),
+                            os.path.expanduser("~/.supernova"),
+                            ".supernova"]
+
     supernova_config = ConfigParser.RawConfigParser()
 
     # Can we successfully read the configuration file?

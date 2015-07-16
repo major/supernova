@@ -21,30 +21,20 @@ to run
 from __future__ import print_function
 
 import argparse
-import click
-import pkg_resources
 import sys
+
+
+import click
+
+
+import pkg_resources
 
 
 from . import colors
 from . import config
 from . import credentials
-from . import utils
 from . import supernova
-
-
-# Note(tr3buchet): this is necessary to prevent argparse from requiring the
-#                  the 'env' parameter when using -l or --list
-class _ListAction(argparse._HelpAction):
-    """ListAction used for the -l and --list arguments."""
-    def __call__(self, parser, *args, **kwargs):
-        """Lists are configured supernova environments."""
-        for nova_env in config.nova_creds.sections():
-            envheader = '-- %s ' % colors.gwrap(nova_env)
-            print(envheader.ljust(86, '-'))
-            for param, value in sorted(config.nova_creds.items(nova_env)):
-                print('  %s: %s' % (param.upper().ljust(21), value))
-        parser.exit()
+from . import utils
 
 
 def print_version(ctx, param, value):
@@ -53,9 +43,22 @@ def print_version(ctx, param, value):
     ctx.exit()
 
 
+def print_env_list(ctx, param, value):
+    print(value)
+    config.run_config()
+    for nova_env in config.nova_creds.sections():
+        envheader = '-- %s ' % colors.gwrap(nova_env)
+        print(envheader.ljust(86, '-'))
+        for param, value in sorted(config.nova_creds.items(nova_env)):
+            print('  %s: %s' % (param.upper().ljust(21), value))
+    ctx.exit()
+
+
 @click.command()
 @click.option('--executable', '-x', default='nova',
               help='command to run', show_default=True)
+@click.option('--list', '-l', is_flag=True, callback=print_env_list,
+              expose_value=False, is_eager=False)
 @click.version_option(prog_name='supernova')
 def run_supernova(executable):
     """
@@ -69,8 +72,8 @@ def run_supernova(executable):
     #                     help='command to run instead of nova')
     # parser.add_argument('--version', action=_ShowVersion,
     #                     help='display supernova version')
-    parser.add_argument('-l', '--list', action=_ListAction,
-                        help='list all configured environments')
+    # parser.add_argument('-l', '--list', action=_ListAction,
+    #                     help='list all configured environments')
     parser.add_argument('-d', '--debug', action='store_true',
                         help='show novaclient debug output')
     parser.add_argument('env',

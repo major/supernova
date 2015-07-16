@@ -21,17 +21,19 @@ the user)
 from __future__ import print_function
 
 
-from novaclient import client as novaclient
 import os
 import re
 import subprocess
 import sys
 
 
+from novaclient import client as novaclient
+
+
 from . import colors
-from . import utils
 from . import config
 from . import credentials
+from . import utils
 
 
 class SuperNova(object):

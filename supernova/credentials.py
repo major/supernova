@@ -20,9 +20,11 @@ Handles all of the interactions with the operating system's keyring
 from __future__ import print_function
 
 import getpass
-import keyring
 import re
 import sys
+
+
+import keyring
 
 from . import colors
 
