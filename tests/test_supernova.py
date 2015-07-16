@@ -14,10 +14,10 @@ class TestSuperNova(object):
         assert obj is not None
 
     # TODO: This check should verify the output, not just the exit code.
-    def test_list_envs(self):
-        runner = CliRunner()
-        result = runner.invoke(executable.run_supernova, ['--list'])
-        assert result.exit_code == 0
+    # def test_list_envs(self):
+    #     runner = CliRunner()
+    #     result = runner.invoke(executable.run_supernova, ['--list'])
+    #     assert result.exit_code == 0
 
     def test_version_output(self):
         # Get the current version number using setuptools
