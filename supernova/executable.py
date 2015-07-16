@@ -138,7 +138,13 @@ def run_supernova_keyring(ctx, action, environment, parameter):
         ctx.exit()
 
     if action == 'get_credential':
-        credentials.get_user_password(env=environment, param=parameter)
+        result = credentials.get_user_password(env=environment,
+                                               param=parameter)
+        if not result:
+            click.echo("\nUnable to find a credential matching the data "
+                       "provided.")
+        else:
+            click.echo("\nFound credential for {0}: {1}".format(*result))
         ctx.exit()
 
     if action == 'set_credential':

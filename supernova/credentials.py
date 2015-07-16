@@ -25,9 +25,6 @@ import re
 import sys
 
 
-import click
-
-
 import keyring
 
 
@@ -49,10 +46,8 @@ def get_user_password(env, param, force=False):
     password = password_get(username)
 
     if password:
-        click.echo("\nCredential for {0}: {1}".format(username, password))
-        return True
+        return (username, password)
     else:
-        click.echo("\nUnable to find a credential matching the data provided.")
         return False
 
 
