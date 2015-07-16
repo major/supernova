@@ -36,7 +36,6 @@ class TestCredentials(object):
     def test_get_user_password_failure(self, monkeypatch):
         def mockreturn(path):
             return False
-        # monkeypatch.setattr(utils, "confirm_credential_display", mockreturn)
         monkeypatch.setattr(credentials, "password_get", mockreturn)
         keyring.set_keyring(TestKeyring())
         result = credentials.get_user_password('prod', 'prodpass', force=True)
