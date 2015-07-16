@@ -54,10 +54,11 @@ CTRL-C right now.
     print("If you are completely sure you want to display it, type 'yes' and ",
           "press enter:")
     try:
-        if sys.version_info.major >= 3:
-            confirm = input('')
-        else:
-            confirm = raw_input('')
+        try:
+            input = raw_input
+        except NameError:
+            pass
+        confirm = input('')
     except KeyboardInterrupt:
         print('')
         confirm = ''
