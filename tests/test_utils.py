@@ -1,6 +1,9 @@
 import os
 
 
+import click
+
+
 from supernova import config, utils
 
 
@@ -9,6 +12,43 @@ class TestUtils(object):
     def test_assemble_username(self):
         result = utils.assemble_username('firstparam', 'secondparam')
         assert result == "firstparam:secondparam"
+
+    def test_confirm_credential_display_forced(self):
+        result = utils.confirm_credential_display(True)
+        assert result
+
+    def test_confirm_credential_display_not_forced(self, monkeypatch):
+        # We have to patch the click.confirm() method since we can't use stdin
+        # as a user would.
+        def mockreturn(text):
+            return True
+        monkeypatch.setattr(click, "confirm", mockreturn)
+        result = utils.confirm_credential_display()
+        assert result
+
+    def test_is_valid_environment_success(self):
+        testcfg = "{0}/tests/configs/rax_without_keyring".format(os.getcwd())
+        nova_creds = config.load_config([testcfg])
+        result = utils.is_valid_environment('dfw', nova_creds)
+        assert result
+
+    def test_is_valid_environment_failure(self):
+        testcfg = "{0}/tests/configs/rax_without_keyring".format(os.getcwd())
+        nova_creds = config.load_config([testcfg])
+        result = utils.is_valid_environment('non-existent', nova_creds)
+        assert not result
+
+    def test_is_valid_group_success(self):
+        testcfg = "{0}/tests/configs/rax_without_keyring".format(os.getcwd())
+        nova_creds = config.load_config([testcfg])
+        result = utils.is_valid_group('raxusa', nova_creds)
+        assert result
+
+    def test_is_valid_group_failure(self):
+        testcfg = "{0}/tests/configs/rax_without_keyring".format(os.getcwd())
+        nova_creds = config.load_config([testcfg])
+        result = utils.is_valid_group('non-existent', nova_creds)
+        assert not result
 
     def test_get_envs_in_group(self):
         testcfg = "{0}/tests/configs/rax_without_keyring".format(os.getcwd())

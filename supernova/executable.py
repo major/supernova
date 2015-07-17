@@ -82,7 +82,7 @@ def run_supernova(ctx, executable, debug, environment, command):
         sys.exit(1)
 
     # Is our environment argument a single environment or a supernova group?
-    if utils.is_valid_group(environment):
+    if utils.is_valid_group(environment, config.nova_creds):
         envs = utils.get_envs_in_group(environment, config.nova_creds)
     else:
         envs = [environment]

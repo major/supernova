@@ -24,7 +24,6 @@ import click
 
 
 from . import colors
-from . import config
 
 
 def assemble_username(env, param):
@@ -56,26 +55,25 @@ def get_envs_in_group(group_name, nova_creds):
     return envs
 
 
-def is_valid_environment(env):
+def is_valid_environment(env, nova_creds):
     """
     Checks to see if the configuration file contains a section for our
     requested environment.
     """
-    valid_envs = config.nova_creds.sections()
-    return env in valid_envs
+    if env in nova_creds.keys():
+        return env
+    else:
+        return
 
 
-def is_valid_group(group_name):
+def is_valid_group(group_name, nova_creds):
     """
     Checks to see if the configuration file contains a SUPERNOVA_GROUP
     configuration option.
     """
-    valid_groups = []
-    for section in config.nova_creds.sections():
-        if config.nova_creds.has_option(section, 'SUPERNOVA_GROUP'):
-            valid_groups.append(config.nova_creds.get(section,
-                                                      'SUPERNOVA_GROUP'))
-    valid_groups = list(set(valid_groups))
+    valid_groups = [value['SUPERNOVA_GROUP'] for key, value in
+                    nova_creds.items() if 'SUPERNOVA_GROUP'
+                    in nova_creds[key].keys()]
     if group_name in valid_groups:
         return True
     else:

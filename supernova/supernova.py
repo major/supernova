@@ -178,8 +178,11 @@ credentials for %s yet, try running:
         Returns python novaclient object authenticated with supernova config.
         """
         self.nova_env = env
-        assert utils.is_valid_environment(env), "Env %s not found in "\
-            "supernova configuration file." % env
+
+        if not utils.is_valid_environment(env, config.nova_creds):
+            print("Env %s not found in supernova configuration file." % env)
+            sys.exit(1)
+
         version, creds = self.prep_python_creds(client_version)
         return novaclient.Client(version, **creds)
 
