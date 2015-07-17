@@ -75,6 +75,8 @@ def password_get(username=None):
     """
     Retrieves a password from the keychain based on the environment and
     configuration parameter pair.
+
+    If this fails, None is returned.
     """
     return keyring.get_password('supernova', username).encode('ascii')
 
