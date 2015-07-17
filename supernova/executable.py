@@ -148,5 +148,22 @@ def run_supernova_keyring(ctx, action, environment, parameter):
         ctx.exit()
 
     if action == 'set_credential':
-        credentials.set_user_password(env=environment, param=parameter)
+        msg = """
+Preparing to set a credential in the keyring for:
+
+  - Environment  : {0}
+  - Parameter    : {1}
+
+If this is correct, enter the corresponding credential to store in your keyring
+or press CTRL-C to abort""".format(environment, parameter)
+        credential = click.prompt(text=msg, hide_input=True)
+
+        result = credentials.set_user_password(environment=environment,
+                                               parameter=parameter,
+                                               password=credential)
+
+        if result:
+            click.echo("\nSuccessfully stored.")
+        else:
+            click.echo("\nUnable to store your credential.")
         ctx.exit()

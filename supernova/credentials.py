@@ -20,15 +20,12 @@ Handles all of the interactions with the operating system's keyring
 from __future__ import print_function
 
 
-import getpass
 import re
-import sys
 
 
 import keyring
 
 
-from . import colors
 from . import utils
 
 
@@ -81,48 +78,12 @@ def password_get(username=None):
     return keyring.get_password('supernova', username).encode('ascii')
 
 
-def set_user_password(args):
+def set_user_password(environment, parameter, password):
     """
     Sets a user's password in the keyring storage
     """
-    print("""
-[%s] Preparing to set a password in the keyring for:
-
-  - Environment  : %s
-  - Parameter    : %s
-
-If this is correct, enter the corresponding credential to store in your keyring
-or press CTRL-D to abort:""" % (colors.gwrap("Keyring operation"), args.env,
-                                args.parameter))
-
-    # Prompt for a password and catch a CTRL-D
-    try:
-        password = getpass.getpass('')
-    except:
-        password = None
-        print()
-
-    # Did we get a password from the prompt?
-    if not password or len(password) < 1:
-        print("\n[%s] No data was altered in your keyring.\n" % (
-            colors.rwrap("Canceled")))
-        sys.exit()
-
-    # Try to store the password
-    username = '%s:%s' % (args.env, args.parameter)
-    try:
-        store_ok = password_set(username, password)
-    except:
-        store_ok = False
-
-    if store_ok:
-        msg = ("[%s] Successfully stored credentials for %s under the "
-               "supernova service.\n")
-        print(msg % (colors.gwrap("Success"), username))
-    else:
-        msg = ("[%s] Unable to store credentials for %s under the "
-               "supernova service.\n")
-        print(msg % (colors.rwrap("Failed"), username))
+    username = '%s:%s' % (environment, parameter)
+    return password_set(username, password)
 
 
 def password_set(username=None, password=None):
@@ -130,8 +91,10 @@ def password_set(username=None, password=None):
     Stores a password in a keychain for a particular environment and
     configuration parameter pair.
     """
-    try:
-        keyring.set_password('supernova', username, password)
+    result = keyring.set_password('supernova', username, password)
+
+    # NOTE: keyring returns None when the storage is successful.  That's weird.
+    if result is None:
         return True
-    except:
+    else:
         return False

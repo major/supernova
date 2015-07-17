@@ -57,6 +57,19 @@ class TestCredentials(object):
         else:
             assert result == 'password from TestKeyring'
 
+    def test_password_set(self):
+        keyring.set_keyring(TestKeyring())
+        result = credentials.password_set('user', 'password')
+        assert result
+
+    def test_password_set_failure(self, monkeypatch):
+        def mockreturn(system, username, password):
+            return False
+        monkeypatch.setattr(keyring, "set_password", mockreturn)
+        keyring.set_keyring(TestKeyring())
+        result = credentials.password_set('user', 'password')
+        assert not result
+
     def test_pull_env_credential_global(self):
         keyring.set_keyring(TestKeyring())
         result = credentials.pull_env_credential('prod',
@@ -82,3 +95,12 @@ class TestCredentials(object):
             assert result[1] == b'password from TestKeyring'
         else:
             assert result[1] == 'password from TestKeyring'
+
+    def test_set_user_password(self):
+        keyring.set_keyring(TestKeyring())
+        environment = "prod"
+        parameter = "prodpass"
+        password = "supersecurepassword"
+        result = credentials.set_user_password(environment, parameter,
+                                               password)
+        assert result
