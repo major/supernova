@@ -29,6 +29,18 @@ import keyring
 from . import utils
 
 
+def add_bypass_url(raw_creds):
+    """
+    Return a list of extra args that need to be passed on cmdline to nova.
+    """
+    if 'BYPASS_URL' in raw_creds.keys():
+        args = '--bypass-url {0}'.format(raw_creds['BYPASS_URL'])
+    else:
+        args = False
+
+    return args
+
+
 def get_user_password(env, param, force=False):
     """
     Allows the user to print the credential for a particular keyring entry
@@ -98,3 +110,52 @@ def password_set(username=None, password=None):
         return True
     else:
         return False
+
+
+def prep_shell_environment(nova_env, nova_creds):
+    """
+    Appends new variables to the current shell environment temporarily.
+    """
+    new_env = {}
+
+    for key, value in prep_nova_creds(nova_env, nova_creds):
+        new_env[key] = value
+
+    return new_env
+
+
+def prep_nova_creds(nova_env, nova_creds):
+    """
+    Finds relevant config options in the supernova config and cleans them
+    up for novaclient.
+    """
+    try:
+        raw_creds = nova_creds[nova_env]
+    except KeyError:
+        msg = "{0} was not found in your supernova configuration "\
+              "file".format(nova_env)
+        raise KeyError(msg)
+
+    proxy_re = re.compile(r"(^http_proxy|^https_proxy)")
+
+    creds = []
+    for param, value in raw_creds.items():
+
+        if not proxy_re.match(param):
+            param = param.upper()
+
+        # Get values from the keyring if we find a USE_KEYRING constant
+        if value.startswith("USE_KEYRING"):
+            username, credential = pull_env_credential(nova_env, param,
+                                                       value)
+        else:
+            credential = value.strip("\"'")
+
+        # Make sure we got something valid from the configuration file or
+        # the keyring
+        if not credential:
+            raise LookupError("No matching credentials found in keyring")
+
+        creds.append((param, credential))
+
+    return creds

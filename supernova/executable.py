@@ -46,11 +46,11 @@ def print_version(ctx, param, value):
 def print_env_list(ctx, param, value):
     if not value or ctx.resilient_parsing:
         return
-    config.run_config()
-    for nova_env in config.nova_creds.keys():
+    nova_creds = config.run_config()
+    for nova_env in nova_creds.keys():
         envheader = '-- %s ' % colors.gwrap(nova_env)
         print(envheader.ljust(86, '-'))
-        for param, value in sorted(config.nova_creds[nova_env].items()):
+        for param, value in sorted(nova_creds[nova_env].items()):
             print('  %s: %s' % (param.upper().ljust(25), value))
     ctx.exit()
 
@@ -77,13 +77,13 @@ def run_supernova(ctx, executable, debug, environment, command):
       supernova prod image-list
       supernova prod keypair-list
     """
-    config.run_config()
+    nova_creds = config.run_config()
 
     utils.check_environment_presets()
 
     # Is our environment argument a single environment or a supernova group?
-    if utils.is_valid_group(environment, config.nova_creds):
-        envs = utils.get_envs_in_group(environment, config.nova_creds)
+    if utils.is_valid_group(environment, nova_creds):
+        envs = utils.get_envs_in_group(environment, nova_creds)
     else:
         envs = [environment]
 
@@ -92,10 +92,17 @@ def run_supernova(ctx, executable, debug, environment, command):
         'executable': executable
     }
 
+    if len(envs) == 1 and not utils.is_valid_environment(envs[0], nova_creds):
+        msg = ("\nCouldn't find an environment called '{0}' in your "
+               "configuration file.\nTry supernova --list to see all "
+               "configured environments.\n".format(envs[0]))
+        click.echo(msg)
+        ctx.exit(1)
+
     for env in envs:
-        snobj = supernova.SuperNova()
-        snobj.nova_env = env
-        returncode = snobj.run_novaclient(command, supernova_args)
+        supernova_args['nova_env'] = env
+        returncode = supernova.run_novaclient(nova_creds, command,
+                                              supernova_args)
 
     # NOTE(major): The return code here is the one that comes back from the
     # OS_EXECUTABLE that supernova runs (by default, 'nova').  When using

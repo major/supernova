@@ -81,7 +81,7 @@ def is_valid_environment(env, nova_creds):
     if env in nova_creds.keys():
         return env
     else:
-        return
+        return False
 
 
 def is_valid_group(group_name, nova_creds):
