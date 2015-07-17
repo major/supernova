@@ -13,6 +13,16 @@ class TestUtils(object):
         result = utils.assemble_username('firstparam', 'secondparam')
         assert result == "firstparam:secondparam"
 
+    def test_env_var_warning(self):
+        os.environ["OS_LETS_CAUSE_A_WARNING"] = "BOOM"
+        result = utils.check_environment_presets()
+        assert not result
+
+    def test_env_var_pass(self):
+        os.environ = {"KEY": 'value'}
+        result = utils.check_environment_presets()
+        assert result
+
     def test_confirm_credential_display_forced(self):
         result = utils.confirm_credential_display(True)
         assert result

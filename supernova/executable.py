@@ -69,28 +69,17 @@ def print_env_list(ctx, param, value):
 @click.pass_context
 def run_supernova(ctx, executable, debug, environment, command):
     """
-    Handles all of the prep work and error checking for the
-    supernova executable.
+      supernova [environment] [command]
+
+    Here are some example commands that may help you get started:
+
+      supernova prod list
+      supernova prod image-list
+      supernova prod keypair-list
     """
     config.run_config()
 
     utils.check_environment_presets()
-
-    # Did we get any arguments to pass on to nova?
-    if not command:
-        msg = """
-[%s] No arguments were provided to pass along to nova.
-The supernova script expects to get commands structured like this:
-
-  supernova [environment] [command]
-
-Here are some example commands that may help you get started:
-
-  supernova prod list
-  supernova prod image-list
-  supernova prod keypair-list"""
-        click.echo(msg)
-        ctx.exit()
 
     # Is our environment argument a single environment or a supernova group?
     if utils.is_valid_group(environment, config.nova_creds):
@@ -143,22 +132,18 @@ def run_supernova_keyring(ctx, action, environment, parameter):
         supernova -g prod production_sso     <= get the credential
         supernova -s prod production_sso     <= set the credential
     """
-    if action is None:
-        click.secho("ERROR: must specify --get or --set", bold=True)
-        click.echo(ctx.get_help())
-        ctx.exit()
-
     if action == 'get_credential':
         result = credentials.get_user_password(env=environment,
                                                param=parameter)
         if not result:
             click.echo("\nUnable to find a credential matching the data "
                        "provided.")
+            ctx.exit(1)
         else:
             click.echo("\nFound credential for {0}: {1}".format(*result))
-        ctx.exit()
+            ctx.exit()
 
-    if action == 'set_credential':
+    elif action == 'set_credential':
         msg = """
 Preparing to set a credential in the keyring for:
 
@@ -175,6 +160,11 @@ or press CTRL-C to abort""".format(environment, parameter)
 
         if result:
             click.echo("\nSuccessfully stored.")
+            ctx.exit()
         else:
             click.echo("\nUnable to store your credential.")
+            ctx.exit(1)
+    else:
+        click.secho("ERROR: must specify --get or --set", bold=True)
+        click.echo(ctx.get_help())
         ctx.exit()

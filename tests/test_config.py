@@ -16,16 +16,6 @@ class TestConfig(object):
         assert len(result.keys()) == 5
         assert 'dfw' in result.keys()
 
-    def test_env_var_warning(self):
-        os.environ["OS_LETS_CAUSE_A_WARNING"] = "BOOM"
-        result = config.check_environment_presets()
-        assert not result
-
-    def test_env_var_pass(self):
-        os.environ = {"KEY": 'value'}
-        result = config.check_environment_presets()
-        assert result
-
     # NOTE: This test uses the .supernova testing config file in the root
     # of the repository.  It's hacky but it's what I've got. :/
     def test_get_config_file(self):

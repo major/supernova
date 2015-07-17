@@ -56,7 +56,7 @@ class SuperNova(object):
         up for novaclient.
         """
         try:
-            raw_creds = config.nova_creds.items(self.nova_env)
+            raw_creds = config.nova_creds[self.nova_env]
         except:
             msg = "[%s] Unable to locate section '%s' in your configuration."
             print(msg % (colors.rwrap("Failed"), self.nova_env))
@@ -64,7 +64,7 @@ class SuperNova(object):
         proxy_re = re.compile(r"(^http_proxy|^https_proxy)")
 
         creds = []
-        for param, value in raw_creds:
+        for param, value in raw_creds.items():
 
             if not proxy_re.match(param):
                 param = param.upper()
@@ -100,19 +100,19 @@ credentials for %s yet, try running:
         for key, value in self.prep_nova_creds():
             self.env[key] = value
 
-    def prep_extra_args(self):
+    def prep_extra_args(self, nova_creds):
         """
         Return a list of extra args that need to be passed on cmdline to nova.
         """
         try:
-            raw_creds = config.nova_creds.items(self.nova_env)
+            raw_creds = nova_creds[self.nova_env]
         except:
             msg = "[%s] Unable to locate section '%s' in your configuration."
             print(msg % (colors.rwrap("Failed"), self.nova_env))
             sys.exit(1)
 
         args = ""
-        for param, value in raw_creds:
+        for param, value in raw_creds.items():
             param = param.upper()
             if param == 'BYPASS_URL':
                 args += '--bypass-url {0}'.format(value)
@@ -148,7 +148,7 @@ credentials for %s yet, try running:
                                             self.nova_env)
         print("[%s] %s " % (colors.gwrap('SUPERNOVA'), msg))
 
-        nova_args = self.prep_extra_args() + nova_args
+        nova_args = self.prep_extra_args(config.nova_creds) + nova_args
 
         # Call novaclient and connect stdout/stderr to the current terminal
         # so that any unicode characters from novaclient's list will be

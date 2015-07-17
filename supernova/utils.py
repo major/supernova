@@ -20,11 +20,32 @@ Contains many of the shared utility functions
 from __future__ import print_function
 
 
+import os
+
+
 import click
 
 
 def assemble_username(env, param):
     return "{0}:{1}".format(env, param)
+
+
+def check_environment_presets():
+    """
+    Checks for environment variables that can cause problems with supernova
+    """
+    presets = [x for x in os.environ.copy().keys() if x.startswith('NOVA_') or
+               x.startswith('OS_')]
+    if len(presets) < 1:
+        return True
+    else:
+        print("_" * 80)
+        print("*WARNING* Found existing environment variables that may "
+              "cause conflicts:")
+        for preset in presets:
+            print("  - %s" % preset)
+        print("_" * 80)
+        return False
 
 
 def confirm_credential_display(force=False):
