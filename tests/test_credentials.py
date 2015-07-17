@@ -57,7 +57,7 @@ class TestCredentials(object):
         else:
             assert result == 'password from TestKeyring'
 
-    def test_pull_env_credential(self):
+    def test_pull_env_credential_global(self):
         keyring.set_keyring(TestKeyring())
         result = credentials.pull_env_credential('prod',
                                                  'OS_PASSWORD',
@@ -65,6 +65,19 @@ class TestCredentials(object):
                                                  )
         assert isinstance(result, tuple)
         assert result[0] == 'global:prodpass'
+        if six.PY3:
+            assert result[1] == b'password from TestKeyring'
+        else:
+            assert result[1] == 'password from TestKeyring'
+
+    def test_pull_env_credential_old_style(self):
+        keyring.set_keyring(TestKeyring())
+        result = credentials.pull_env_credential('prod',
+                                                 'OS_PASSWORD',
+                                                 'USE_KEYRING'
+                                                 )
+        assert isinstance(result, tuple)
+        assert result[0] == 'prod:OS_PASSWORD'
         if six.PY3:
             assert result[1] == b'password from TestKeyring'
         else:
