@@ -7,3 +7,4 @@ rpms
 docs/_build
 .coverage
 .tox
+htmlcov
