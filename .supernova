@@ -10,6 +10,7 @@ NOVA_SERVICE_NAME=cloudServersOpenStack
 OS_PASSWORD=my_password
 OS_USERNAME=my_username
 OS_TENANT_NAME=my_tenant
+BYPASS_URL=http://special.bypass.example.com/
 
 [ord]
 SUPERNOVA_GROUP=raxusa
