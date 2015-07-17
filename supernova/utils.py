@@ -23,9 +23,6 @@ from __future__ import print_function
 import click
 
 
-from . import colors
-
-
 def assemble_username(env, param):
     return "{0}:{1}".format(env, param)
 
@@ -78,35 +75,6 @@ def is_valid_group(group_name, nova_creds):
         return True
     else:
         return False
-
-
-def print_valid_envs(valid_envs):
-    """
-    Prints the available environments.
-    """
-    print("[%s] Your valid environments are:" %
-          (colors.gwrap('Found environments')))
-    print("%r" % valid_envs)
-
-
-def warn_missing_nova_args():
-    """
-    Provides a friendly warning for users who forget to provide commands to
-    be passed on to nova.
-    """
-    msg = """
-[%s] No arguments were provided to pass along to nova.
-The supernova script expects to get commands structured like this:
-
-  supernova [environment] [command]
-
-Here are some example commands that may help you get started:
-
-  supernova prod list
-  supernova prod image-list
-  supernova prod keypair-list
-"""
-    print(msg % colors.rwrap('Missing arguments'))
 
 
 def rm_prefix(name):

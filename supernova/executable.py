@@ -78,8 +78,19 @@ def run_supernova(ctx, executable, debug, environment, command):
 
     # Did we get any arguments to pass on to nova?
     if not command:
-        utils.warn_missing_nova_args()
-        sys.exit(1)
+        msg = """
+[%s] No arguments were provided to pass along to nova.
+The supernova script expects to get commands structured like this:
+
+  supernova [environment] [command]
+
+Here are some example commands that may help you get started:
+
+  supernova prod list
+  supernova prod image-list
+  supernova prod keypair-list"""
+        click.echo(msg)
+        ctx.exit()
 
     # Is our environment argument a single environment or a supernova group?
     if utils.is_valid_group(environment, config.nova_creds):

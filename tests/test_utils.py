@@ -56,3 +56,9 @@ class TestUtils(object):
         result = utils.get_envs_in_group('raxusa', nova_creds)
         assert len(result) == 3
         assert 'dfw' in result
+
+    def test_rm_prefix(self):
+        assert utils.rm_prefix('nova_variable') == 'variable'
+        assert utils.rm_prefix('novaclient_variable') == 'variable'
+        assert utils.rm_prefix('os_variable') == 'variable'
+        assert utils.rm_prefix('bare_variable') == 'bare_variable'
