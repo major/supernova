@@ -34,6 +34,51 @@ from . import colors
 from . import credentials
 
 
+def execute_executable(commandline, env_vars):
+    """
+    Executes the executable given by the user.
+
+    Hey, I know this method has a silly name, but I write the code here and
+    I'm silly.
+    """
+    process = subprocess.Popen(shlex.split(commandline),
+                               stdout=sys.stdout,
+                               stderr=subprocess.PIPE,
+                               env=env_vars)
+    process.wait()
+    return process
+
+
+def check_for_executable(supernova_args, env_vars):
+    if 'OS_EXECUTABLE' in env_vars.keys():
+        supernova_args['executable'] = env_vars['OS_EXECUTABLE']
+
+    return supernova_args
+
+
+def check_for_bypass_url(raw_creds):
+    """
+    Return a list of extra args that need to be passed on cmdline to nova.
+    """
+    if 'BYPASS_URL' in raw_creds.keys():
+        args = '--bypass-url {0}'.format(raw_creds['BYPASS_URL'])
+    else:
+        args = ''
+
+    return args
+
+
+def handle_stderr(stderr_pipe):
+    stderr_output = stderr_pipe.read()
+
+    if len(stderr_output) > 0:
+        click.secho("\n__ Error Output {0}".format('_'*62), fg='white',
+                    bold=True)
+        click.echo(stderr_output)
+
+    return True
+
+
 def run_command(nova_creds, nova_args, supernova_args):
     """
     Sets the environment variables for novaclient, runs novaclient, and
@@ -56,11 +101,7 @@ def run_command(nova_creds, nova_args, supernova_args):
         nova_args = '--debug ' + nova_args
 
     # Check for OS_EXECUTABLE
-    try:
-        if env_vars['OS_EXECUTABLE']:
-            supernova_args['executable'] = env_vars['OS_EXECUTABLE']
-    except KeyError:
-        pass
+    supernova_args = check_for_executable(supernova_args, env_vars)
 
     # Print a small message for the user (very helpful for groups)
     msg = "Running %s against %s..." % (supernova_args.get('executable'),
@@ -69,9 +110,8 @@ def run_command(nova_creds, nova_args, supernova_args):
 
     # BYPASS_URL is a weird one, so we need to send it as an argument,
     # not an environment variable.
-    bypass_url_args = credentials.add_bypass_url(nova_creds[nova_env])
-    if bypass_url_args:
-        nova_args = "{0} {1}".format(bypass_url_args, nova_args)
+    bypass_url_args = check_for_bypass_url(nova_creds[nova_env])
+    nova_args = "{0} {1}".format(bypass_url_args, nova_args)
 
     # Call executable and connect stdout to the current terminal
     # so that any unicode characters from the executable's list will be
@@ -81,26 +121,6 @@ def run_command(nova_creds, nova_args, supernova_args):
     commandline = "{0} {1}".format(supernova_args['executable'],
                                    nova_args)
     process = execute_executable(commandline, env_vars)
-
-    stderr_output = process.stderr.read()
-    if len(stderr_output) > 0:
-        click.secho("\n__ Error Output {0}".format('_'*62), fg='white',
-                    bold=True)
-        click.echo(stderr_output)
+    handle_stderr(process.stderr)
 
     return process.returncode
-
-
-def execute_executable(commandline, env_vars):
-    """
-    Executes the executable given by the user.
-
-    Hey, I know this method has a silly name, but I write the code here and
-    I'm silly.
-    """
-    process = subprocess.Popen(shlex.split(commandline),
-                               stdout=sys.stdout,
-                               stderr=subprocess.PIPE,
-                               env=env_vars)
-    process.wait()
-    return process

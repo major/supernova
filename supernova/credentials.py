@@ -29,18 +29,6 @@ import keyring
 from . import utils
 
 
-def add_bypass_url(raw_creds):
-    """
-    Return a list of extra args that need to be passed on cmdline to nova.
-    """
-    if 'BYPASS_URL' in raw_creds.keys():
-        args = '--bypass-url {0}'.format(raw_creds['BYPASS_URL'])
-    else:
-        args = False
-
-    return args
-
-
 def get_user_password(env, param, force=False):
     """
     Allows the user to print the credential for a particular keyring entry
