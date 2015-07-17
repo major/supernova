@@ -34,7 +34,7 @@ from . import colors
 from . import credentials
 
 
-def run_novaclient(nova_creds, nova_args, supernova_args):
+def run_command(nova_creds, nova_args, supernova_args):
     """
     Sets the environment variables for novaclient, runs novaclient, and
     prints the output.
@@ -53,7 +53,7 @@ def run_novaclient(nova_creds, nova_args, supernova_args):
 
     # Check for a debug override
     if supernova_args['debug']:
-        nova_args.insert(0, '--debug')
+        nova_args = '--debug ' + nova_args
 
     # Check for OS_EXECUTABLE
     try:
@@ -73,20 +73,14 @@ def run_novaclient(nova_creds, nova_args, supernova_args):
     if bypass_url_args:
         nova_args = "{0} {1}".format(bypass_url_args, nova_args)
 
-    # Call novaclient and connect stdout/stderr to the current terminal
-    # so that any unicode characters from novaclient's list will be
+    # Call executable and connect stdout to the current terminal
+    # so that any unicode characters from the executable's list will be
     # displayed appropriately.
     #
     # In other news, I hate how python 2.6 does unicode.
     commandline = "{0} {1}".format(supernova_args['executable'],
                                    nova_args)
-    process = subprocess.Popen(shlex.split(commandline),
-                               stdout=sys.stdout,
-                               stderr=subprocess.PIPE,
-                               env=env_vars)
-
-    # Don't exit until we're sure the subprocess has exited
-    process.wait()
+    process = execute_executable(commandline, env_vars)
 
     stderr_output = process.stderr.read()
     if len(stderr_output) > 0:
@@ -95,3 +89,18 @@ def run_novaclient(nova_creds, nova_args, supernova_args):
         click.echo(stderr_output)
 
     return process.returncode
+
+
+def execute_executable(commandline, env_vars):
+    """
+    Executes the executable given by the user.
+
+    Hey, I know this method has a silly name, but I write the code here and
+    I'm silly.
+    """
+    process = subprocess.Popen(shlex.split(commandline),
+                               stdout=sys.stdout,
+                               stderr=subprocess.PIPE,
+                               env=env_vars)
+    process.wait()
+    return process

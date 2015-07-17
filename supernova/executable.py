@@ -101,8 +101,8 @@ def run_supernova(ctx, executable, debug, environment, command):
 
     for env in envs:
         supernova_args['nova_env'] = env
-        returncode = supernova.run_novaclient(nova_creds, command,
-                                              supernova_args)
+        returncode = supernova.run_command(nova_creds, command,
+                                           supernova_args)
 
     # NOTE(major): The return code here is the one that comes back from the
     # OS_EXECUTABLE that supernova runs (by default, 'nova').  When using

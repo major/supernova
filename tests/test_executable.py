@@ -89,7 +89,7 @@ class TestExecutable(object):
     def test_valid_group(self, monkeypatch):
         def mockreturn(nova_creds, nova_args, supernova_args):
             return 0
-        monkeypatch.setattr(supernova, "run_novaclient", mockreturn)
+        monkeypatch.setattr(supernova, "run_command", mockreturn)
         runner = CliRunner()
         command = ['raxusa', 'list']
         result = runner.invoke(executable.run_supernova, command)
