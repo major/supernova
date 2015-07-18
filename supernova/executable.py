@@ -73,13 +73,27 @@ def print_env_list(ctx, param, value):
 @click.pass_context
 def run_supernova(ctx, executable, debug, environment, command):
     """
-      supernova [environment] [command]
+    You can use supernova with many OpenStack clients and avoid the pain of
+    managing multiple sets of environment variables.  Getting started is easy
+    and there's some documentation that can help:
 
-    Here are some example commands that may help you get started:
+      http://supernova.readthedocs.org/
 
-      supernova prod list
-      supernova prod image-list
-      supernova prod keypair-list
+    The first step is to get your environment variables packed into a
+    configuration file, usually in ~/.supernova.  The docs (linked above) have
+    some good examples that you can fill in via copy/paste.
+
+    Once you have a configuration ready to go, replace 'prod' below with one
+    of your configured environments and try some of these commands:
+
+      supernova prod list                 (Lists instances via novaclient)
+      supernova prod image-list           (Lists images via novaclient)
+      supernova prod boot ...             (Boots an instance via novaclient)
+
+    Have questions, bugs, or comments?  Head on over to Github and open an
+    issue or submit a pull request!
+
+      https://github.com/major/supernova
     """
     nova_creds = config.run_config()
 
