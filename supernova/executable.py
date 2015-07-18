@@ -41,7 +41,7 @@ def print_version(ctx, param, value):
     if not value or ctx.resilient_parsing:
         return
     version = pkg_resources.require("supernova")[0].version
-    click.echo("supernova, version %s" % version)
+    click.echo("supernova, version {0}".format(version))
     ctx.exit()
 
 
@@ -50,10 +50,10 @@ def print_env_list(ctx, param, value):
         return
     nova_creds = config.run_config()
     for nova_env in nova_creds.keys():
-        envheader = '-- %s ' % colors.gwrap(nova_env)
-        print(envheader.ljust(86, '-'))
+        envheader = '__ %s ' % click.style(nova_env, fg='green')
+        click.echo(envheader.ljust(86, '_'))
         for param, value in sorted(nova_creds[nova_env].items()):
-            print('  %s: %s' % (param.upper().ljust(25), value))
+            click.echo('  %s: %s' % (param.upper().ljust(25), value))
     ctx.exit()
 
 
