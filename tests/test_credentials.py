@@ -1,6 +1,9 @@
 import keyring.backend
 
 
+import pytest
+
+
 import six
 
 
@@ -69,6 +72,13 @@ class TestCredentials(object):
         keyring.set_keyring(TestKeyring())
         result = credentials.password_set('user', 'password')
         assert not result
+
+    def test_invalid_environment(self):
+        nova_env = "non-existent"
+        nova_creds = {'dfw': None}
+        with pytest.raises(KeyError) as excinfo:
+            credentials.prep_nova_creds(nova_env, nova_creds)
+        assert "was not found" in str(excinfo.value)
 
     def test_pull_env_credential_global(self):
         keyring.set_keyring(TestKeyring())
