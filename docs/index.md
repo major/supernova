@@ -2,6 +2,8 @@
 
 **supernova helps you use novaclient (and other executables) with multiple environments the easy way.**
 
+First time here?  Read the [getting started](gettingstarted.md) section first.
+
 You may like supernova if you regularly have the following problems:
 
   * You hate trying to source multiple novarc files when using nova
