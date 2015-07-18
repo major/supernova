@@ -50,7 +50,14 @@ def execute_executable(commandline, env_vars):
 
 
 def check_for_executable(supernova_args, env_vars):
-    if 'OS_EXECUTABLE' in env_vars.keys():
+    """
+    It's possible that a user might set their custom executable via an
+    environment variable.  If we detect one, we should add it to supernova's
+    arguments ONLY IF an executable wasn't set on the command line.  The
+    command line executable must take priority.
+    """
+    if ('OS_EXECUTABLE' in env_vars.keys() and
+            'executable' not in supernova_args.keys()):
         supernova_args['executable'] = env_vars['OS_EXECUTABLE']
 
     return supernova_args
@@ -69,6 +76,10 @@ def check_for_bypass_url(raw_creds):
 
 
 def handle_stderr(stderr_pipe):
+    """
+    Takes stderr from the command's output and displays it AFTER the stdout
+    is printed by run_command().
+    """
     stderr_output = stderr_pipe.read()
 
     if len(stderr_output) > 0:
@@ -81,13 +92,8 @@ def handle_stderr(stderr_pipe):
 
 def run_command(nova_creds, nova_args, supernova_args):
     """
-    Sets the environment variables for novaclient, runs novaclient, and
-    prints the output.
-
-    NOTE(major): The name of this method is a bit misleading.  By using the
-    OS_EXECUTABLE environment variable or the -x argument, a user can
-    specify a different executable to be used other than the default, which
-    is 'nova'.
+    Sets the environment variables for the executable, runs the executable,
+    and handles the output.
     """
     nova_env = supernova_args['nova_env']
 
