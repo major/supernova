@@ -18,171 +18,111 @@
 Contains the actual class that runs novaclient (or the executable chosen by
 the user)
 """
-from __future__ import print_function
-
-
-from novaclient import client as novaclient
 import os
-import re
+import shlex
 import subprocess
 import sys
 
 
-from . import colors
-from . import utils
-from . import config
+import click
+
+
 from . import credentials
 
 
-class SuperNova(object):
+def execute_executable(commandline, env_vars):
     """
-    Gathers information for novaclient and eventually runs it
+    Executes the executable given by the user.
+
+    Hey, I know this method has a silly name, but I write the code here and
+    I'm silly.
     """
+    process = subprocess.Popen(shlex.split(commandline),
+                               stdout=sys.stdout,
+                               stderr=subprocess.PIPE,
+                               env=env_vars)
+    process.wait()
+    return process
 
-    def __init__(self):
-        config.run_config()
-        self.nova_env = None
-        self.env = os.environ.copy()
 
-    def prep_nova_creds(self):
-        """
-        Finds relevant config options in the supernova config and cleans them
-        up for novaclient.
-        """
-        try:
-            raw_creds = config.nova_creds.items(self.nova_env)
-        except:
-            msg = "[%s] Unable to locate section '%s' in your configuration."
-            print(msg % (colors.rwrap("Failed"), self.nova_env))
-            sys.exit(1)
-        proxy_re = re.compile(r"(^http_proxy|^https_proxy)")
+def check_for_executable(supernova_args, env_vars):
+    """
+    It's possible that a user might set their custom executable via an
+    environment variable.  If we detect one, we should add it to supernova's
+    arguments ONLY IF an executable wasn't set on the command line.  The
+    command line executable must take priority.
+    """
+    if ('OS_EXECUTABLE' in env_vars.keys() and
+            'executable' not in supernova_args.keys()):
+        supernova_args['executable'] = env_vars['OS_EXECUTABLE']
 
-        creds = []
-        for param, value in raw_creds:
+    return supernova_args
 
-            if not proxy_re.match(param):
-                param = param.upper()
 
-            # Get values from the keyring if we find a USE_KEYRING constant
-            if value.startswith("USE_KEYRING"):
-                username, credential = credentials.pull_env_credential(
-                    self.nova_env, param, value)
-            else:
-                credential = value.strip("\"'")
+def check_for_bypass_url(raw_creds):
+    """
+    Return a list of extra args that need to be passed on cmdline to nova.
+    """
+    if 'BYPASS_URL' in raw_creds.keys():
+        args = '--bypass-url {0}'.format(raw_creds['BYPASS_URL'])
+    else:
+        args = ''
 
-            # Make sure we got something valid from the configuration file or
-            # the keyring
-            if not credential:
-                msg = """
-While connecting to %s, supernova attempted to retrieve a credential
-for %s but couldn't find it within the keyring.  If you haven't stored
-credentials for %s yet, try running:
+    return args
 
-    supernova-keyring -s %s
-""" % (self.nova_env, username, username, ' '.join(username.split(':')))
-                print(msg)
-                sys.exit(1)
 
-            creds.append((param, credential))
+def handle_stderr(stderr_pipe):
+    """
+    Takes stderr from the command's output and displays it AFTER the stdout
+    is printed by run_command().
+    """
+    stderr_output = stderr_pipe.read()
 
-        return creds
+    if len(stderr_output) > 0:
+        click.secho("\n__ Error Output {0}".format('_'*62), fg='white',
+                    bold=True)
+        click.echo(stderr_output)
 
-    def prep_shell_environment(self):
-        """
-        Appends new variables to the current shell environment temporarily.
-        """
-        for key, value in self.prep_nova_creds():
-            self.env[key] = value
+    return True
 
-    def prep_extra_args(self):
-        """
-        Return a list of extra args that need to be passed on cmdline to nova.
-        """
-        try:
-            raw_creds = config.nova_creds.items(self.nova_env)
-        except:
-            msg = "[%s] Unable to locate section '%s' in your configuration."
-            print(msg % (colors.rwrap("Failed"), self.nova_env))
-            sys.exit(1)
 
-        args = []
-        for param, value in raw_creds:
-            param = param.upper()
-            if param == 'BYPASS_URL':
-                args += ['--bypass-url', value]
+def run_command(nova_creds, nova_args, supernova_args):
+    """
+    Sets the environment variables for the executable, runs the executable,
+    and handles the output.
+    """
+    nova_env = supernova_args['nova_env']
 
-        return args
+    # Get the environment variables ready
+    env_vars = os.environ.copy()
+    env_vars.update(credentials.prep_shell_environment(nova_env,
+                                                       nova_creds))
 
-    def run_novaclient(self, nova_args, supernova_args):
-        """
-        Sets the environment variables for novaclient, runs novaclient, and
-        prints the output.
+    # Check for a debug override
+    if supernova_args['debug']:
+        nova_args = '--debug ' + nova_args
 
-        NOTE(major): The name of this method is a bit misleading.  By using the
-        OS_EXECUTABLE environment variable or the -x argument, a user can
-        specify a different executable to be used other than the default, which
-        is 'nova'.
-        """
-        # Get the environment variables ready
-        self.prep_shell_environment()
+    # Check for OS_EXECUTABLE
+    supernova_args = check_for_executable(supernova_args, env_vars)
 
-        # Check for a debug override
-        if supernova_args.debug:
-            nova_args.insert(0, '--debug')
+    # Print a small message for the user (very helpful for groups)
+    msg = "Running %s against %s..." % (supernova_args.get('executable'),
+                                        nova_env)
+    click.echo("[%s] %s " % (click.style('SUPERNOVA', fg='green'), msg))
 
-        # Check for OS_EXECUTABLE
-        try:
-            if self.env['OS_EXECUTABLE']:
-                supernova_args.executable = self.env['OS_EXECUTABLE']
-        except KeyError:
-            pass
+    # BYPASS_URL is a weird one, so we need to send it as an argument,
+    # not an environment variable.
+    bypass_url_args = check_for_bypass_url(nova_creds[nova_env])
+    nova_args = "{0} {1}".format(bypass_url_args, nova_args)
 
-        # Print a small message for the user (very helpful for groups)
-        msg = "Running %s against %s..." % (supernova_args.executable,
-                                            self.nova_env)
-        print("[%s] %s " % (colors.gwrap('SUPERNOVA'), msg))
+    # Call executable and connect stdout to the current terminal
+    # so that any unicode characters from the executable's list will be
+    # displayed appropriately.
+    #
+    # In other news, I hate how python 2.6 does unicode.
+    commandline = "{0} {1}".format(supernova_args['executable'],
+                                   nova_args)
+    process = execute_executable(commandline, env_vars)
+    handle_stderr(process.stderr)
 
-        nova_args = self.prep_extra_args() + nova_args
-
-        # Call novaclient and connect stdout/stderr to the current terminal
-        # so that any unicode characters from novaclient's list will be
-        # displayed appropriately.
-        #
-        # In other news, I hate how python 2.6 does unicode.
-        process = subprocess.Popen([supernova_args.executable] + nova_args,
-                                   stdout=sys.stdout,
-                                   stderr=sys.stderr,
-                                   env=self.env)
-
-        # Don't exit until we're sure the subprocess has exited
-        process.wait()
-        return process.returncode
-
-    def get_novaclient(self, env, client_version=3):
-        """
-        Returns python novaclient object authenticated with supernova config.
-        """
-        self.nova_env = env
-        assert utils.is_valid_environment(env), "Env %s not found in "\
-            "supernova configuration file." % env
-        version, creds = self.prep_python_creds(client_version)
-        return novaclient.Client(version, **creds)
-
-    def prep_python_creds(self, client_version=3):
-        """
-        Prepare credentials for python Client instantiation.
-        """
-        creds = dict((utils.rm_prefix(k[0].lower()), k[1])
-                     for k in self.prep_nova_creds())
-        if creds.get('url'):
-            creds['auth_url'] = creds.pop('url')
-        if creds.get('tenant_name'):
-            creds['project_id'] = creds.pop('tenant_name')
-        if creds.get('compute_api_version'):
-            client_version = creds.pop('compute_api_version')
-
-        if client_version == '1.1':
-            if creds.get('password'):
-                creds['api_key'] = creds.pop('password')
-
-        return (client_version, creds)
+    return process.returncode

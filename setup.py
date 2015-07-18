@@ -18,8 +18,11 @@ from setuptools import setup
 
 
 required_packages = [
+    "click",
+    "configobj",
     "keyring",
     "python-novaclient",
+    "six"
 ]
 
 setup(
@@ -30,10 +33,10 @@ setup(
     description="novaclient wrapper for multiple nova environments",
     install_requires=required_packages,
     packages=['supernova'],
-    url='https://github.com/rackerhacker/supernova',
-    entry_points={
-        'console_scripts': [
-            'supernova = supernova.executable:run_supernova',
-            'supernova-keyring = supernova.executable:run_supernova_keyring'],
-        },
+    url='https://github.com/major/supernova',
+    entry_points='''
+        [console_scripts]
+        supernova = supernova.executable:run_supernova
+        supernova-keyring = supernova.executable:run_supernova_keyring
+    '''
     )

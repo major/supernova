@@ -17,73 +17,31 @@
 """
 Handles all of the interactions with the operating system's keyring
 """
-from __future__ import print_function
-
-import getpass
-import keyring
 import re
-import sys
-
-from . import colors
 
 
-def get_user_password(args):
+import keyring
+
+
+from . import utils
+
+
+def get_user_password(env, param, force=False):
     """
     Allows the user to print the credential for a particular keyring entry
     to the screen
     """
-    username = '%s:%s' % (args.env, args.parameter)
+    username = utils.assemble_username(env, param)
 
-    warnstring = colors.rwrap("__ WARNING ".ljust(80, '_'))
-    print("""
-%s
+    if not utils.confirm_credential_display(force):
+        return
 
-If this operation is successful, the credential stored for this username will
-be displayed in your terminal as PLAIN TEXT:
-
-  %s
-
-Seriously.  It will just be hanging out there for anyone to see.  If you have
-any concerns about having this credential displayed on your screen, press
-CTRL-C right now.
-
-%s
-""" % (warnstring, username, warnstring))
-    print("If you are completely sure you want to display it, type 'yes' and ",
-          "press enter:")
-    try:
-        if sys.version_info.major >= 3:
-            confirm = input('')
-        else:
-            confirm = raw_input('')
-    except KeyboardInterrupt:
-        print('')
-        confirm = ''
-    if confirm != 'yes':
-        print("\n[%s] Your keyring was not read or altered.\n" % (
-            colors.rwrap("Canceled")))
-        return False
-
-    try:
-        password = password_get(username)
-    except:
-        password = None
+    # Retrieve the credential from the keychain
+    password = password_get(username)
 
     if password:
-        print("""
-[%s] Found credentials for %s: %s
-""" % (
-            colors.gwrap("Success"), username, password))
-        return True
+        return (username, password)
     else:
-        print("""
-[%s] Unable to retrieve credentials for %s.
-
-It's likely that there aren't any credentials stored for this environment and
-parameter combination.  If you want to set a credential, just run this command:
-
-  supernova-keyring -s %s %s
-""" % (colors.rwrap("Failed"), username, args.env, args.parameter))
         return False
 
 
@@ -93,11 +51,17 @@ def pull_env_credential(env, param, value):
     and returns the username/password combo
     """
     rex = "USE_KEYRING\[([\x27\x22])(.*)\\1\]"
+
+    # This is the old-style, per-environment keyring credential
     if value == "USE_KEYRING":
-        username = "%s:%s" % (env, param)
+        username = utils.assemble_username(env, param)
+
+    # This is the new-style, global keyring credential that can be applied
+    # to multiple environments
     else:
         global_identifier = re.match(rex, value).group(2)
-        username = "%s:%s" % ('global', global_identifier)
+        username = utils.assemble_username('global', global_identifier)
+
     return (username, password_get(username))
 
 
@@ -105,55 +69,18 @@ def password_get(username=None):
     """
     Retrieves a password from the keychain based on the environment and
     configuration parameter pair.
+
+    If this fails, None is returned.
     """
-    try:
-        return keyring.get_password('supernova', username).encode('ascii')
-    except:
-        return False
+    return keyring.get_password('supernova', username).encode('ascii')
 
 
-def set_user_password(args):
+def set_user_password(environment, parameter, password):
     """
     Sets a user's password in the keyring storage
     """
-    print("""
-[%s] Preparing to set a password in the keyring for:
-
-  - Environment  : %s
-  - Parameter    : %s
-
-If this is correct, enter the corresponding credential to store in your keyring
-or press CTRL-D to abort:""" % (colors.gwrap("Keyring operation"), args.env,
-                                args.parameter))
-
-    # Prompt for a password and catch a CTRL-D
-    try:
-        password = getpass.getpass('')
-    except:
-        password = None
-        print()
-
-    # Did we get a password from the prompt?
-    if not password or len(password) < 1:
-        print("\n[%s] No data was altered in your keyring.\n" % (
-            colors.rwrap("Canceled")))
-        sys.exit()
-
-    # Try to store the password
-    username = '%s:%s' % (args.env, args.parameter)
-    try:
-        store_ok = password_set(username, password)
-    except:
-        store_ok = False
-
-    if store_ok:
-        msg = ("[%s] Successfully stored credentials for %s under the "
-               "supernova service.\n")
-        print(msg % (colors.gwrap("Success"), username))
-    else:
-        msg = ("[%s] Unable to store credentials for %s under the "
-               "supernova service.\n")
-        print(msg % (colors.rwrap("Failed"), username))
+    username = '%s:%s' % (environment, parameter)
+    return password_set(username, password)
 
 
 def password_set(username=None, password=None):
@@ -161,8 +88,59 @@ def password_set(username=None, password=None):
     Stores a password in a keychain for a particular environment and
     configuration parameter pair.
     """
-    try:
-        keyring.set_password('supernova', username, password)
+    result = keyring.set_password('supernova', username, password)
+
+    # NOTE: keyring returns None when the storage is successful.  That's weird.
+    if result is None:
         return True
-    except:
+    else:
         return False
+
+
+def prep_shell_environment(nova_env, nova_creds):
+    """
+    Appends new variables to the current shell environment temporarily.
+    """
+    new_env = {}
+
+    for key, value in prep_nova_creds(nova_env, nova_creds):
+        new_env[key] = value
+
+    return new_env
+
+
+def prep_nova_creds(nova_env, nova_creds):
+    """
+    Finds relevant config options in the supernova config and cleans them
+    up for novaclient.
+    """
+    try:
+        raw_creds = nova_creds[nova_env]
+    except KeyError:
+        msg = "{0} was not found in your supernova configuration "\
+              "file".format(nova_env)
+        raise KeyError(msg)
+
+    proxy_re = re.compile(r"(^http_proxy|^https_proxy)")
+
+    creds = []
+    for param, value in raw_creds.items():
+
+        if not proxy_re.match(param):
+            param = param.upper()
+
+        # Get values from the keyring if we find a USE_KEYRING constant
+        if value.startswith("USE_KEYRING"):
+            username, credential = pull_env_credential(nova_env, param,
+                                                       value)
+        else:
+            credential = value.strip("\"'")
+
+        # Make sure we got something valid from the configuration file or
+        # the keyring
+        if not credential:
+            raise LookupError("No matching credentials found in keyring")
+
+        creds.append((param, credential))
+
+    return creds

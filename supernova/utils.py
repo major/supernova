@@ -17,90 +17,82 @@
 """
 Contains many of the shared utility functions
 """
-from __future__ import print_function
-
-from . import colors
-from . import config
+import os
 
 
-def check_deprecated_options(self):
+import click
+
+
+def assemble_username(env, param):
+    return "{0}:{1}".format(env, param)
+
+
+def check_environment_presets():
     """
-    Hunts for deprecated configuration options from previous SuperNova
-    versions.
+    Checks for environment variables that can cause problems with supernova
     """
-    creds = config.nova_creds
-    if creds.has_option(self.nova_env, 'insecure'):
-        print("WARNING: the 'insecure' option is deprecated. ",
-              "Consider using NOVACLIENT_INSECURE=1 instead.")
+    presets = [x for x in os.environ.copy().keys() if x.startswith('NOVA_') or
+               x.startswith('OS_')]
+    if len(presets) < 1:
+        return True
+    else:
+        click.echo("_" * 80)
+        click.echo("*WARNING* Found existing environment variables that may "
+                   "cause conflicts:")
+        for preset in presets:
+            click.echo("  - %s" % preset)
+        click.echo("_" * 80)
+        return False
 
 
-def get_envs_in_group(group_name):
+def confirm_credential_display(force=False):
+    if force:
+        return True
+
+    msg = """
+    [WARNING] Your credential is about to be displayed on screen.
+    If this is really what you want, type 'y' and press enter."""
+
+    result = click.confirm(text=msg)
+    return result
+
+
+def get_envs_in_group(group_name, nova_creds):
     """
     Takes a group_name and finds any environments that have a SUPERNOVA_GROUP
     configuration line that matches the group_name.
     """
     envs = []
-    for section in config.nova_creds.sections():
-        if (config.nova_creds.has_option(section, 'SUPERNOVA_GROUP') and
-                config.nova_creds.get(section,
-                                      'SUPERNOVA_GROUP') == group_name):
+    for section in nova_creds.keys():
+        if ('SUPERNOVA_GROUP' in nova_creds[section] and
+                nova_creds[section]['SUPERNOVA_GROUP'] == group_name):
             envs.append(section)
     return envs
 
 
-def is_valid_environment(env):
+def is_valid_environment(env, nova_creds):
     """
     Checks to see if the configuration file contains a section for our
     requested environment.
     """
-    valid_envs = config.nova_creds.sections()
-    return env in valid_envs
-
-
-def is_valid_group(group_name):
-    """
-    Checks to see if the configuration file contains a SUPERNOVA_GROUP
-    configuration option.
-    """
-    valid_groups = []
-    for section in config.nova_creds.sections():
-        if config.nova_creds.has_option(section, 'SUPERNOVA_GROUP'):
-            valid_groups.append(config.nova_creds.get(section,
-                                                      'SUPERNOVA_GROUP'))
-    valid_groups = list(set(valid_groups))
-    if group_name in valid_groups:
-        return True
+    if env in nova_creds.keys():
+        return env
     else:
         return False
 
 
-def print_valid_envs(valid_envs):
+def is_valid_group(group_name, nova_creds):
     """
-    Prints the available environments.
+    Checks to see if the configuration file contains a SUPERNOVA_GROUP
+    configuration option.
     """
-    print("[%s] Your valid environments are:" %
-          (colors.gwrap('Found environments')))
-    print("%r" % valid_envs)
-
-
-def warn_missing_nova_args():
-    """
-    Provides a friendly warning for users who forget to provide commands to
-    be passed on to nova.
-    """
-    msg = """
-[%s] No arguments were provided to pass along to nova.
-The supernova script expects to get commands structured like this:
-
-  supernova [environment] [command]
-
-Here are some example commands that may help you get started:
-
-  supernova prod list
-  supernova prod image-list
-  supernova prod keypair-list
-"""
-    print(msg % colors.rwrap('Missing arguments'))
+    valid_groups = [value['SUPERNOVA_GROUP'] for key, value in
+                    nova_creds.items() if 'SUPERNOVA_GROUP'
+                    in nova_creds[key].keys()]
+    if group_name in valid_groups:
+        return True
+    else:
+        return False
 
 
 def rm_prefix(name):
