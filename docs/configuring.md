@@ -8,7 +8,9 @@ The following locations are valid configuration files for supernova.
 
 Specifying a configuration file manually is also an option:
 
+```html
     supernova -c ~/secrets/supernova_config production list
+```
 
 In addition to the nova environment variables the config can include a key of _BYPASS_URL_ that will be passed to nova's --bypass-url command line option.
 

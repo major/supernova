@@ -46,8 +46,10 @@ For debug output, supernova accepts `--debug` as a supernova option or as a nova
 ## Custom supernova configuration file locations
 You can specify a custom location for your supernova configuration file if you have it stored in a non-standard directory or if you need to name it differently:
 
+```html
     supernova -c ~/supernova/work.config prod list
     supernova -c ~/supernova/home.config prod list
+```
 
 ## Listing available supernova environments
 
