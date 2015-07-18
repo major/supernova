@@ -17,9 +17,6 @@
 """
 Contains many of the shared utility functions
 """
-from __future__ import print_function
-
-
 import os
 
 
@@ -39,12 +36,12 @@ def check_environment_presets():
     if len(presets) < 1:
         return True
     else:
-        print("_" * 80)
-        print("*WARNING* Found existing environment variables that may "
+        click.echo("_" * 80)
+        click.echo("*WARNING* Found existing environment variables that may "
               "cause conflicts:")
         for preset in presets:
-            print("  - %s" % preset)
-        print("_" * 80)
+            click.echo("  - %s" % preset)
+        click.echo("_" * 80)
         return False
 
 

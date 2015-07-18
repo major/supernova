@@ -17,9 +17,6 @@
 """
 Handles all of the interactions with the operating system's keyring
 """
-from __future__ import print_function
-
-
 import re
 
 

@@ -18,9 +18,6 @@
 Contains the actual class that runs novaclient (or the executable chosen by
 the user)
 """
-from __future__ import print_function
-
-
 import os
 import shlex
 import subprocess
@@ -112,7 +109,7 @@ def run_command(nova_creds, nova_args, supernova_args):
     # Print a small message for the user (very helpful for groups)
     msg = "Running %s against %s..." % (supernova_args.get('executable'),
                                         nova_env)
-    print("[%s] %s " % (colors.gwrap('SUPERNOVA'), msg))
+    click.echo("[%s] %s " % (click.style('SUPERNOVA', fg='green'), msg))
 
     # BYPASS_URL is a weird one, so we need to send it as an argument,
     # not an environment variable.
