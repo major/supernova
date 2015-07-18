@@ -37,3 +37,11 @@ class TestConfig(object):
             result = config.load_config(config_file_override=testcfg)
         assert result is None
         assert "Couldn't find" in str(excinfo.value)
+
+    def test_override_with_non_string(self):
+        testcfg = "/tmp/invalid_file"
+        result = None
+        with pytest.raises(Exception) as excinfo:
+            result = config.load_config(config_file_override=[testcfg])
+        assert result is None
+        assert "must be a string" in str(excinfo.value)
