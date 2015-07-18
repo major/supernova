@@ -59,19 +59,21 @@ def print_env_list(ctx, param, value):
 
 @click.command()
 @click.option('--executable', '-x', default='nova',
-              help='command to run', show_default=True)
-@click.option('--debug', '-d', default='False', is_flag=True,
+              help='Command to run', show_default=True)
+@click.option('--debug', '-d', default=False, is_flag=True,
               help="Enable debugging", show_default=True)
+@click.option('--conf', '-c', default=None, is_flag=False,
+              help="Manually specify a supernova configuration file")
 @click.argument('environment', nargs=1)
 @click.argument('command')
-@click.option('--version', is_flag=True, callback=print_version,
+@click.option('--version', '-v', is_flag=True, callback=print_version,
               expose_value=False, is_eager=False, default=False,
               help="Print version number")
-@click.option('--list', is_flag=True, callback=print_env_list,
+@click.option('--list', '-l', is_flag=True, callback=print_env_list,
               expose_value=False, is_eager=False, default=False,
               help="List all configured environments")
 @click.pass_context
-def run_supernova(ctx, executable, debug, environment, command):
+def run_supernova(ctx, executable, debug, environment, command, conf):
     """
     You can use supernova with many OpenStack clients and avoid the pain of
     managing multiple sets of environment variables.  Getting started is easy
@@ -95,8 +97,11 @@ def run_supernova(ctx, executable, debug, environment, command):
 
       https://github.com/major/supernova
     """
-    nova_creds = config.run_config()
+    # Retrieve our credentials from the configuration file
+    nova_creds = config.run_config(config_file_override=conf)
 
+    # Warn the user if there are potentially conflicting environment variables
+    # already set in the user's environment.
     utils.check_environment_presets()
 
     # Is our environment argument a single environment or a supernova group?
@@ -110,6 +115,8 @@ def run_supernova(ctx, executable, debug, environment, command):
         'executable': executable
     }
 
+    # If the user specified a single environment, we need to verify that the
+    # environment actually exists in their configuration file.
     if len(envs) == 1 and not utils.is_valid_environment(envs[0], nova_creds):
         msg = ("\nCouldn't find an environment called '{0}' in your "
                "configuration file.\nTry supernova --list to see all "
@@ -117,6 +124,8 @@ def run_supernova(ctx, executable, debug, environment, command):
         click.echo(msg)
         ctx.exit(1)
 
+    # Loop through the single environment (if the user specified one) or all
+    # of the environments in a supernova group (if the user specified a group).
     for env in envs:
         supernova_args['nova_env'] = env
         returncode = supernova.run_command(nova_creds, command,

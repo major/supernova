@@ -21,13 +21,13 @@ sanity checks
 import os
 
 
+import six
+
+
 from configobj import ConfigObj
 
 
-nova_creds = None
-
-
-def run_config(config_file_override=None):
+def run_config(config_file_override=False):
     """
     Runs sanity checks and prepares the global nova_creds variable
     """
@@ -35,7 +35,7 @@ def run_config(config_file_override=None):
     return nova_creds
 
 
-def load_config(config_file_override=None):
+def load_config(config_file_override=False):
     """
     Pulls the supernova configuration file and reads it
     """
@@ -47,16 +47,16 @@ def load_config(config_file_override=None):
     return nova_creds
 
 
-def get_config_file(override_files=None):
+def get_config_file(override_files=False):
     """
     Looks for the most specific configuration file available.  An override
     can be provided as a string if needed.
     """
     if override_files:
-        if isinstance(override_files, list):
-            possible_configs = override_files
+        if isinstance(override_files, six.string_types):
+            possible_configs = [override_files]
         else:
-            raise Exception("Config file override must be a list of paths")
+            raise Exception("Config file override must be a string")
     else:
         xdg_config_home = os.environ.get('XDG_CONFIG_HOME') or \
             os.path.expanduser('~/.config')
