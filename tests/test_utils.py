@@ -38,31 +38,31 @@ class TestUtils(object):
 
     def test_is_valid_environment_success(self):
         testcfg = "{0}/tests/configs/rax_without_keyring".format(os.getcwd())
-        nova_creds = config.load_config([testcfg])
+        nova_creds = config.load_config(testcfg)
         result = utils.is_valid_environment('dfw', nova_creds)
         assert result
 
     def test_is_valid_environment_failure(self):
         testcfg = "{0}/tests/configs/rax_without_keyring".format(os.getcwd())
-        nova_creds = config.load_config([testcfg])
+        nova_creds = config.load_config(testcfg)
         result = utils.is_valid_environment('non-existent', nova_creds)
         assert not result
 
     def test_is_valid_group_success(self):
         testcfg = "{0}/tests/configs/rax_without_keyring".format(os.getcwd())
-        nova_creds = config.load_config([testcfg])
+        nova_creds = config.load_config(testcfg)
         result = utils.is_valid_group('raxusa', nova_creds)
         assert result
 
     def test_is_valid_group_failure(self):
         testcfg = "{0}/tests/configs/rax_without_keyring".format(os.getcwd())
-        nova_creds = config.load_config([testcfg])
+        nova_creds = config.load_config(testcfg)
         result = utils.is_valid_group('non-existent', nova_creds)
         assert not result
 
     def test_get_envs_in_group(self):
         testcfg = "{0}/tests/configs/rax_without_keyring".format(os.getcwd())
-        nova_creds = config.load_config([testcfg])
+        nova_creds = config.load_config(testcfg)
         result = utils.get_envs_in_group('raxusa', nova_creds)
         assert len(result) == 3
         assert 'dfw' in result

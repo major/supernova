@@ -28,7 +28,7 @@ class TestSuperNova(object):
         #     return False
         # monkeypatch.setattr(supernova, "execute_executable", mockreturn)
         testcfg = "{0}/tests/configs/rax_without_keyring".format(os.getcwd())
-        nova_creds = config.load_config([testcfg])
+        nova_creds = config.load_config(testcfg)
         supernova_args = {
             'debug': False,
             'executable': 'echo',
@@ -39,7 +39,7 @@ class TestSuperNova(object):
 
     def test_run_novaclient_with_debug(self):
         testcfg = "{0}/tests/configs/rax_without_keyring".format(os.getcwd())
-        nova_creds = config.load_config([testcfg])
+        nova_creds = config.load_config(testcfg)
         supernova_args = {
             'debug': True,
             'executable': 'echo',

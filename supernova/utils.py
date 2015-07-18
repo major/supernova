@@ -38,7 +38,7 @@ def check_environment_presets():
     else:
         click.echo("_" * 80)
         click.echo("*WARNING* Found existing environment variables that may "
-              "cause conflicts:")
+                   "cause conflicts:")
         for preset in presets:
             click.echo("  - %s" % preset)
         click.echo("_" * 80)

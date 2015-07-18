@@ -30,7 +30,6 @@ import click
 import pkg_resources
 
 
-from . import colors
 from . import config
 from . import credentials
 from . import supernova

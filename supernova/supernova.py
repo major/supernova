@@ -27,7 +27,6 @@ import sys
 import click
 
 
-from . import colors
 from . import credentials
 
 

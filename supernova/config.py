@@ -21,10 +21,10 @@ sanity checks
 import os
 
 
-import six
-
-
 from configobj import ConfigObj
+
+
+import six
 
 
 def run_config(config_file_override=False):
