@@ -5,7 +5,7 @@
 %endif
 
 Name:           supernova
-Version:        1.0.7
+Version:        2.0.0
 Release:        1%{?dist}
 Summary:        Use novaclient with multiple OpenStack nova environments the easy way
 License:        ASLv2
@@ -13,10 +13,13 @@ URL:            https://github.com/major/supernova
 Source0:        https://pypi.python.org/packages/source/s/%{name}/%{name}-%{version}.tar.gz
 BuildArch:      noarch
 BuildRequires:  python-setuptools
+Requires:       python-click
+Requires:       python-configobj
 Requires:       python-keyring
 Requires:       python-novaclient
 Requires:       pycryptopp
 Requires:       python-simplejson
+Requires:       python-six
 Requires:       python-iso8601
 
 
