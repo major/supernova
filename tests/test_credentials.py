@@ -80,6 +80,50 @@ class TestCredentials(object):
             credentials.prep_nova_creds(nova_env, nova_creds)
         assert "was not found" in str(excinfo.value)
 
+    def test_uppercase_credentials(self):
+        nova_env = 'prod'
+        nova_creds = {
+            'prod': {
+                'key': 'value'
+            }
+        }
+        result = credentials.prep_nova_creds(nova_env, nova_creds)
+        assert result[0][0] == 'KEY'
+
+    def test_lowercase_credentials(self):
+        nova_env = 'prod'
+        nova_creds = {
+            'prod': {
+                'http_proxy': 'value'
+            }
+        }
+        result = credentials.prep_nova_creds(nova_env, nova_creds)
+        assert result[0][0] == 'http_proxy'
+
+    def test_retrieve_values_from_keyring(self):
+        nova_env = 'prod'
+        nova_creds = {
+            'prod': {
+                'OS_PASSWORD': 'USE_KEYRING'
+            }
+        }
+        result = credentials.prep_nova_creds(nova_env, nova_creds)
+        assert result[0][1] == "password from TestKeyring"
+
+    def test_retrieve_values_from_keyring_failure(self, monkeypatch):
+        def mockreturn(nova_env, param, value):
+            return ('useername', False)
+        monkeypatch.setattr(credentials, "pull_env_credential", mockreturn)
+        nova_env = 'prod'
+        nova_creds = {
+            'prod': {
+                'OS_PASSWORD': 'USE_KEYRING'
+            }
+        }
+        with pytest.raises(LookupError) as excinfo:
+            credentials.prep_nova_creds(nova_env, nova_creds)
+        assert "No matching credentials" in str(excinfo.value)
+
     def test_pull_env_credential_global(self):
         keyring.set_keyring(TestKeyring())
         result = credentials.pull_env_credential('prod',
