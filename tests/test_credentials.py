@@ -108,7 +108,10 @@ class TestCredentials(object):
             }
         }
         result = credentials.prep_nova_creds(nova_env, nova_creds)
-        assert result[0][1] == "password from TestKeyring"
+        if six.PY3:
+            assert result[0][1] == b"password from TestKeyring"
+        else:
+            assert result[0][1] == "password from TestKeyring"
 
     def test_retrieve_values_from_keyring_failure(self, monkeypatch):
         def mockreturn(nova_env, param, value):
