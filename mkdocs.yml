@@ -1,7 +1,8 @@
 site_name: supernova
 pages:
   - Home: index.md
-  - Rackspace Quick Start: raxquickstart.md
+  - Getting started: gettingstarted.md
+  - Rackspace quick start: raxquickstart.md
   - Installing supernova: installation.md
   - Configuration: configuring.md
   - Usage: usingsupernova.md
