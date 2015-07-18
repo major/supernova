@@ -22,6 +22,7 @@ If any of these complaints ring true, **supernova is for you**. supernova manage
 ## Contents
 
 *   Using supernova with Rackspace Cloud? Here's a [quick guide](raxquickstart).
+*   [Getting started](gettingstarted.md)
 *   [Installing supernova](installation) for the first time
 *   [Configuration guide](configuring)
 *   Making requests [using supernova](usingsupernova)
