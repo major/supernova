@@ -43,6 +43,12 @@ For debug output, supernova accepts `--debug` as a supernova option or as a nova
 
 ***Be careful with sharing debug output since many clients will print credentials in plain text even if the credentials are not stored in plain text.***
 
+## Custom supernova configuration file locations
+You can specify a custom location for your supernova configuration file if you have it stored in a non-standard directory or if you need to name it differently:
+
+    supernova -c ~/supernova/work.config prod list
+    supernova -c ~/supernova/home.config prod list
+
 ## Listing available supernova environments
 
 There's a convenience function provided that will dump out your parsed supernova configuration file to the screen::

@@ -6,9 +6,11 @@ The following locations are valid configuration files for supernova.
   * ~/.supernova
   * ./.supernova
 
-A complete list of nova environment variables can be located here_.
+Specifying a configuration file manually is also an option:
 
-In addition to the nova environment variables the config can include a key of 'BYPASS_URL' that will be passed to nova's --bypass-url command line option.
+    supernova -c ~/secrets/supernova_config production list
+
+In addition to the nova environment variables the config can include a key of _BYPASS_URL_ that will be passed to nova's --bypass-url command line option.
 
 ## Working with keyring storage
 
