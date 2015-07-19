@@ -1,3 +1,4 @@
 include contrib/*.bash
+include mkdocs.yml
 recursive-include docs *
 recursive-include example_configs *
