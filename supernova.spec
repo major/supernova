@@ -47,6 +47,9 @@ novarc's or mucking with environment variables.
 
 
 %changelog
+* Tue Jul 21 2015 Major Hayden <major@mhtx.net> - 2.0.0-1
+- Version bump to 2.0.0
+
 * Tue Oct 28 2014 Jason DeTiberus <jdetiber@redhat.com> - 1.0.7-1
 - version bump to 1.0.7
 
