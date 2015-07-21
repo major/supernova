@@ -56,7 +56,16 @@ def print_env_list(ctx, param, value):
     ctx.exit()
 
 
-@click.command()
+# NOTE(major): This tells click to allow us to put arguments/options after
+# the environment is specified.  See the note just before the
+# supernova.run_command() call below for more clarity.
+command_settings = {
+    'ignore_unknown_options': True,
+    'allow_extra_args': True
+}
+
+
+@click.command(context_settings=command_settings)
 @click.option('--executable', '-x', default='nova',
               help='Command to run', show_default=True)
 @click.option('--debug', '-d', default=False, is_flag=True,
@@ -127,6 +136,12 @@ def run_supernova(ctx, executable, debug, environment, command, conf):
     # of the environments in a supernova group (if the user specified a group).
     for env in envs:
         supernova_args['nova_env'] = env
+
+        # NOTE(major): Click tries to eat the additional arguments/options
+        # provided after the environment on the command line.  One argument
+        # ends up in the command variable and the leftovers are in ctx.args.
+        command = ' '.join([command] + ctx.args)
+
         returncode = supernova.run_command(nova_creds, command,
                                            supernova_args)
 
