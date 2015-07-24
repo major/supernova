@@ -134,12 +134,13 @@ def run_supernova(ctx, executable, debug, environment, command, conf):
         click.echo(msg)
         ctx.exit(1)
 
+    nova_args = list(command)
+
     # Loop through the single environment (if the user specified one) or all
     # of the environments in a supernova group (if the user specified a group).
     for env in envs:
         supernova_args['nova_env'] = env
-        command = ' '.join(command)
-        returncode = supernova.run_command(nova_creds, command,
+        returncode = supernova.run_command(nova_creds, nova_args,
                                            supernova_args)
 
     # NOTE(major): The return code here is the one that comes back from the

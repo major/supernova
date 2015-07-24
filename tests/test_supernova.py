@@ -10,8 +10,17 @@ class TestSuperNova(object):
         raw_creds = {
             "BYPASS_URL": 'some_url'
         }
-        result = supernova.check_for_bypass_url(raw_creds)
-        assert result == "--bypass-url some_url"
+        nova_args = []
+        result = supernova.check_for_bypass_url(raw_creds, nova_args)
+        assert result == ['--bypass-url', 'some_url']
+
+    def test_for_no_bypass_url(self):
+        raw_creds = {
+            "NO_BYPASS_URL_HERE": 'some_url'
+        }
+        nova_args = []
+        result = supernova.check_for_bypass_url(raw_creds, nova_args)
+        assert result == []
 
     def test_for_executable_env_var(self):
         env_vars = {
@@ -34,7 +43,7 @@ class TestSuperNova(object):
             'executable': 'echo',
             'nova_env': 'dfw'
         }
-        result = supernova.run_command(nova_creds, 'list', supernova_args)
+        result = supernova.run_command(nova_creds, ['list'], supernova_args)
         assert result == 0
 
     def test_run_novaclient_with_debug(self):
@@ -45,7 +54,7 @@ class TestSuperNova(object):
             'executable': 'echo',
             'nova_env': 'dfw'
         }
-        result = supernova.run_command(nova_creds, 'list', supernova_args)
+        result = supernova.run_command(nova_creds, ['list'], supernova_args)
         assert result == 0
 
     def test_handle_stderr(self, tmpdir, capsys):

@@ -19,7 +19,6 @@ Contains the actual class that runs novaclient (or the executable chosen by
 the user)
 """
 import os
-import shlex
 import subprocess
 import sys
 
@@ -30,14 +29,14 @@ import click
 from . import credentials
 
 
-def execute_executable(commandline, env_vars):
+def execute_executable(nova_args, env_vars):
     """
     Executes the executable given by the user.
 
     Hey, I know this method has a silly name, but I write the code here and
     I'm silly.
     """
-    process = subprocess.Popen(shlex.split(commandline),
+    process = subprocess.Popen(nova_args,
                                stdout=sys.stdout,
                                stderr=subprocess.PIPE,
                                env=env_vars)
@@ -59,16 +58,15 @@ def check_for_executable(supernova_args, env_vars):
     return supernova_args
 
 
-def check_for_bypass_url(raw_creds):
+def check_for_bypass_url(raw_creds, nova_args):
     """
     Return a list of extra args that need to be passed on cmdline to nova.
     """
     if 'BYPASS_URL' in raw_creds.keys():
-        args = '--bypass-url {0}'.format(raw_creds['BYPASS_URL'])
-    else:
-        args = ''
+        bypass_args = ['--bypass-url', raw_creds['BYPASS_URL']]
+        nova_args = bypass_args + nova_args
 
-    return args
+    return nova_args
 
 
 def handle_stderr(stderr_pipe):
@@ -100,7 +98,11 @@ def run_command(nova_creds, nova_args, supernova_args):
 
     # Check for a debug override
     if supernova_args['debug']:
-        nova_args = '--debug ' + nova_args
+        nova_args.insert(0, '--debug ')
+
+    # BYPASS_URL is a weird one, so we need to send it as an argument,
+    # not an environment variable.
+    nova_args = check_for_bypass_url(nova_creds[nova_env], nova_args)
 
     # Check for OS_EXECUTABLE
     supernova_args = check_for_executable(supernova_args, env_vars)
@@ -110,19 +112,13 @@ def run_command(nova_creds, nova_args, supernova_args):
                                         nova_env)
     click.echo("[%s] %s " % (click.style('SUPERNOVA', fg='green'), msg))
 
-    # BYPASS_URL is a weird one, so we need to send it as an argument,
-    # not an environment variable.
-    bypass_url_args = check_for_bypass_url(nova_creds[nova_env])
-    nova_args = "{0} {1}".format(bypass_url_args, nova_args)
-
     # Call executable and connect stdout to the current terminal
     # so that any unicode characters from the executable's list will be
     # displayed appropriately.
     #
     # In other news, I hate how python 2.6 does unicode.
-    commandline = "{0} {1}".format(supernova_args['executable'],
-                                   nova_args)
-    process = execute_executable(commandline, env_vars)
+    nova_args.insert(0, supernova_args['executable'])
+    process = execute_executable(nova_args, env_vars)
     handle_stderr(process.stderr)
 
     return process.returncode
