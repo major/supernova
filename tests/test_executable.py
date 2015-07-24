@@ -34,10 +34,12 @@ class TestExecutable(object):
 
     def test_missing_command(self):
         runner = CliRunner()
-        command = ['environment']
+        command = ['dfw']
         result = runner.invoke(executable.run_supernova, command)
-        assert result.exit_code == 2
-        assert "Usage" in result.output
+        from pprint import pprint
+        pprint(result)
+        assert result.exit_code == 1
+        assert "Missing arguments" in result.output
 
     def test_invalid_env(self):
         runner = CliRunner()

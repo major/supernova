@@ -18,9 +18,6 @@
 Contains the functions needed for supernova and supernova-keyring commands
 to run
 """
-from __future__ import print_function
-
-
 import sys
 
 
@@ -61,7 +58,6 @@ def print_env_list(ctx, param, value):
 # supernova.run_command() call below for more clarity.
 command_settings = {
     'ignore_unknown_options': True,
-    'allow_extra_args': True
 }
 
 
@@ -73,7 +69,7 @@ command_settings = {
 @click.option('--conf', '-c', default=None, is_flag=False,
               help="Manually specify a supernova configuration file")
 @click.argument('environment', nargs=1)
-@click.argument('command')
+@click.argument('command', nargs=-1)
 @click.option('--version', '-v', is_flag=True, callback=print_version,
               expose_value=False, is_eager=False, default=False,
               help="Print version number")
@@ -132,16 +128,17 @@ def run_supernova(ctx, executable, debug, environment, command, conf):
         click.echo(msg)
         ctx.exit(1)
 
+    if len(command) == 0:
+        msg = ("\nMissing arguments to pass to executable  Run supernova "
+               "--help for examples.\n".format(envs[0]))
+        click.echo(msg)
+        ctx.exit(1)
+
     # Loop through the single environment (if the user specified one) or all
     # of the environments in a supernova group (if the user specified a group).
     for env in envs:
         supernova_args['nova_env'] = env
-
-        # NOTE(major): Click tries to eat the additional arguments/options
-        # provided after the environment on the command line.  One argument
-        # ends up in the command variable and the leftovers are in ctx.args.
-        command = ' '.join([command] + ctx.args)
-
+        command = ' '.join(command)
         returncode = supernova.run_command(nova_creds, command,
                                            supernova_args)
 
