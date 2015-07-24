@@ -7,7 +7,7 @@
 %endif
 
 Name:           python-supernova
-Version:        2.0.2
+Version:        2.0.3
 Release:        1%{?dist}
 Summary:        Use novaclient with multiple OpenStack nova environments the easy way
 License:        ASLv2
@@ -91,6 +91,9 @@ popd
 %endif
 
 %changelog
+* Fri Jul 24 2015 Major Hayden <major@mhtx.net> - 2.0.3-1
+* Version bump
+
 * Tue Jul 21 2015 Major Hayden <major@mhtx.net> - 2.0.2-1
 * Version bump
 
