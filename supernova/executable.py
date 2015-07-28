@@ -62,7 +62,7 @@ command_settings = {
 
 
 @click.command(context_settings=command_settings)
-@click.option('--executable', '-x', default='nova',
+@click.option('--executable', '-x', default='default',
               help='Command to run', show_default=True)
 @click.option('--debug', '-d', default=False, is_flag=True,
               help="Enable debugging", show_default=True)
