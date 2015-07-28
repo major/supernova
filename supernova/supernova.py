@@ -52,8 +52,10 @@ def check_for_executable(supernova_args, env_vars):
     command line executable must take priority.
     """
     if ('OS_EXECUTABLE' in env_vars.keys() and
-            'executable' not in supernova_args.keys()):
+            supernova_args['executable'] == 'default'):
         supernova_args['executable'] = env_vars['OS_EXECUTABLE']
+    elif supernova_args['executable'] == 'default':
+        supernova_args['executable'] = 'nova'
 
     return supernova_args
 
@@ -95,7 +97,6 @@ def run_command(nova_creds, nova_args, supernova_args):
     env_vars = os.environ.copy()
     env_vars.update(credentials.prep_shell_environment(nova_env,
                                                        nova_creds))
-
     # Check for a debug override
     if supernova_args['debug']:
         nova_args.insert(0, '--debug ')
