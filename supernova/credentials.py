@@ -72,7 +72,14 @@ def password_get(username=None):
 
     If this fails, None is returned.
     """
-    return keyring.get_password('supernova', username).encode('ascii')
+    password = keyring.get_password('supernova', username)
+    if password is None:
+        split_username = tuple(username.split(':'))
+        msg = ("Couldn't find a credential for {0}:{1}. You need to set one "
+               "with: supernova-keyring -s {0} {1}").format(*split_username)
+        raise LookupError(msg)
+    else:
+        return password.encode('ascii')
 
 
 def set_user_password(environment, parameter, password):

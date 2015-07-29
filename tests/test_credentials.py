@@ -60,6 +60,14 @@ class TestCredentials(object):
         else:
             assert result == 'password from TestKeyring'
 
+    def test_password_get_failure(self, monkeypatch):
+        def mockreturn(self, username, password):
+            return None
+        monkeypatch.setattr(TestKeyring, "get_password", mockreturn)
+        with pytest.raises(LookupError) as excinfo:
+            credentials.password_get('global:something')
+        assert "Couldn't find a credential" in str(excinfo.value)
+
     def test_password_set(self):
         keyring.set_keyring(TestKeyring())
         result = credentials.password_set('user', 'password')
