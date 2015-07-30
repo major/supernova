@@ -51,14 +51,13 @@ def check_for_executable(supernova_args, env_vars):
     arguments ONLY IF an executable wasn't set on the command line.  The
     command line executable must take priority.
     """
+    exe = supernova_args.get('executable', 'default')
+    if exe != 'default':
+        return supernova_args
     if 'OS_EXECUTABLE' in env_vars.keys():
-        if 'executable' not in supernova_args.keys():
-            supernova_args['executable'] = env_vars['OS_EXECUTABLE']
-        elif supernova_args['executable'] == 'default':
-            supernova_args['executable'] = env_vars['OS_EXECUTABLE']
-        else:
-            supernova_args['executable'] = 'nova'
-
+        supernova_args['executable'] = env_vars['OS_EXECUTABLE']
+        return supernova_args
+    supernova_args['executable'] = 'nova'
     return supernova_args
 
 
