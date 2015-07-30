@@ -34,20 +34,14 @@ Here's how we're already doing that in the [Rackspace example configuration](htt
     [dfw]
     ... snip ...
     OS_PASSWORD=USE_KEYRING['RackspaceAccountAPIKey']
-    OS_USERNAME=USE_KEYRING['RackspaceAccountUser']
-    OS_TENANT_NAME=USE_KEYRING['RackspaceAccountDDI']
 
     [ord]
     ... snip ...
     OS_PASSWORD=USE_KEYRING['RackspaceAccountAPIKey']
-    OS_USERNAME=USE_KEYRING['RackspaceAccountUser']
-    OS_TENANT_NAME=USE_KEYRING['RackspaceAccountDDI']
 
     [iad]
     ... snip ...
     OS_PASSWORD=USE_KEYRING['RackspaceAccountAPIKey']
-    OS_USERNAME=USE_KEYRING['RackspaceAccountUser']
-    OS_TENANT_NAME=USE_KEYRING['RackspaceAccountDDI']
 
 You can set global credentials with supernova-keyring:
 

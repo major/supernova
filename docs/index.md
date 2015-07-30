@@ -9,7 +9,7 @@ You may like supernova if you regularly have the following problems:
   * You hate trying to source multiple novarc files when using nova
   * You get your terminals confused and do the wrong things in the wrong nova environment
   * You don't like remembering things
-  * You want to keep sensitive API keys and passwords out of plain text configuration files (see the [keyring](keyring) section)
+  * You want to keep sensitive API keys and passwords out of plain text configuration files (see the keyring documentation)
   * You need to share common skeleton environment variables for nova with your teams
 
 If any of these complaints ring true, **supernova is for you**. supernova manages multiple nova environments without sourcing novarc files or mucking with environment variables.
@@ -21,9 +21,9 @@ If any of these complaints ring true, **supernova is for you**. supernova manage
 
 ## Contents
 
-*   Using supernova with Rackspace Cloud? Here's a [quick guide](raxquickstart).
+*   Using supernova with Rackspace Cloud? Here's a [quick guide](raxquickstart.md).
 *   [Getting started](gettingstarted.md)
-*   [Installing supernova](installation) for the first time
-*   [Configuration guide](configuring)
-*   Making requests [using supernova](usingsupernova)
-*   Having trouble? Check the [troubleshooting guide](troubleshooting).
+*   [Installing supernova](installation.md) for the first time
+*   [Configuration guide](configuring.md)
+*   Making requests [using supernova](usingsupernova.md)
+*   Having trouble? Check the [troubleshooting guide](troubleshooting.md).
