@@ -4,9 +4,7 @@ If you're already a Rackspace customer, you can get started quickly with superno
 
     pip install supernova rackspace-novaclient
     wget -O ~/.supernova http://bit.ly/raxsupernova
-    supernova-keyring -s global RackspaceAccountUser
     supernova-keyring -s global RackspaceAccountAPIKey
-    supernova-keyring -s global RackspaceAccountDDI
     supernova dfw list
 
 ## Break it down
@@ -20,11 +18,9 @@ There's a [Rackspace example configuration](http://bit.ly/raxsupernova) file in 
 
     wget -O ~/.supernova http://bit.ly/raxsupernova
 
-One of supernova's features is the ability to store sensitive data in your operating system's keyring.  This also makes it handy when you want to re-use usernames, account numbers and passwords across multiple environments.  We add that data to the keyring with these commands:
+One of supernova's features is the ability to store sensitive data in your operating system's keyring.  This also makes it handy when you want to re-use  passwords across multiple environments.  We add that data to the keyring with these commands:
 
-    supernova-keyring -s global RackspaceAccountUser
     supernova-keyring -s global RackspaceAccountAPIKey
-    supernova-keyring -s global RackspaceAccountDDI
 
 Finally, we can test our configuration by listing our current instances in the DFW region:
 

@@ -1,11 +1,16 @@
 # To begin using this sample configuration file, drop it into ~/.supernova and
-# run these commands to add credentials to your keyring:
+# run this command to add credentials to your keyring:
 #
-#    supernova-keyring -s global RackspaceAccountUser
 #    supernova-keyring -s global RackspaceAccountAPIKey
-#    supernova-keyring -s global RackspaceAccountDDI
 #
-# "RackspaceAccountDDI" is your Rackspace account number and you can find it
+# If you'd like to get started without using keyring storage, you can paste
+# your credentials directly into this configuration file like this:
+#
+#    OS_PASSWORD=<paste your API key here>
+#
+# That's a less secure method, but it's faster to get started.
+#
+# OS_TENANT_NAME is your Rackspace account number and you can find it
 # at the top right of your screen when you log in here:
 #
 #    https://mycloud.rackspace.com/
@@ -18,8 +23,8 @@ NOVA_RAX_AUTH=1
 OS_REGION_NAME=DFW
 NOVA_SERVICE_NAME=cloudServersOpenStack
 OS_PASSWORD=USE_KEYRING['RackspaceAccountAPIKey']
-OS_USERNAME=USE_KEYRING['RackspaceAccountUser']
-OS_TENANT_NAME=USE_KEYRING['RackspaceAccountDDI']
+OS_USERNAME=my_cloud_username
+OS_TENANT_NAME=1234567
 
 [ord]
 OS_AUTH_SYSTEM=rackspace
@@ -29,8 +34,8 @@ NOVA_RAX_AUTH=1
 OS_REGION_NAME=ORD
 NOVA_SERVICE_NAME=cloudServersOpenStack
 OS_PASSWORD=USE_KEYRING['RackspaceAccountAPIKey']
-OS_USERNAME=USE_KEYRING['RackspaceAccountUser']
-OS_TENANT_NAME=USE_KEYRING['RackspaceAccountDDI']
+OS_USERNAME=my_cloud_username
+OS_TENANT_NAME=1234567
 
 [iad]
 OS_AUTH_SYSTEM=rackspace
@@ -40,8 +45,8 @@ NOVA_RAX_AUTH=1
 OS_REGION_NAME=IAD
 NOVA_SERVICE_NAME=cloudServersOpenStack
 OS_PASSWORD=USE_KEYRING['RackspaceAccountAPIKey']
-OS_USERNAME=USE_KEYRING['RackspaceAccountUser']
-OS_TENANT_NAME=USE_KEYRING['RackspaceAccountDDI']
+OS_USERNAME=my_cloud_username
+OS_TENANT_NAME=1234567
 
 [syd]
 OS_AUTH_SYSTEM=rackspace
@@ -51,8 +56,8 @@ NOVA_RAX_AUTH=1
 OS_REGION_NAME=SYD
 NOVA_SERVICE_NAME=cloudServersOpenStack
 OS_PASSWORD=USE_KEYRING['RackspaceAccountAPIKey']
-OS_USERNAME=USE_KEYRING['RackspaceAccountUser']
-OS_TENANT_NAME=USE_KEYRING['RackspaceAccountDDI']
+OS_USERNAME=my_cloud_username
+OS_TENANT_NAME=1234567
 
 [hkg]
 OS_AUTH_SYSTEM=rackspace
@@ -62,5 +67,5 @@ NOVA_RAX_AUTH=1
 OS_REGION_NAME=HKG
 NOVA_SERVICE_NAME=cloudServersOpenStack
 OS_PASSWORD=USE_KEYRING['RackspaceAccountAPIKey']
-OS_USERNAME=USE_KEYRING['RackspaceAccountUser']
-OS_TENANT_NAME=USE_KEYRING['RackspaceAccountDDI']
+OS_USERNAME=my_cloud_username
+OS_TENANT_NAME=1234567

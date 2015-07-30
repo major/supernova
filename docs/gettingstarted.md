@@ -44,7 +44,7 @@ Simply add another configuration section to your configuration file and change *
 Of course, it's highly recommended to use keyrings for storing your credentials.  That's discussed on the [Configuration](configuring.md) page of the documentation.
 
 ### Ready to go
-When you run supernova, it parses your configuration file and looks for the configuration options associated with the environment you specified.  If you specified a supernova group (more on that in [Usage](usage.md)), it will find all of the matching environments and run the executable against them one by one.
+When you run supernova, it parses your configuration file and looks for the configuration options associated with the environment you specified.  If you specified a supernova group (more on that in [Usage](usingsupernova.md)), it will find all of the matching environments and run the executable against them one by one.
 
 If any of those configuration items call for a password from the keyring storage, supernova will retrieve those from your system's keyring and store them in environment variables that will only be made available to the subprocess that supernova will spawn.
 
