@@ -102,3 +102,11 @@ class TestExecutable(object):
         command = ['raxusa', 'list']
         result = runner.invoke(executable.run_supernova, command)
         assert result.exit_code == 0
+
+    def test_broken_configuration_file(self):
+        runner = CliRunner()
+        command = ['-c', 'tests/configs/rax_without_keyring_malformed', 'dfw',
+                   'list']
+        result = runner.invoke(executable.run_supernova, command)
+        assert result.exit_code != 0
+        assert "There's an error in your configuration file" in result.output

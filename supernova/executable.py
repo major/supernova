@@ -102,7 +102,13 @@ def run_supernova(ctx, executable, debug, environment, command, conf):
       https://github.com/major/supernova
     """
     # Retrieve our credentials from the configuration file
-    nova_creds = config.run_config(config_file_override=conf)
+    try:
+        nova_creds = config.run_config(config_file_override=conf)
+    except Exception as e:
+        msg = ("\n  There's an error in your configuration file:\n\n"
+               "    {0.message}\n").format(e)
+        click.echo(msg)
+        ctx.exit(1)
 
     # Warn the user if there are potentially conflicting environment variables
     # already set in the user's environment.

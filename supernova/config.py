@@ -31,7 +31,10 @@ def run_config(config_file_override=False):
     """
     Runs sanity checks and prepares the global nova_creds variable
     """
-    nova_creds = load_config(config_file_override)
+    try:
+        nova_creds = load_config(config_file_override)
+    except:
+        raise
     return nova_creds
 
 
@@ -42,7 +45,10 @@ def load_config(config_file_override=False):
     supernova_config = get_config_file(config_file_override)
 
     # Can we successfully read the configuration file?
-    nova_creds = ConfigObj(supernova_config)
+    try:
+        nova_creds = ConfigObj(supernova_config)
+    except:
+        raise
 
     return nova_creds
 
