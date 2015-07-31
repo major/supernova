@@ -2,7 +2,7 @@ Name:           supernova
 Version:        2.0.5
 Release:        1%{?dist}
 Summary:        Use novaclient with multiple OpenStack nova environments the easy way
-License:        ASLv2
+License:        ASL 2.0
 URL:            https://github.com/major/supernova
 Source0:        https://pypi.python.org/packages/source/s/supernova/supernova-%{version}.tar.gz
 BuildArch:      noarch
