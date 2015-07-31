@@ -75,6 +75,9 @@ command_settings = {
               help="Enable debugging", show_default=True)
 @click.option('--conf', '-c', default=None, is_flag=False,
               help="Manually specify a supernova configuration file")
+@click.option('--quiet', '-q', default=False, show_default=False,
+              is_flag=True,
+              help="Display the least amount of output possible")
 @click.argument('environment', nargs=1)
 @click.argument('command', nargs=-1)
 @click.option('--version', '-v', is_flag=True, callback=print_version,
@@ -84,7 +87,7 @@ command_settings = {
               expose_value=False, is_eager=False, default=False,
               help="List all configured environments")
 @click.pass_context
-def run_supernova(ctx, executable, debug, environment, command, conf):
+def run_supernova(ctx, executable, debug, quiet, environment, command, conf):
     """
     You can use supernova with many OpenStack clients and avoid the pain of
     managing multiple sets of environment variables.  Getting started is easy
@@ -127,9 +130,12 @@ def run_supernova(ctx, executable, debug, environment, command, conf):
     else:
         envs = [environment]
 
+    # These are arguments for supernova and not the executable that supernova
+    # will eventually call.
     supernova_args = {
         'debug': debug,
-        'executable': executable
+        'executable': executable,
+        'quiet': quiet,
     }
 
     # If the user specified a single environment, we need to verify that the

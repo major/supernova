@@ -112,7 +112,8 @@ def run_command(nova_creds, nova_args, supernova_args):
     # Print a small message for the user (very helpful for groups)
     msg = "Running %s against %s..." % (supernova_args.get('executable'),
                                         nova_env)
-    click.echo("[%s] %s " % (click.style('SUPERNOVA', fg='green'), msg))
+    if not supernova_args.get('quiet'):
+        click.echo("[%s] %s " % (click.style('SUPERNOVA', fg='green'), msg))
 
     # Call executable and connect stdout to the current terminal
     # so that any unicode characters from the executable's list will be
@@ -121,6 +122,9 @@ def run_command(nova_creds, nova_args, supernova_args):
     # In other news, I hate how python 2.6 does unicode.
     nova_args.insert(0, supernova_args['executable'])
     process = execute_executable(nova_args, env_vars)
-    handle_stderr(process.stderr)
+
+    # If the user asked us to be quiet, then let's not print stderr
+    if not supernova_args.get('quiet'):
+        handle_stderr(process.stderr)
 
     return process.returncode
