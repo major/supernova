@@ -62,8 +62,15 @@ command_settings = {
 
 
 @click.command(context_settings=command_settings)
-@click.option('--executable', '-x', default='nova',
-              help='Command to run', show_default=True)
+# This is a little hacky, but we cannot directly set the default to nova
+# because then we have no way of determining if the option was supplied on the
+# command line, or simply set to the default.  We need that information so that
+# we can properly set the executable to run in this order:
+# 1. executable provided on command line
+# 2. executable from environment variable
+# 3. fallback to nova as a default if neither 1 nor 2 are set
+@click.option('--executable', '-x', default='default',
+              help='Command to run  [default: nova]', show_default=False)
 @click.option('--debug', '-d', default=False, is_flag=True,
               help="Enable debugging", show_default=True)
 @click.option('--conf', '-c', default=None, is_flag=False,
