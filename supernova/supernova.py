@@ -98,9 +98,6 @@ def run_command(nova_creds, nova_args, supernova_args):
     env_vars = os.environ.copy()
     env_vars.update(credentials.prep_shell_environment(nova_env,
                                                        nova_creds))
-    # Check for a debug override
-    if supernova_args['debug']:
-        nova_args.insert(0, '--debug ')
 
     # BYPASS_URL is a weird one, so we need to send it as an argument,
     # not an environment variable.
@@ -108,6 +105,12 @@ def run_command(nova_creds, nova_args, supernova_args):
 
     # Check for OS_EXECUTABLE
     supernova_args = check_for_executable(supernova_args, env_vars)
+
+    # Check for a debug override
+    if supernova_args['debug'] and supernova_args['executable'] == 'heat':
+        nova_args.insert(0, '-d')
+    elif supernova_args['debug']:
+        nova_args.insert(0, '--debug ')
 
     # Print a small message for the user (very helpful for groups)
     msg = "Running %s against %s..." % (supernova_args.get('executable'),
