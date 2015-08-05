@@ -27,7 +27,7 @@ required_packages = [
 
 setup(
     name='supernova',
-    version='2.0.5',
+    version='2.0.6',
     author='Major Hayden',
     author_email='major@mhtx.net',
     description="novaclient wrapper for multiple nova environments",
