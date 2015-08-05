@@ -184,18 +184,51 @@ def run_supernova_keyring(ctx, action, environment, parameter):
     Sets or retrieves credentials stored in your system's keyring using the
     python-keyring module.
 
-    Consider a supernova configuration file with these items:
+    Global credentials can be shared between multiple configuration sections:
 
     \b
         [prod]
-        OS_PASSWORD=USE_KEYRING['production_sso']
+        OS_PASSWORD=USE_KEYRING['sso_password']
         ...
 
-    You could retrieve or set the credential using these commands:
+    \b
+        [staging]
+        OS_PASSWORD=USE_KEYRING['my sso_password']
+        ...
+
+    You could retrieve or set the global credential using these commands:
 
     \b
-        supernova -g prod production_sso     <= get the credential
-        supernova -s prod production_sso     <= set the credential
+        supernova -g global sso_password     <= get the credential
+        supernova -s global sso_password     <= set the credential
+
+    Local credentials are intended for use with only one configuration section:
+
+    \b
+        [prod]
+        OS_PASSWORD=USE_KEYRING
+        ...
+
+    \b
+        [staging]
+        OS_PASSWORD=USE_KEYRING
+        ...
+
+    You could retrieve or set the local credential using these commands:
+
+    \b
+        supernova -g prod OS_PASSWORD     <= get the credential for prod
+        supernova -s prod OS_PASSWORD     <= set the credential for prod
+
+    \b
+        supernova -g staging OS_PASSWORD  <= get the credential for staging
+        supernova -s staging OS_PASSWORD  <= set the credential for staging
+
+    Full documentation:
+
+    \b
+        http://supernova.readthedocs.org/en/latest/configuring/
+
     """
     if action == 'get_credential':
         result = credentials.get_user_password(env=environment,
