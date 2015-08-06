@@ -1,5 +1,5 @@
 Name:           supernova
-Version:        2.0.6
+Version:        2.0.7
 Release:        1%{?dist}
 Summary:        Use novaclient with multiple OpenStack nova environments the easy way
 License:        ASL 2.0
@@ -47,6 +47,9 @@ CFLAGS="$RPM_OPT_FLAGS" %{__python} setup.py build
 %{python_sitelib}/supernova-*-py?.?.egg-info/*
 
 %changelog
+* Thu Aug 06 2015 Major Hayden <major@mhtx.net> - 2.0.7-1
+* Version bump
+
 * Wed Aug 05 2015 Major Hayden <major@mhtx.net> - 2.0.6-1
 * Version bump
 
