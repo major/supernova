@@ -44,6 +44,22 @@ def execute_executable(nova_args, env_vars):
     return process
 
 
+def check_for_debug(supernova_args, nova_args):
+    """
+    If the user wanted to run the executable with debugging enabled, we need
+    to apply the correct arguments to the executable.
+
+    Heat is a corner case since it uses -d instead of --debug.
+    """
+    # Heat requires special handling for debug arguments
+    if supernova_args['debug'] and supernova_args['executable'] == 'heat':
+        nova_args.insert(0, '-d ')
+    elif supernova_args['debug']:
+        nova_args.insert(0, '--debug ')
+
+    return nova_args
+
+
 def check_for_executable(supernova_args, env_vars):
     """
     It's possible that a user might set their custom executable via an
@@ -107,10 +123,7 @@ def run_command(nova_creds, nova_args, supernova_args):
     supernova_args = check_for_executable(supernova_args, env_vars)
 
     # Check for a debug override
-    if supernova_args['debug'] and supernova_args['executable'] == 'heat':
-        nova_args.insert(0, '-d')
-    elif supernova_args['debug']:
-        nova_args.insert(0, '--debug ')
+    nova_args = check_for_debug(supernova_args, nova_args)
 
     # Print a small message for the user (very helpful for groups)
     msg = "Running %s against %s..." % (supernova_args.get('executable'),

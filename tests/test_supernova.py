@@ -32,6 +32,14 @@ class TestSuperNova(object):
         assert 'executable' in supernova_args
         assert supernova_args['executable'] == 'glance'
 
+    def test_for_missing_executable_env_var(self):
+        env_vars = {}
+        supernova_args = {}
+        supernova_args = supernova.check_for_executable(supernova_args,
+                                                        env_vars)
+        assert 'executable' in supernova_args
+        assert supernova_args['executable'] == 'nova'
+
     def test_run_novaclient(self):
         testcfg = "{0}/tests/configs/rax_without_keyring".format(os.getcwd())
         nova_creds = config.load_config(testcfg)
@@ -67,6 +75,26 @@ class TestSuperNova(object):
         }
         result = supernova.run_command(nova_creds, ['list'], supernova_args)
         assert result == 0
+
+    def test_debug_check(self):
+        supernova_args = {
+            'debug': True,
+            'executable': 'nova',
+        }
+        nova_args = []
+        result = supernova.check_for_debug(supernova_args, nova_args)
+        expected_nova_args = ['--debug ']
+        assert result == expected_nova_args
+
+    def test_debug_check_with_heat(self):
+        supernova_args = {
+            'debug': True,
+            'executable': 'heat',
+        }
+        nova_args = []
+        result = supernova.check_for_debug(supernova_args, nova_args)
+        expected_nova_args = ['-d ']
+        assert result == expected_nova_args
 
     def test_handle_stderr(self, tmpdir, capsys):
         p = tmpdir.mkdir("sub").join("stderr.txt")
