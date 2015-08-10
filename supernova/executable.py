@@ -24,9 +24,6 @@ import sys
 import click
 
 
-import pkg_resources
-
-
 from . import config
 from . import credentials
 from . import supernova
