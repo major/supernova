@@ -33,14 +33,6 @@ from . import supernova
 from . import utils
 
 
-def print_version(ctx, param, value):
-    if not value or ctx.resilient_parsing:
-        return
-    version = pkg_resources.require("supernova")[0].version
-    click.echo("supernova, version {0}".format(version))
-    ctx.exit()
-
-
 def print_env_list(ctx, param, value):
     if not value or ctx.resilient_parsing:
         return
@@ -80,9 +72,7 @@ command_settings = {
               help="Display the least amount of output possible")
 @click.argument('environment', nargs=1)
 @click.argument('command', nargs=-1)
-@click.option('--version', '-v', is_flag=True, callback=print_version,
-              expose_value=False, is_eager=False, default=False,
-              help="Print version number")
+@click.version_option()
 @click.option('--list', '-l', is_flag=True, callback=print_env_list,
               expose_value=False, is_eager=False, default=False,
               help="List all configured environments")

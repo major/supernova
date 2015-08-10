@@ -1,5 +1,7 @@
 include contrib/*.bash
 include mkdocs.yml
 include LICENSE
+include .supernova
 recursive-include docs *
 recursive-include example_configs *
+recursive-include tests *

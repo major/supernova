@@ -1,5 +1,5 @@
 Name:           supernova
-Version:        2.0.7
+Version:        2.0.8
 Release:        1%{?dist}
 Summary:        Use novaclient with multiple OpenStack nova environments the easy way
 License:        ASL 2.0
@@ -7,8 +7,14 @@ URL:            https://github.com/major/supernova
 Source0:        https://pypi.python.org/packages/source/s/supernova/supernova-%{version}.tar.gz
 BuildArch:      noarch
 
+BuildRequires:  pytest
+BuildRequires:  python-click
+BuildRequires:  python-configobj
+BuildRequires:  python-coverage
 BuildRequires:  python-devel
+BuildRequires:  python-keyring
 BuildRequires:  python-setuptools
+BuildRequires:  python-tox
 Requires:       python-click
 Requires:       python-configobj
 Requires:       python-keyring
@@ -32,6 +38,9 @@ CFLAGS="$RPM_OPT_FLAGS" %{__python} setup.py build
 %install
 %{__python} setup.py install --skip-build --root $RPM_BUILD_ROOT
 
+%check
+PYTHONPATH=$(pwd) py.test tests --tb=long --verbose
+
 %files
 %defattr(-,root,root,-)
 %doc LICENSE
@@ -47,6 +56,9 @@ CFLAGS="$RPM_OPT_FLAGS" %{__python} setup.py build
 %{python_sitelib}/supernova-*-py?.?.egg-info/*
 
 %changelog
+* Sun Aug 09 2015 Major Hayden <major@mhtx.net> - 2.0.8-1
+* Version bump and spec improvements
+
 * Thu Aug 06 2015 Major Hayden <major@mhtx.net> - 2.0.7-1
 * Version bump
 
