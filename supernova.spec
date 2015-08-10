@@ -1,6 +1,6 @@
 Name:           supernova
 Version:        2.0.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Use novaclient with multiple OpenStack nova environments the easy way
 License:        ASL 2.0
 URL:            https://github.com/major/supernova
@@ -14,6 +14,7 @@ BuildRequires:  python-coverage
 BuildRequires:  python-devel
 BuildRequires:  python-keyring
 BuildRequires:  python-setuptools
+BuildRequires:  python-six
 BuildRequires:  python-tox
 Requires:       python-click
 Requires:       python-configobj
@@ -56,35 +57,38 @@ PYTHONPATH=$(pwd) py.test tests --tb=long --verbose
 %{python_sitelib}/supernova-*-py?.?.egg-info/*
 
 %changelog
+* Sun Aug 09 2015 Major Hayden <major@mhtx.net> - 2.0.8-2
+- Adding python-six to BuildRequires 
+
 * Sun Aug 09 2015 Major Hayden <major@mhtx.net> - 2.0.8-1
-* Version bump and spec improvements
+- Version bump and spec improvements
 
 * Thu Aug 06 2015 Major Hayden <major@mhtx.net> - 2.0.7-1
-* Version bump
+- Version bump
 
 * Wed Aug 05 2015 Major Hayden <major@mhtx.net> - 2.0.6-1
-* Version bump
+- Version bump
 
 * Fri Jul 31 2015 Major Hayden <major@mhtx.net> - 2.0.5-1
-* Version bump
+- Version bump
 
 * Fri Jul 31 2015 Major Hayden <major@mhtx.net> - 2.0.4-2
-* Use more basic python packaging format
+- Use more basic python packaging format
 
 * Wed Jul 29 2015 Major Hayden <major@mhtx.net> - 2.0.4-1
-* Version bump
+- Version bump
 
 * Fri Jul 24 2015 Major Hayden <major@mhtx.net> - 2.0.3-1
-* Version bump
+- Version bump
 
 * Tue Jul 21 2015 Major Hayden <major@mhtx.net> - 2.0.2-1
-* Version bump
+- Version bump
 
 * Tue Jul 21 2015 Major Hayden <major@mhtx.net> - 2.0.0-3
-* Python3 packaging
+- Python3 packaging
 
 * Tue Jul 21 2015 Major Hayden <major@mhtx.net> - 2.0.0-2
-* Bug fixes in spec file
+- Bug fixes in spec file
 
 * Tue Jul 21 2015 Major Hayden <major@mhtx.net> - 2.0.0-1
 - Version bump to 2.0.0
