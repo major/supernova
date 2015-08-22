@@ -48,10 +48,11 @@ def load_config(config_file_override=False):
     if not supernova_config and not supernova_config_dir:
         raise Exception("Couldn't find a valid configuration file to parse")
 
+    nova_creds = ConfigObj()
     # Can we successfully read the configuration file?
     if supernova_config:
         try:
-            nova_creds = ConfigObj(supernova_config)
+            nova_creds.merge(ConfigObj(supernova_config))
         except:
             raise Exception("There is an error in your configuration file.")
     else:
@@ -100,10 +101,7 @@ def get_config_directory(override_files=False):
     load individual configuration files.
     """
     if override_files:
-        if isinstance(override_files, six.string_types):
-            possible_dirs = [override_files]
-        else:
-            raise Exception("Config file override must be a string")
+        possible_dirs = [override_files]
 
     else:
         xdg_config_home = os.environ.get('XDG_CONFIG_HOME') or \

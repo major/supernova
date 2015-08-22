@@ -79,23 +79,17 @@ def run_supernova(ctx, executable, debug, quiet, environment, command, conf):
     You can use supernova with many OpenStack clients and avoid the pain of
     managing multiple sets of environment variables.  Getting started is easy
     and there's some documentation that can help:
-
       http://supernova.readthedocs.org/
-
     The first step is to get your environment variables packed into a
     configuration file, usually in ~/.supernova.  The docs (linked above) have
     some good examples that you can fill in via copy/paste.
-
     Once you have a configuration ready to go, replace 'prod' below with one
     of your configured environments and try some of these commands:
-
       supernova prod list                 (Lists instances via novaclient)
       supernova prod image-list           (Lists images via novaclient)
       supernova prod boot ...             (Boots an instance via novaclient)
-
     Have questions, bugs, or comments?  Head on over to Github and open an
     issue or submit a pull request!
-
       https://github.com/major/supernova
     """
     # Retrieve our credentials from the configuration file
@@ -103,7 +97,7 @@ def run_supernova(ctx, executable, debug, quiet, environment, command, conf):
         nova_creds = config.run_config(config_file_override=conf)
     except Exception as e:
         msg = ("\n  There's an error in your configuration file:\n\n"
-               "{0.msg}\n").format(e)
+               "    {0}\n").format(str(e))
         click.echo(msg)
         ctx.exit(1)
 
@@ -170,52 +164,38 @@ def run_supernova_keyring(ctx, action, environment, parameter):
     """
     Sets or retrieves credentials stored in your system's keyring using the
     python-keyring module.
-
     Global credentials can be shared between multiple configuration sections:
-
     \b
         [prod]
         OS_PASSWORD=USE_KEYRING['sso_password']
         ...
-
     \b
         [staging]
         OS_PASSWORD=USE_KEYRING['my sso_password']
         ...
-
     You could retrieve or set the global credential using these commands:
-
     \b
         supernova -g global sso_password     <= get the credential
         supernova -s global sso_password     <= set the credential
-
     Local credentials are intended for use with only one configuration section:
-
     \b
         [prod]
         OS_PASSWORD=USE_KEYRING
         ...
-
     \b
         [staging]
         OS_PASSWORD=USE_KEYRING
         ...
-
     You could retrieve or set the local credential using these commands:
-
     \b
         supernova -g prod OS_PASSWORD     <= get the credential for prod
         supernova -s prod OS_PASSWORD     <= set the credential for prod
-
     \b
         supernova -g staging OS_PASSWORD  <= get the credential for staging
         supernova -s staging OS_PASSWORD  <= set the credential for staging
-
     Full documentation:
-
     \b
         http://supernova.readthedocs.org/en/latest/configuring/
-
     """
     if action == 'get_credential':
         result = credentials.get_user_password(env=environment,
@@ -231,10 +211,8 @@ def run_supernova_keyring(ctx, action, environment, parameter):
     elif action == 'set_credential':
         msg = """
 Preparing to set a credential in the keyring for:
-
   - Environment  : {0}
   - Parameter    : {1}
-
 If this is correct, enter the corresponding credential to store in your keyring
 or press CTRL-C to abort""".format(environment, parameter)
         credential = click.prompt(text=msg, hide_input=True)
