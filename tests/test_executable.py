@@ -104,3 +104,12 @@ class TestExecutable(object):
         result = runner.invoke(executable.run_supernova, command)
         assert result.exit_code != 0
         assert "There's an error in your configuration file" in result.output
+
+    def test_broken_configuration_directory(self):
+        runner = CliRunner()
+        command = ['-c', 'tests/configs/', 'dfw',
+                   'list']
+        result = runner.invoke(executable.run_supernova, command)
+        assert "Could not parse config file "
+        "'tests/configs/rax_without_keyring_malformed'"
+        ", Skipping." in result.output
