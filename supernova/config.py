@@ -18,13 +18,7 @@
 Takes care of the basic setup of the config files and does some preliminary
 sanity checks
 """
-try:
-    import ConfigParser
-except:
-    import configparser as ConfigParser
-
 import os
-import sys
 
 
 from configobj import ConfigObj
@@ -49,7 +43,6 @@ def load_config(config_file_override=False):
     Pulls the supernova configuration file and reads it
     """
     supernova_config = get_config_file(config_file_override)
-    create_dynamic_configs(supernova_config)
 
     # Can we successfully read the configuration file?
     try:
@@ -57,6 +50,7 @@ def load_config(config_file_override=False):
     except:
         raise
 
+    create_dynamic_configs(nova_creds)
     return nova_creds
 
 
@@ -83,38 +77,41 @@ def get_config_file(override_files=False):
 
     raise Exception("Couldn't find a valid configuration file to parse")
 
-    return nova_creds
 
+def create_dynamic_configs(config, region_name='OS_REGION_NAME', delimiter=';'):
+    if not isinstance(config, ConfigObj):
+        raise ValueError("config should be ConfigObj, not %s" % type(config))
 
-def create_dynamic_configs(config, key='OS_REGION_NAME', delimiter=';'):
-    sections = config.sections()
+    sections = config.sections
+
+    #Allowing for default section, same behavior as previous config.
+    default_section = None
+    for section in sections:
+        if section.lower() == 'default':
+            default_section = config[section]
+            del config[section]
+            break
+
     for section in sections:
 
         # Check to see if we should generate new sections.
-        if config.has_option(section, key) and delimiter in \
-                config.get(section, key):
+        if delimiter in config[section].get(region_name,''):
+            for new_section_arg in config[section][region_name].split(delimiter):
+                new_section = section + '-' + new_section_arg
 
-            for new_section_arg in config.get(section, key).split(
-                    delimiter):
-                try:
-                    new_section = section + '-' + new_section_arg
-                    config.add_section(new_section)
+                # Use default section
+                if default_section:
+                    config[new_section] = default_section.copy()
+                else:
+                    config[new_section] = {}
 
-                    # We are eventually going to delete the old section.
-                    # Lets use it as a supernova group
-                    config.set(new_section, 'SUPERNOVA_GROUP', section)
+                #Copy the existing section config.
+                config[new_section].update(config[section])
+                config[new_section][region_name] = new_section_arg
 
-                    for orig_section_key, orig_section_value in \
-                            config.items(section):
-                        if orig_section_key.lower() == key.lower():
-                            config.set(new_section, orig_section_key,
-                                       new_section_arg)
-                        else:
-                            config.set(new_section, orig_section_key,
-                                       orig_section_value)
-                except ConfigParser.DuplicateSectionError:
-                    # Skip, in case it already exists or the user has defined
-                    # it
-                    pass
+                # We are eventually going to delete the old section.
+                # Lets use it as a supernova group
+                config[new_section]['SUPERNOVA_GROUP'] = section
+
             # We are done, lets remove the original section
-            config.remove_section(section)
+            del config[section]
