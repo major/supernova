@@ -53,7 +53,7 @@ def load_config(config_file_override=False):
         try:
             nova_creds = ConfigObj(supernova_config)
         except:
-            raise ("There is an error in your configuration file.")
+            raise Exception("There is an error in your configuration file.")
     else:
         nova_creds = ConfigObj()
 
@@ -63,7 +63,7 @@ def load_config(config_file_override=False):
             try:
                 nova_creds.merge(ConfigObj(full_path))
             except:
-                msg = "Could not parse config file '{}', Skipping."
+                msg = "Skipping '{}', Parsing Error."
                 print(msg.format(full_path))
 
     create_dynamic_configs(nova_creds)
