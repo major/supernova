@@ -43,13 +43,27 @@ def load_config(config_file_override=False):
     Pulls the supernova configuration file and reads it
     """
     supernova_config = get_config_file(config_file_override)
+    supernova_config_dir = get_config_directory(config_file_override)
+
+    if not supernova_config and not supernova_config_dir:
+        raise Exception("Couldn't find a valid configuration file to parse")
 
     # Can we successfully read the configuration file?
-    try:
-        nova_creds = ConfigObj(supernova_config)
-    except:
-        raise
+    if supernova_config:
+        try:
+            nova_creds = ConfigObj(supernova_config)
+        except:
+            raise ("There is an error in your configuration file, it could not be loaded.")
+    else:
+        nova_creds = ConfigObj()
 
+    if supernova_config_dir:
+        for dir_file in os.listdir(supernova_config_dir):
+            full_path = ''.join((supernova_config_dir, dir_file))
+            try:
+                nova_creds.merge(ConfigObj(full_path))
+            except:
+                print("Could not parse config file '{}', Skipping.".format(full_path))
     return nova_creds
 
 
@@ -74,4 +88,28 @@ def get_config_file(override_files=False):
         if os.path.isfile(config_file):
             return config_file
 
-    raise Exception("Couldn't find a valid configuration file to parse")
+    return False
+
+def get_config_directory(override_files=False):
+    """
+    Looks for the most specific configuration directory possible, in order to
+    load individual configuration files.
+    """
+    if override_files:
+        if isinstance(override_files, six.string_types):
+            possible_configs = [override_files]
+        else:
+            raise Exception("Config file override must be a string")
+
+    else:       
+        xdg_config_home = os.environ.get('XDG_CONFIG_HOME') or \
+            os.path.expanduser('~/.config')
+        possible_dirs = [os.path.join(xdg_config_home, "supernova.d/"),
+                            os.path.expanduser("~/.supernova.d/"),
+                            ".supernova.d/"]
+
+    for config_dir in reversed(possible_dirs):
+        if os.path.isdir(config_dir):
+            return config_dir
+    return False
+
