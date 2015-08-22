@@ -46,6 +46,7 @@ class TestConfig(object):
         assert result is None
         assert "must be a string" in str(excinfo.value)
 
+
 class TestDynamicConfig(object):
 
     def test_bad_config_arg(self):

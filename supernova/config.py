@@ -78,7 +78,8 @@ def get_config_file(override_files=False):
     raise Exception("Couldn't find a valid configuration file to parse")
 
 
-def create_dynamic_configs(config, region_name='OS_REGION_NAME', delimiter=';'):
+def create_dynamic_configs(config, region_name='OS_REGION_NAME',
+                           delimiter=';'):
     if not isinstance(config, ConfigObj):
         raise ValueError("config should be ConfigObj, not %s" % type(config))
 
@@ -87,15 +88,16 @@ def create_dynamic_configs(config, region_name='OS_REGION_NAME', delimiter=';'):
     for section in sections:
 
         # Check to see if we should generate new sections.
-        if delimiter in config[section].get(region_name,''):
-            for new_section_arg in config[section][region_name].split(delimiter):
+        if delimiter in config[section].get(region_name, ''):
+            for new_section_arg in config[section][region_name].split(
+                    delimiter):
 
                 new_section = section + '-' + new_section_arg
 
                 # Use default section
                 config[new_section] = {}
 
-                #Copy the existing section config.
+                # Copy the existing section config.
                 config[new_section].update(config[section])
                 config[new_section][region_name] = new_section_arg
 
