@@ -84,26 +84,16 @@ def create_dynamic_configs(config, region_name='OS_REGION_NAME', delimiter=';'):
 
     sections = config.sections
 
-    #Allowing for default section, same behavior as previous config.
-    default_section = None
-    for section in sections:
-        if section.lower() == 'default':
-            default_section = config[section]
-            del config[section]
-            break
-
     for section in sections:
 
         # Check to see if we should generate new sections.
         if delimiter in config[section].get(region_name,''):
             for new_section_arg in config[section][region_name].split(delimiter):
+
                 new_section = section + '-' + new_section_arg
 
                 # Use default section
-                if default_section:
-                    config[new_section] = default_section.copy()
-                else:
-                    config[new_section] = {}
+                config[new_section] = {}
 
                 #Copy the existing section config.
                 config[new_section].update(config[section])

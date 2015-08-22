@@ -88,37 +88,6 @@ Using the [Rackspace example configuration](http://bit.ly/raxsupernova), plain t
 
 When supernova runs, it will take the configuration options and pass them directly to nova (or the executable of your choice) in a subprocess.
 
-# Default Section
-
-You can apply a default configuration across all accounts, by applying the rules to [default]. Here is an example::
-
-    [default]
-    OS_AUTH_URL=https://identity.api.rackspacecloud.com/v2.0/
-    OS_AUTH_SYSTEM=rackspace
-    OS_SERVICE_NAME=cloudserversOpenStack
-    OS_NO_CACHE=1
-    NOVA_RAX_AUTH=1
-
-    [personal]
-    OS_REGION_NAME=DFW
-    OS_TENANT_NAME=123456
-    OS_USERNAME=username
-    OS_PASSWORD=somelongapikey
-
-The output will look like::
-
-    -- personal-DFW -------------------------------------------------------------
-      NOVA_RAX_AUTH        : 1
-      OS_AUTH_SYSTEM       : rackspace
-      OS_AUTH_URL          : https://identity.api.rackspacecloud.com/v2.0/
-      OS_NO_CACHE          : 1
-      OS_PASSWORD          : somelongapikey
-      OS_REGION_NAME       : DFW
-      OS_SERVICE_NAME      : cloudserversOpenStack
-      OS_TENANT_NAME       : 123456
-      OS_USERNAME          : username
-      SUPERNOVA_GROUP      : personal
-
 # Dynamic Configuration
 
 For accounts where you would like to utilize the same configuration, it is possible to use the same entry.
