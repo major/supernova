@@ -53,7 +53,8 @@ def load_config(config_file_override=False):
         try:
             nova_creds = ConfigObj(supernova_config)
         except:
-            raise ("There is an error in your configuration file, it could not be loaded.")
+            print("There's an error in your configuration file")
+            os.exit(1)
     else:
         nova_creds = ConfigObj()
 
@@ -63,7 +64,8 @@ def load_config(config_file_override=False):
             try:
                 nova_creds.merge(ConfigObj(full_path))
             except:
-                print("Could not parse config file '{}', Skipping.".format(full_path))
+                msg = "Skipping '%s', Parsing Error.".format(full_path)
+                print(msg)
     return nova_creds
 
 
@@ -90,6 +92,7 @@ def get_config_file(override_files=False):
 
     return False
 
+
 def get_config_directory(override_files=False):
     """
     Looks for the most specific configuration directory possible, in order to
@@ -97,19 +100,18 @@ def get_config_directory(override_files=False):
     """
     if override_files:
         if isinstance(override_files, six.string_types):
-            possible_configs = [override_files]
+            possible_dirs = [override_files]
         else:
             raise Exception("Config file override must be a string")
 
-    else:       
+    else:
         xdg_config_home = os.environ.get('XDG_CONFIG_HOME') or \
             os.path.expanduser('~/.config')
         possible_dirs = [os.path.join(xdg_config_home, "supernova.d/"),
-                            os.path.expanduser("~/.supernova.d/"),
-                            ".supernova.d/"]
+                         os.path.expanduser("~/.supernova.d/"),
+                         ".supernova.d/"]
 
     for config_dir in reversed(possible_dirs):
         if os.path.isdir(config_dir):
             return config_dir
     return False
-
