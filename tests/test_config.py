@@ -45,3 +45,73 @@ class TestConfig(object):
             result = config.load_config(config_file_override=[testcfg])
         assert result is None
         assert "must be a string" in str(excinfo.value)
+
+class TestDynamicConfig(object):
+
+    def test_bad_config_arg(self):
+        with pytest.raises(ValueError) as val_error:
+            result = config.create_dynamic_configs('bad_arg')
+        assert result is  None
+        assert "config should be ConfigObj" in str(val_error)
+
+    def test_default_config(self):
+        result = config.load_config()
+        result['default'] = {'somearg': "new_arg"}
+        config.create_dynamic_configs(result)
+        assert 'default' not in result.sections
+        for section in result.sections:
+            assert 'new_arg' == result[section].get('somearg')
+
+    def test_dynamic_sections_with_default(self):
+        result = config.load_config()
+        result['default'] = {'somearg': "new_arg"}
+        result['dynamic-section'] = {'OS_REGION_NAME': "DFW;ORD"}
+        config.create_dynamic_configs(result)
+        # The new sections exist
+        assert 'dynamic-section-ORD' in result.sections
+        assert 'dynamic-section-DFW' in result.sections
+
+        # The default section is no longer provided
+        assert 'dynamic-section' not in result.sections
+
+        # The super group is set up correctly
+        assert 'dynamic-section' in \
+               result['dynamic-section-ORD'].get('SUPERNOVA_GROUP')
+        assert 'dynamic-section' == \
+               result['dynamic-section-DFW'].get('SUPERNOVA_GROUP')
+
+        # The regions are correct
+        assert 'ORD' == \
+               result['dynamic-section-ORD'].get('OS_REGION_NAME')
+        assert 'DFW' == \
+               result['dynamic-section-DFW'].get('OS_REGION_NAME')
+
+        # The default is being used
+        assert 'new_arg' == \
+               result['dynamic-section-ORD'].get('somearg')
+        assert 'new_arg' == \
+               result['dynamic-section-DFW'].get('somearg')
+
+    def test_dynamic_sections_without_default(self):
+        result = config.load_config()
+        result['default'] = {'somearg': "new_arg"}
+        result['dynamic-section'] = {'OS_REGION_NAME': "DFW;ORD"}
+        config.create_dynamic_configs(result)
+        # The new sections exist
+        assert 'dynamic-section-ORD' in result.sections
+        assert 'dynamic-section-DFW' in result.sections
+
+        # The default section is no longer provided
+        assert 'dynamic-section' not in result.sections
+
+        # The super group is set up correctly
+        assert 'dynamic-section' in \
+               result['dynamic-section-ORD'].get('SUPERNOVA_GROUP')
+        assert 'dynamic-section' == \
+               result['dynamic-section-DFW'].get('SUPERNOVA_GROUP')
+
+        # The regions are correct
+        assert 'ORD' == \
+               result['dynamic-section-ORD'].get('OS_REGION_NAME')
+        assert 'DFW' == \
+               result['dynamic-section-DFW'].get('OS_REGION_NAME')
