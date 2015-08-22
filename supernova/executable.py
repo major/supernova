@@ -102,9 +102,8 @@ def run_supernova(ctx, executable, debug, quiet, environment, command, conf):
     try:
         nova_creds = config.run_config(config_file_override=conf)
     except Exception as e:
-        raise e
-        # msg = ("\n  There's an error in your configuration file:\n\n"
-        #        "    {0.msg}\n").format(e)
+        msg = ("\n  There's an error in your configuration file:\n\n"
+               "{0.msg}\n").format(e)
         click.echo(msg)
         ctx.exit(1)
 
