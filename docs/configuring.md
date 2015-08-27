@@ -87,3 +87,25 @@ Using the [Rackspace example configuration](http://bit.ly/raxsupernova), plain t
     OS_TENANT_NAME=123456
 
 When supernova runs, it will take the configuration options and pass them directly to nova (or the executable of your choice) in a subprocess.
+
+# Dynamic Configuration
+
+For accounts where you would like to utilize the same configuration, it is possible to use the same entry.
+
+In the configuration, you can separate the regions by a semicolon::
+
+    [personal]
+    ..snip..
+    OS_REGION_NAME=DFW;ORD
+    OS_TENANT_NAME=123456
+    OS_USERNAME=username
+    OS_PASSWORD=somelongapikey
+
+
+This will create the super group "personal" as well as the individual groups "personal-DFW" and "personal-ORD"::
+
+    > supernova -l | grep personal
+    -- personal-DFW -------------------------------------------------------------
+      SUPERNOVA_GROUP      : personal
+    -- personal-ORD -------------------------------------------------------------
+      SUPERNOVA_GROUP      : personal
