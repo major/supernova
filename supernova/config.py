@@ -67,6 +67,15 @@ def load_config(config_file_override=False):
                 msg = "Skipping '{}', Parsing Error."
                 print(msg.format(full_path))
 
+    if supernova_config_dir:
+        for dir_file in os.listdir(supernova_config_dir):
+            full_path = ''.join((supernova_config_dir, dir_file))
+            try:
+                nova_creds.merge(ConfigObj(full_path))
+            except:
+                msg = "Skipping '%s', Parsing Error.".format(full_path)
+                print(msg)
+
     create_dynamic_configs(nova_creds)
     return nova_creds
 
