@@ -1,6 +1,6 @@
 Name:           supernova
 Version:        2.0.8
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Use novaclient with multiple OpenStack nova environments the easy way
 License:        ASL 2.0
 URL:            https://github.com/major/supernova
@@ -28,35 +28,38 @@ Requires:       python-iso8601
 
 %description
 supernova manages multiple nova environments without sourcing
-novarc's or mucking with environment variables.
+novarc files or mucking with environment variables.
 
 %prep
 %setup -q
 
 %build
-CFLAGS="$RPM_OPT_FLAGS" %{__python} setup.py build
+CFLAGS="$RPM_OPT_FLAGS" %{__python2} setup.py build
 
 %install
-%{__python} setup.py install --skip-build --root $RPM_BUILD_ROOT
+%{__python2} setup.py install --skip-build --root $RPM_BUILD_ROOT
 
 %check
 PYTHONPATH=$(pwd) py.test tests --tb=long --verbose
 
 %files
 %defattr(-,root,root,-)
-%doc LICENSE
+%license LICENSE
 %{_bindir}/supernova
 %{_bindir}/supernova-keyring
 
-%dir %{python_sitelib}/%{name}
-%{python_sitelib}/%{name}/*.py
-%{python_sitelib}/%{name}/*.pyc
-%{python_sitelib}/%{name}/*.pyo
+%dir %{python2_sitelib}/%{name}
+%{python2_sitelib}/%{name}/*.py
+%{python2_sitelib}/%{name}/*.pyc
+%{python2_sitelib}/%{name}/*.pyo
 
-%dir %{python_sitelib}/supernova-*-py?.?.egg-info
-%{python_sitelib}/supernova-*-py?.?.egg-info/*
+%dir %{python_sitelib}/%{name}-*-py?.?.egg-info
+%{python_sitelib}/%{name}-*-py?.?.egg-info/*
 
 %changelog
+* Wed Aug 26 2015 Major Hayden <major@mhtx.net> - 2.0.8-3
+- Cleanup
+
 * Sun Aug 09 2015 Major Hayden <major@mhtx.net> - 2.0.8-2
 - Adding python-six to BuildRequires 
 
