@@ -54,9 +54,7 @@ def load_config(config_file_override=False):
         try:
             nova_creds.merge(ConfigObj(supernova_config))
         except:
-            raise Exception("There is an error in your configuration file.")
-    else:
-        nova_creds = ConfigObj()
+            raise("There is an error in your configuration file.")
 
     if supernova_config_dir:
         for dir_file in os.listdir(supernova_config_dir):
