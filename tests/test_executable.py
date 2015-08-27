@@ -110,5 +110,5 @@ class TestExecutable(object):
         command = ['-c', 'tests/configs/', 'dfw',
                    'list']
         result = runner.invoke(executable.run_supernova, command)
-        assert "Skipping 'tests/configs/rax_without_keyring_malformed',"
-        " Parsing Error." in result.output
+        assert "Skipping 'tests/configs/rax_without_keyring_malformed', "
+        "Parsing Error." in result.output
