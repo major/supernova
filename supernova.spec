@@ -48,7 +48,7 @@ BuildRequires:  python-tox
 Requires:       python3-click
 Requires:       python3-configobj
 Requires:       python3-keyring
-Requires:       python3-novaclient
+#Requires:       python3-novaclient
 Requires:       pycryptopp
 Requires:       python3-simplejson
 Requires:       python3-six
