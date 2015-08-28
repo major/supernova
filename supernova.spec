@@ -48,7 +48,7 @@ BuildRequires:  python-tox
 Requires:       python3-click
 Requires:       python3-configobj
 Requires:       python3-keyring
-#Requires:       python3-novaclient
+Requires:       python3-novaclient
 Requires:       pycryptopp
 Requires:       python3-simplejson
 Requires:       python3-six
@@ -108,12 +108,14 @@ PYTHONPATH=$(pwd) py.test tests --tb=long --verbose
 %{python2_sitelib}/supernova
 %license LICENSE
 
+%if 0%{?with_python3}
 %files -n python3-supernova
 %{_bindir}/supernova%{python3_version}
 %{_bindir}/supernova-keyring%{python3_version}
 %{python3_sitelib}/supernova-%{version}-py%{python3_version}.egg-info
 %{python3_sitelib}/supernova
 %license LICENSE
+%endif
 
 %files -n supernova-doc
 %doc docs/ example_configs
