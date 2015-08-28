@@ -1,8 +1,9 @@
-%global with_python3 1
+# python-novaclient doesn't have a python 3 package at this time
+%global with_python3 0
 
 Name:           supernova
-Version:        2.0.8
-Release:        4%{?dist}
+Version:        2.0.9
+Release:        2%{?dist}
 Summary:        Use novaclient with multiple OpenStack nova environments the easy way
 License:        ASL 2.0
 URL:            https://github.com/major/supernova
@@ -116,9 +117,15 @@ PYTHONPATH=$(pwd) py.test tests --tb=long --verbose
 
 %files -n supernova-doc
 %doc docs/ example_configs
-
+%license LICENSE
 
 %changelog
+* Fri Aug 28 2015 Major Hayden <major@mhtx.net> - 2.0.9-2
+- Disable python 3 build since python3-novaclient doesn't exist yet
+
+* Thu Aug 27 2015 Major Hayden <major@mhtx.net> - 2.0.9-1
+- New upstream version
+
 * Thu Aug 27 2015 Major Hayden <major@mhtx.net> - 2.0.8-4
 - Added python3 and doc subpackages
 
