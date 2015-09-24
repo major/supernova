@@ -136,6 +136,7 @@ def run_command(nova_creds, nova_args, supernova_args):
     #
     # In other news, I hate how python 2.6 does unicode.
     nova_args.insert(0, supernova_args['executable'])
+    nova_args = [nova_arg.strip() for nova_arg in nova_args]
     process = execute_executable(nova_args, env_vars)
 
     # If the user asked us to be quiet, then let's not print stderr
