@@ -104,3 +104,16 @@ class TestExecutable(object):
         result = runner.invoke(executable.run_supernova, command)
         assert result.exit_code != 0
         assert "There's an error in your configuration file" in result.output
+
+    def test_echo(self):
+        runner = CliRunner()
+        result = runner.invoke(executable.run_supernova, ['--echo', 'hkg'])
+        assert result.exit_code == 0
+        assert len(result.output.split('\n')) == 10
+        assert 'OS_REGION_NAME=HKG' in result.output
+
+    def test_echo_group(self):
+        runner = CliRunner()
+        result = runner.invoke(executable.run_supernova, ['--echo', 'raxusa'])
+        assert result.exit_code == 1
+        assert 'group of environments' in result.output
