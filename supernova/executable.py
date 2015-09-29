@@ -66,6 +66,8 @@ command_settings = {
 @click.option('--quiet', '-q', default=False, show_default=False,
               is_flag=True,
               help="Display the least amount of output possible")
+@click.option('--echo', '-e', default=None, is_flag=True,
+              help="Print the specified environment and exit")
 @click.argument('environment', nargs=1)
 @click.argument('command', nargs=-1)
 @click.version_option()
@@ -73,7 +75,8 @@ command_settings = {
               expose_value=False, is_eager=False, default=False,
               help="List all configured environments")
 @click.pass_context
-def run_supernova(ctx, executable, debug, quiet, environment, command, conf):
+def run_supernova(ctx, executable, debug, quiet, environment, command, conf,
+                  echo):
     """
     You can use supernova with many OpenStack clients and avoid the pain of
     managing multiple sets of environment variables.  Getting started is easy
@@ -122,6 +125,7 @@ def run_supernova(ctx, executable, debug, quiet, environment, command, conf):
         'debug': debug,
         'executable': executable,
         'quiet': quiet,
+        'echo': echo,
     }
 
     # If the user specified a single environment, we need to verify that the
@@ -132,6 +136,17 @@ def run_supernova(ctx, executable, debug, quiet, environment, command, conf):
                "configured environments.\n".format(envs[0]))
         click.echo(msg)
         ctx.exit(1)
+
+    if supernova_args['echo']:
+        if len(envs) > 1:
+            msg = ("\nCan't echo a group of environments.\nSpecify a single "
+                   "environment when using --echo.")
+            click.echo(msg)
+            ctx.exit(1)
+        env = credentials.prep_shell_environment(envs[0], nova_creds)
+        for k in env:
+            click.echo('{0}={1}'.format(k, env[k]))
+        ctx.exit(0)
 
     if len(command) == 0:
         msg = ("\nMissing arguments to pass to executable  Run supernova "
