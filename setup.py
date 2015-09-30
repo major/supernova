@@ -25,6 +25,12 @@ required_packages = [
     "six"
 ]
 
+optional_packages = {
+    'rackspace':  [
+        'rackspace-novaclient'
+    ]
+}
+
 setup(
     name='supernova',
     version='2.0.9',
@@ -32,6 +38,7 @@ setup(
     author_email='major@mhtx.net',
     description="novaclient wrapper for multiple nova environments",
     install_requires=required_packages,
+    extras_require=optional_packages,
     packages=['supernova'],
     url='https://github.com/major/supernova',
     entry_points='''
