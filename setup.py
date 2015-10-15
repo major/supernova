@@ -33,7 +33,7 @@ optional_packages = {
 
 setup(
     name='supernova',
-    version='2.0.9',
+    version='2.1.0',
     author='Major Hayden',
     author_email='major@mhtx.net',
     description="novaclient wrapper for multiple nova environments",
