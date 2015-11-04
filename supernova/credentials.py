@@ -19,6 +19,12 @@ Handles all of the interactions with the operating system's keyring
 import re
 
 
+try:
+  from gi import require_version
+  require_version('GnomeKeyring', '1.0')
+except:
+  pass
+
 import keyring
 
 
