@@ -15,57 +15,39 @@
 #
 #    https://mycloud.rackspace.com/
 #
-[dfw]
+[DEFAULT]
 OS_AUTH_URL=https://identity.api.rackspacecloud.com/v2.0/
 OS_AUTH_SYSTEM=rackspace
 OS_COMPUTE_API_VERSION=1.1
 NOVA_RAX_AUTH=1
-OS_REGION_NAME=DFW
 NOVA_SERVICE_NAME=cloudServersOpenStack
+
+[dfw]
+OS_REGION_NAME=DFW
 OS_PASSWORD=USE_KEYRING['RackspaceAccountAPIKey']
 OS_USERNAME=my_cloud_username
 OS_TENANT_NAME=1234567
 
 [ord]
-OS_AUTH_SYSTEM=rackspace
-OS_AUTH_URL=https://identity.api.rackspacecloud.com/v2.0/
-OS_COMPUTE_API_VERSION=1.1
-NOVA_RAX_AUTH=1
 OS_REGION_NAME=ORD
-NOVA_SERVICE_NAME=cloudServersOpenStack
 OS_PASSWORD=USE_KEYRING['RackspaceAccountAPIKey']
 OS_USERNAME=my_cloud_username
 OS_TENANT_NAME=1234567
 
 [iad]
-OS_AUTH_SYSTEM=rackspace
-OS_AUTH_URL=https://identity.api.rackspacecloud.com/v2.0/
-OS_COMPUTE_API_VERSION=1.1
-NOVA_RAX_AUTH=1
 OS_REGION_NAME=IAD
-NOVA_SERVICE_NAME=cloudServersOpenStack
 OS_PASSWORD=USE_KEYRING['RackspaceAccountAPIKey']
 OS_USERNAME=my_cloud_username
 OS_TENANT_NAME=1234567
 
 [syd]
-OS_AUTH_SYSTEM=rackspace
-OS_AUTH_URL=https://syd.identity.api.rackspacecloud.com/v2.0/
-OS_COMPUTE_API_VERSION=1.1
-NOVA_RAX_AUTH=1
 OS_REGION_NAME=SYD
-NOVA_SERVICE_NAME=cloudServersOpenStack
 OS_PASSWORD=USE_KEYRING['RackspaceAccountAPIKey']
 OS_USERNAME=my_cloud_username
 OS_TENANT_NAME=1234567
 
 [hkg]
-OS_AUTH_SYSTEM=rackspace
-OS_AUTH_URL=https://identity.api.rackspacecloud.com/v2.0/
-OS_COMPUTE_API_VERSION=1.1
-NOVA_RAX_AUTH=1
 OS_REGION_NAME=HKG
-NOVA_SERVICE_NAME=cloudServersOpenStack
 OS_PASSWORD=USE_KEYRING['RackspaceAccountAPIKey']
 OS_USERNAME=my_cloud_username
 OS_TENANT_NAME=1234567
