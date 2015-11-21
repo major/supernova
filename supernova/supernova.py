@@ -17,6 +17,7 @@
 Contains the actual class that runs novaclient (or the executable chosen by
 the user)
 """
+import copy
 import os
 import subprocess
 import sys
@@ -108,6 +109,9 @@ def run_command(nova_creds, nova_args, supernova_args):
     and handles the output.
     """
     nova_env = supernova_args['nova_env']
+    # (gtmanfred) make a copy of this object.  If we don't copy it, the insert
+    # to 0 happens multiple times because it is the same object in memory.
+    nova_args = copy.copy(nova_args)
 
     # Get the environment variables ready
     env_vars = os.environ.copy()
