@@ -42,6 +42,30 @@ def print_env_list(ctx, param, value):
     ctx.exit()
 
 
+def print_env_short_list(ctx, param, value):
+    if not value or ctx.resilient_parsing:
+        return
+    nova_creds = config.run_config()
+    row = 1
+    for nova_env in nova_creds.keys():
+        executable = "nova"
+        auth_url = ""
+        for param, value in sorted(nova_creds[nova_env].items()):
+            if param.upper() == 'OS_EXECUTABLE':
+                executable = value
+            if param.upper() == 'OS_AUTH_URL' and 'inova' in value:
+                executable = 'inova'
+            if param.upper() == 'OS_AUTH_URL':
+                auth_url = value
+        color = 'green'
+        if row % 2 == 0:
+            color = 'red'
+        env = click.style(nova_env, fg=color)
+        click.echo("%s (%s) @ %s" % (env, executable, auth_url))
+        row += 1
+    ctx.exit()
+
+
 # NOTE(major): This tells click to allow us to put arguments/options after
 # the environment is specified.  See the note just before the
 # supernova.run_command() call below for more clarity.
@@ -75,6 +99,9 @@ command_settings = {
 @click.option('--list', '-l', is_flag=True, callback=print_env_list,
               expose_value=False, is_eager=False, default=False,
               help="List all configured environments")
+@click.option('--shortlist', '-s', is_flag=True, callback=print_env_short_list,
+              expose_value=False, is_eager=False, default=False,
+              help="List all configured environments in shorter format")
 @click.pass_context
 def run_supernova(ctx, executable, debug, quiet, environment, command, conf,
                   echo):

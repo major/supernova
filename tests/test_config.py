@@ -13,7 +13,7 @@ class TestConfig(object):
         testcfg = "{0}/tests/configs/rax_without_keyring".format(os.getcwd())
         result = config.run_config(testcfg)
         assert result is not None
-        assert len(result.keys()) == 5
+        assert len(result.keys()) == 7
         assert 'dfw' in result.keys()
 
     # NOTE: This test uses the .supernova testing config file in the root
@@ -27,7 +27,7 @@ class TestConfig(object):
         testcfg = "{0}/tests/configs/rax_without_keyring".format(os.getcwd())
         result = config.load_config(config_file_override=testcfg)
         assert result is not None
-        assert len(result.keys()) == 5
+        assert len(result.keys()) == 7
         assert 'dfw' in result.keys()
 
     def test_read_missing_configuration(self):

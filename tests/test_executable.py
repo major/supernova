@@ -18,6 +18,12 @@ class TestExecutable(object):
         assert result.exit_code == 0
         assert "dfw" in result.output
 
+    def test_shortlist_output(self):
+        runner = CliRunner()
+        result = runner.invoke(executable.run_supernova, ['--shortlist'])
+        assert result.exit_code == 0
+        assert "dfw" in result.output
+
     def test_get_credential_success(self):
         runner = CliRunner()
         result = runner.invoke(executable.run_supernova_keyring,
