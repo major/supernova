@@ -121,7 +121,7 @@ def prep_nova_creds(nova_env, nova_creds):
     up for novaclient.
     """
     try:
-        raw_creds = nova_creds[nova_env]
+        raw_creds = dict(nova_creds.get('DEFAULT', {}), **nova_creds[nova_env])
     except KeyError:
         msg = "{0} was not found in your supernova configuration "\
               "file".format(nova_env)

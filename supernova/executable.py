@@ -33,10 +33,11 @@ def print_env_list(ctx, param, value):
     if not value or ctx.resilient_parsing:
         return
     nova_creds = config.run_config()
-    for nova_env in nova_creds.keys():
-        envheader = '__ %s ' % click.style(nova_env, fg='green')
+    for env in nova_creds.keys():
+        nova_env = dict(nova_creds.get('DEFAULT', {}), **nova_creds[env])
+        envheader = '__ %s ' % click.style(env, fg='green')
         click.echo(envheader.ljust(86, '_'))
-        for param, value in sorted(nova_creds[nova_env].items()):
+        for param, value in sorted(nova_env.items()):
             click.echo('  %s: %s' % (param.upper().ljust(25), value))
     ctx.exit()
 

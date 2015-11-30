@@ -17,8 +17,8 @@
 Takes care of the basic setup of the config files and does some preliminary
 sanity checks
 """
+import copy
 import os
-
 
 from configobj import ConfigObj
 
@@ -82,7 +82,7 @@ def create_dynamic_configs(config, region_name='OS_REGION_NAME',
     if not isinstance(config, ConfigObj):
         raise ValueError("config should be ConfigObj, not %s" % type(config))
 
-    sections = config.sections
+    sections = copy.copy(config.sections)
 
     for section in sections:
 
