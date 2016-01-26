@@ -20,7 +20,8 @@ from setuptools import setup
 required_packages = [
     "click",
     "configobj",
-    "keyring",
+    "importlib",
+    "keyring<8.0",
     "python-novaclient",
     "six"
 ]
