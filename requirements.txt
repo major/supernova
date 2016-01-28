@@ -1,5 +1,7 @@
 click
 configobj
 keyring>=0.9.2
-python-novaclient
+# novaclient 3.0+ breaks compute API version 1.1 :(
+python-novaclient<3.0.0
+secretstorage
 six
