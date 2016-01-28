@@ -14,6 +14,9 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+import sys
+
+
 from setuptools import setup
 
 
@@ -21,9 +24,13 @@ required_packages = [
     "click",
     "configobj",
     "keyring",
-    "python-novaclient",
+    "python-novaclient<3.0.0",
+    "secretstorage",
     "six"
 ]
+
+if sys.version_info < (2, 7):
+    required_packages.append("importlib")
 
 optional_packages = {
     'rackspace':  [
