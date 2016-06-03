@@ -18,16 +18,17 @@ Handles all of the interactions with the operating system's keyring
 """
 import re
 
+import keyring
+
+import six
+
+from . import utils
+
 try:
     import gi.require_version
     gi.require_version('GnomeKeyring', '1.0')
 except ImportError:
     pass
-
-import keyring
-
-
-from . import utils
 
 
 def get_user_password(env, param, force=False):
@@ -115,6 +116,8 @@ def prep_shell_environment(nova_env, nova_creds):
     new_env = {}
 
     for key, value in prep_nova_creds(nova_env, nova_creds):
+        if type(value) == six.binary_type:
+            value = value.decode()
         new_env[key] = value
 
     return new_env
