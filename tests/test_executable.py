@@ -128,6 +128,15 @@ class TestExecutable(object):
         assert result.exit_code == 0
         assert "Successfully stored" in result.output
 
+    def test_all_group(self, monkeypatch):
+        def mockreturn(nova_creds, nova_args, supernova_args):
+            return 0
+        monkeypatch.setattr(supernova, "run_command", mockreturn)
+        runner = CliRunner()
+        command = ['all', 'list']
+        result = runner.invoke(executable.run_supernova, command)
+        assert result.exit_code == 0
+
     def test_valid_group(self, monkeypatch):
         def mockreturn(nova_creds, nova_args, supernova_args):
             return 0

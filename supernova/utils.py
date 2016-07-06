@@ -68,6 +68,8 @@ def get_envs_in_group(group_name, nova_creds):
             supernova_groups = [supernova_groups]
         if group_name in supernova_groups:
             envs.append(key)
+        elif group_name == 'all':
+            envs.append(key)
     return envs
 
 
@@ -93,6 +95,7 @@ def is_valid_group(group_name, nova_creds):
         if hasattr(supernova_groups, 'startswith'):
             supernova_groups = [supernova_groups]
         valid_groups.extend(supernova_groups)
+    valid_groups.append('all')
     if group_name in valid_groups:
         return True
     else:

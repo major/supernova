@@ -121,6 +121,12 @@ You can also use a comma-separated list of group names:
     supernova raxusa,raxuk list
 ```
 
+There is a default group called `all` that contains all environments.
+You can use the `all` group without having to add `SUPERNOVA_GROUP`
+settings to your config file:
+
+    supernova all list
+
 ## Using supernova with different executables
 
 While supernova uses the nova executable by default, you can configure it to use any other executable when it runs.  For example, you could use it to run glance, neutron, or keystone.
