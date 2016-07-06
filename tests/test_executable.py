@@ -103,6 +103,24 @@ class TestExecutable(object):
         result = runner.invoke(executable.run_supernova, command)
         assert result.exit_code == 0
 
+    def test_valid_environment_list(self, monkeypatch):
+        def mockreturn(nova_creds, nova_args, supernova_args):
+            return 0
+        monkeypatch.setattr(supernova, "run_command", mockreturn)
+        runner = CliRunner()
+        command = ['dfw,ord', 'list']
+        result = runner.invoke(executable.run_supernova, command)
+        assert result.exit_code == 0
+
+    def test_valid_environment_list_with_group(self, monkeypatch):
+        def mockreturn(nova_creds, nova_args, supernova_args):
+            return 0
+        monkeypatch.setattr(supernova, "run_command", mockreturn)
+        runner = CliRunner()
+        command = ['dfw,raxusa', 'list']
+        result = runner.invoke(executable.run_supernova, command)
+        assert result.exit_code == 0
+
     def test_broken_configuration_file(self):
         runner = CliRunner()
         command = ['-c', 'tests/configs/rax_without_keyring_malformed', 'dfw',

@@ -4,7 +4,7 @@
 
 The structure of a supernova command is relatively simple:
 
-    supernova [enviromment_name] [commands]
+    supernova [enviromment_name[,enviromment_name]...] [commands]
 
 Here are some examples:
 
@@ -30,6 +30,12 @@ Here are some examples:
 
 ```html
     supernova iad boot --image image_uuid --flavor flavor_id myserver.example.com
+```
+
+You can also use a comma-separated list of environment names:
+
+```html
+    supernova iad,dfw,ord list
 ```
 
 You can use supernova with long-running options and the output will be piped live to your terminal.  For example, you can use `--poll` when you boot an instance and you'll see the novaclient output update as your instance is being built.
@@ -84,6 +90,12 @@ Instead of referring to these environments one by one, you can now run commands 
     supernova raxusa list
 
 This can be quite useful if you need to search multiple environments for an instance, or if you need to boot test instances in multiple datacenters.  Just be careful with any actions that manipulate data, like rebuilds or instance deletions.
+
+You can also use a comma-separated list of group names:
+
+```html
+    supernova raxusa,raxuk list
+```
 
 ## Using supernova with different executables
 

@@ -144,6 +144,14 @@ def run_supernova(ctx, executable, debug, quiet, environment, command, conf,
     # Is our environment argument a single environment or a supernova group?
     if utils.is_valid_group(environment, nova_creds):
         envs = utils.get_envs_in_group(environment, nova_creds)
+    elif ',' in environment:
+        envs = []
+
+        for env in environment.split(','):
+            if utils.is_valid_group(env, nova_creds):
+                envs.extend(utils.get_envs_in_group(env, nova_creds))
+            else:
+                envs.append(env)
     else:
         envs = [environment]
 
