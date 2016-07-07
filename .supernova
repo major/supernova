@@ -1,5 +1,6 @@
 # This is an example config for use with tests
 [dfw]
+SUPERNOVA_DASHBOARD_URL=https://dfw.dashboard.rackspacecloud.com/
 SUPERNOVA_GROUP=raxusa
 OS_AUTH_URL=https://identity.api.rackspacecloud.com/v2.0/
 OS_AUTH_SYSTEM=rackspace

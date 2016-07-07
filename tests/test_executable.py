@@ -1,3 +1,5 @@
+import webbrowser
+
 from click.testing import CliRunner
 
 
@@ -110,6 +112,29 @@ class TestExecutable(object):
         result = runner.invoke(executable.run_supernova, command)
         assert result.exit_code != 0
         assert "There's an error in your configuration file" in result.output
+
+    def test_dashboard(self, monkeypatch):
+        def mockreturn(url):
+            return False
+        monkeypatch.setattr(webbrowser, "open", mockreturn)
+        runner = CliRunner()
+        result = runner.invoke(executable.run_supernova,
+                               ['--dashboard', 'dfw'])
+        assert result.exit_code == 0
+
+    def test_dashboard_group(self):
+        runner = CliRunner()
+        result = runner.invoke(executable.run_supernova,
+                               ['--dashboard', 'raxusa'])
+        assert result.exit_code == 1
+        assert 'group of environments' in result.output
+
+    def test_dashboard_no_url(self):
+        runner = CliRunner()
+        result = runner.invoke(executable.run_supernova,
+                               ['--dashboard', 'hkg'])
+        assert result.exit_code == 1
+        assert 'No SUPERNOVA_DASHBOARD_URL' in result.output
 
     def test_echo(self):
         runner = CliRunner()

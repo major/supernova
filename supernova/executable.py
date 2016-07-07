@@ -18,6 +18,7 @@ Contains the functions needed for supernova and supernova-keyring commands
 to run
 """
 import sys
+import webbrowser
 
 
 import click
@@ -93,6 +94,8 @@ command_settings = {
               help="Display the least amount of output possible")
 @click.option('--echo', '-e', default=None, is_flag=True,
               help="Print the specified environment and exit")
+@click.option('--dashboard', '-D', default=None, is_flag=True,
+              help="Open dashboard in browser for specified environment")
 @click.argument('environment', nargs=1)
 @click.argument('command', nargs=-1)
 @click.version_option()
@@ -104,7 +107,7 @@ command_settings = {
               help="List all configured environments in shorter format")
 @click.pass_context
 def run_supernova(ctx, executable, debug, quiet, environment, command, conf,
-                  echo):
+                  echo, dashboard):
     """
     You can use supernova with many OpenStack clients and avoid the pain of
     managing multiple sets of environment variables.  Getting started is easy
@@ -154,6 +157,7 @@ def run_supernova(ctx, executable, debug, quiet, environment, command, conf,
         'executable': executable,
         'quiet': quiet,
         'echo': echo,
+        'dashboard': dashboard,
     }
 
     # If the user specified a single environment, we need to verify that the
@@ -174,6 +178,21 @@ def run_supernova(ctx, executable, debug, quiet, environment, command, conf,
         env = credentials.prep_shell_environment(envs[0], nova_creds)
         for k in env:
             click.echo('{0}={1}'.format(k, env[k]))
+        ctx.exit(0)
+
+    if supernova_args['dashboard']:
+        if len(envs) > 1:
+            msg = ("\nCan't open dashboard for a group of environments.\n"
+                   "Specify a single environment when using --dashboard.")
+            click.echo(msg)
+            ctx.exit(1)
+        url = nova_creds[envs[0]].get('SUPERNOVA_DASHBOARD_URL')
+        if url is None:
+            msg = ("\nNo SUPERNOVA_DASHBOARD_URL specified "
+                   "for environment: %s" % envs[0])
+            click.echo(msg)
+            ctx.exit(1)
+        webbrowser.open(url)
         ctx.exit(0)
 
     if len(command) == 0:
