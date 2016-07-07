@@ -78,3 +78,26 @@ class TestDynamicConfig(object):
                result['dynamic-section-ORD'].get('OS_REGION_NAME')
         assert 'DFW' == \
                result['dynamic-section-DFW'].get('OS_REGION_NAME')
+
+    def test_dynamic_sections_using_tenant(self):
+        result = config.load_config()
+        result['dynamic-section'] = {'OS_TENANT_NAME': "dev;prod"}
+        config.create_dynamic_configs(result)
+        # The new sections exist
+        assert 'dynamic-section-dev' in result.sections
+        assert 'dynamic-section-prod' in result.sections
+
+        # The default section is no longer provided
+        assert 'dynamic-section' not in result.sections
+
+        # The super group is set up correctly
+        assert 'dynamic-section' in \
+               result['dynamic-section-dev'].get('SUPERNOVA_GROUP')
+        assert 'dynamic-section' == \
+               result['dynamic-section-prod'].get('SUPERNOVA_GROUP')
+
+        # The regions are correct
+        assert 'dev' == \
+               result['dynamic-section-dev'].get('OS_TENANT_NAME')
+        assert 'prod' == \
+               result['dynamic-section-prod'].get('OS_TENANT_NAME')

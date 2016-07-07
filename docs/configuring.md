@@ -92,7 +92,7 @@ When supernova runs, it will take the configuration options and pass them direct
 
 For accounts where you would like to utilize the same configuration, it is possible to use the same entry.
 
-In the configuration, you can separate the regions by a semicolon::
+In the configuration, you can separate the regions by a semicolon:
 
     [personal]
     ..snip..
@@ -101,11 +101,24 @@ In the configuration, you can separate the regions by a semicolon::
     OS_USERNAME=username
     OS_PASSWORD=somelongapikey
 
-
 This will create the super group "personal" as well as the individual groups "personal-DFW" and "personal-ORD"::
 
     > supernova -l | grep personal
     -- personal-DFW -------------------------------------------------------------
       SUPERNOVA_GROUP      : personal
     -- personal-ORD -------------------------------------------------------------
+      SUPERNOVA_GROUP      : personal
+
+You can also use dynamic configuration with tenants (in the `OS_TENANT_NAME` setting):
+
+    [personal]
+    ..snip..
+    OS_TENANT_NAME=dev;prod
+    OS_USERNAME=username
+    OS_PASSWORD=somelongapikey
+
+    > supernova -l | grep personal
+    -- personal-dev -------------------------------------------------------------
+      SUPERNOVA_GROUP      : personal
+    -- personal-prod -------------------------------------------------------------
       SUPERNOVA_GROUP      : personal
