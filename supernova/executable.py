@@ -32,7 +32,18 @@ from . import utils
 def print_env_list(ctx, param, value):
     if not value or ctx.resilient_parsing:
         return
-    nova_creds = config.run_config()
+
+    conf = ctx.params.get('conf')
+
+    # Retrieve our credentials from the configuration file
+    try:
+        nova_creds = config.run_config(config_file_override=conf)
+    except Exception as e:
+        msg = ("\n  There's an error in your configuration file:\n\n"
+               "    {0}\n").format(e)
+        click.echo(msg)
+        ctx.exit(1)
+
     for env in nova_creds.keys():
         nova_env = dict(nova_creds.get('DEFAULT', {}), **nova_creds[env])
         envheader = '__ %s ' % click.style(env, fg='green')
@@ -45,7 +56,18 @@ def print_env_list(ctx, param, value):
 def print_env_short_list(ctx, param, value):
     if not value or ctx.resilient_parsing:
         return
-    nova_creds = config.run_config()
+
+    conf = ctx.params.get('conf')
+
+    # Retrieve our credentials from the configuration file
+    try:
+        nova_creds = config.run_config(config_file_override=conf)
+    except Exception as e:
+        msg = ("\n  There's an error in your configuration file:\n\n"
+               "    {0}\n").format(e)
+        click.echo(msg)
+        ctx.exit(1)
+
     row = 1
     for nova_env in nova_creds.keys():
         executable = "nova"

@@ -18,11 +18,43 @@ class TestExecutable(object):
         assert result.exit_code == 0
         assert "dfw" in result.output
 
+    def test_list_specify_config_file(self):
+        runner = CliRunner()
+        command = ['-c', 'tests/configs/test_list_specify_config_file',
+                   '--list']
+        result = runner.invoke(executable.run_supernova, command)
+        assert result.exit_code == 0
+        assert "test_list_specify_config_file" in result.output
+
+    def test_list_broken_configuration_file(self):
+        runner = CliRunner()
+        command = ['-c', 'tests/configs/rax_without_keyring_malformed',
+                   '--list']
+        result = runner.invoke(executable.run_supernova, command)
+        assert result.exit_code != 0
+        assert "There's an error in your configuration file" in result.output
+
     def test_shortlist_output(self):
         runner = CliRunner()
         result = runner.invoke(executable.run_supernova, ['--shortlist'])
         assert result.exit_code == 0
         assert "dfw" in result.output
+
+    def test_shortlist_specify_config_file(self):
+        runner = CliRunner()
+        command = ['-c', 'tests/configs/test_list_specify_config_file',
+                   '--shortlist']
+        result = runner.invoke(executable.run_supernova, command)
+        assert result.exit_code == 0
+        assert "test_list_specify_config_file" in result.output
+
+    def test_shortlist_broken_configuration_file(self):
+        runner = CliRunner()
+        command = ['-c', 'tests/configs/rax_without_keyring_malformed',
+                   '--shortlist']
+        result = runner.invoke(executable.run_supernova, command)
+        assert result.exit_code != 0
+        assert "There's an error in your configuration file" in result.output
 
     def test_get_credential_success(self):
         runner = CliRunner()
