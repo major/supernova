@@ -85,6 +85,20 @@ Starting in supernova 0.9.6, you can "group" environments and run commands acros
     SUPERNOVA_GROUP=raxusa
     ...snip...
 
+You can also use a comma-separated list for `SUPERNOVA_GROUP`:
+
+    [dfw]
+    SUPERNOVA_GROUP=raxusa,rackspace,dallas,usa
+    ...snip...
+
+    [ord]
+    SUPERNOVA_GROUP=raxusa,rackspace,chicago,usa
+    ...snip...
+
+    [iad]
+    SUPERNOVA_GROUP=raxusa,rackspace,virginia,usa
+    ...snip...
+
 Instead of referring to these environments one by one, you can now run commands across them as a group:
 
     supernova raxusa list

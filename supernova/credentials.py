@@ -136,9 +136,11 @@ def prep_nova_creds(nova_env, nova_creds):
 
     creds = []
     for param, value in raw_creds.items():
-
         if not proxy_re.match(param):
             param = param.upper()
+
+        if not hasattr(value, 'startswith'):
+            continue
 
         # Get values from the keyring if we find a USE_KEYRING constant
         if value.startswith("USE_KEYRING"):

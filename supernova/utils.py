@@ -62,10 +62,12 @@ def get_envs_in_group(group_name, nova_creds):
     configuration line that matches the group_name.
     """
     envs = []
-    for section in nova_creds.keys():
-        if ('SUPERNOVA_GROUP' in nova_creds[section] and
-                nova_creds[section]['SUPERNOVA_GROUP'] == group_name):
-            envs.append(section)
+    for key, value in nova_creds.items():
+        supernova_groups = value.get('SUPERNOVA_GROUP', [])
+        if hasattr(supernova_groups, 'startswith'):
+            supernova_groups = [supernova_groups]
+        if group_name in supernova_groups:
+            envs.append(key)
     return envs
 
 
@@ -85,9 +87,12 @@ def is_valid_group(group_name, nova_creds):
     Checks to see if the configuration file contains a SUPERNOVA_GROUP
     configuration option.
     """
-    valid_groups = [value['SUPERNOVA_GROUP'] for key, value in
-                    nova_creds.items() if 'SUPERNOVA_GROUP'
-                    in nova_creds[key].keys()]
+    valid_groups = []
+    for key, value in nova_creds.items():
+        supernova_groups = value.get('SUPERNOVA_GROUP', [])
+        if hasattr(supernova_groups, 'startswith'):
+            supernova_groups = [supernova_groups]
+        valid_groups.extend(supernova_groups)
     if group_name in valid_groups:
         return True
     else:
