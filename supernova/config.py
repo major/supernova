@@ -77,7 +77,8 @@ def get_config_file(override_files=False):
     raise Exception("Couldn't find a valid configuration file to parse")
 
 
-def create_dynamic_configs(config, region_name='OS_REGION_NAME',
+def create_dynamic_configs(config,
+                           dynamic_attrs=('OS_REGION_NAME', 'OS_TENANT_NAME'),
                            delimiter=';'):
     if not isinstance(config, ConfigObj):
         raise ValueError("config should be ConfigObj, not %s" % type(config))
@@ -85,24 +86,29 @@ def create_dynamic_configs(config, region_name='OS_REGION_NAME',
     sections = copy.copy(config.sections)
 
     for section in sections:
+        delete_original_section = False
 
-        # Check to see if we should generate new sections.
-        if delimiter in config[section].get(region_name, ''):
-            for new_section_arg in config[section][region_name].split(
-                    delimiter):
+        for dynamic_attr in dynamic_attrs:
+            # Check to see if we should generate new sections.
+            if delimiter in config[section].get(dynamic_attr, ''):
+                for new_section_arg in config[section][dynamic_attr].split(
+                        delimiter):
 
-                new_section = section + '-' + new_section_arg
+                    new_section = section + '-' + new_section_arg
 
-                # Use default section
-                config[new_section] = {}
+                    # Use default section
+                    config[new_section] = {}
 
-                # Copy the existing section config.
-                config[new_section].update(config[section])
-                config[new_section][region_name] = new_section_arg
+                    # Copy the existing section config.
+                    config[new_section].update(config[section])
+                    config[new_section][dynamic_attr] = new_section_arg
 
-                # We are eventually going to delete the old section.
-                # Lets use it as a supernova group
-                config[new_section]['SUPERNOVA_GROUP'] = section
+                    # We are eventually going to delete the old section.
+                    # Lets use it as a supernova group
+                    config[new_section]['SUPERNOVA_GROUP'] = section
 
+                delete_original_section = True
+
+        if delete_original_section:
             # We are done, lets remove the original section
             del config[section]
