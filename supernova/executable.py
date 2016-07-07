@@ -17,6 +17,7 @@
 Contains the functions needed for supernova and supernova-keyring commands
 to run
 """
+import re
 import sys
 import webbrowser
 
@@ -177,6 +178,9 @@ def run_supernova(ctx, executable, debug, quiet, environment, command, conf,
                 envs.extend(utils.get_envs_in_group(env, nova_creds))
             else:
                 envs.append(env)
+    elif environment.startswith('/') and environment.endswith('/'):
+        envs = [nova_env for nova_env in nova_creds.keys()
+                if re.search(environment[1:-1], nova_env)]
     else:
         envs = [environment]
 

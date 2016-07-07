@@ -38,6 +38,16 @@ You can also use a comma-separated list of environment names:
     supernova iad,dfw,ord list
 ```
 
+You can use a regular expression for the environment if you enclose it
+in slashes:
+
+```html
+    supernova /^rax/ list
+```
+
+The above command will execute `nova list` for every environment whose
+name starts with `rax`.
+
 You can use supernova with long-running options and the output will be piped live to your terminal.  For example, you can use `--poll` when you boot an instance and you'll see the novaclient output update as your instance is being built.
 
 For debug output, supernova accepts `--debug` as a supernova option or as a novaclient option.  Both of these are okay:
