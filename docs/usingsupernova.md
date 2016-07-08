@@ -143,6 +143,25 @@ If you'd rather make a quick change at runtime, just use `-x` or `--executable`:
     supernova -x glance iadglance image-list
 ```
 
+Opening the OpenStack dashboard
+-------------------------------
+
+Assuming I have `SUPERNOVA_DASHBOARD_URL` set for an `az1` environment in my supernova config:
+
+```ini
+[az1]
+SUPERNOVA_DASHBOARD_URL=https://dashboard-az1.openstack.company.com/
+```
+
+Then I can do:
+
+```html
+$ supernova --dashboard az1
+```
+
+to open the dashboard page in my web browser.
+
+
 Checking the supernova version
 ------------------------------
 
