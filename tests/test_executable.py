@@ -176,6 +176,14 @@ class TestExecutable(object):
         assert result.exit_code != 0
         assert "There's an error in your configuration file" in result.output
 
+    def test_broken_configuration_directory(self):
+        runner = CliRunner()
+        command = ['-c', 'tests/configs/', 'dfw',
+                   'list']
+        result = runner.invoke(executable.run_supernova, command)
+        assert "Skipping 'tests/configs/rax_without_keyring_malformed', "
+        "Parsing Error." in result.output
+
     def test_dashboard(self, monkeypatch):
         def mockreturn(url):
             return False
