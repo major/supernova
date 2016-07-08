@@ -169,3 +169,26 @@ class TestCredentials(object):
         result = credentials.set_user_password(environment, parameter,
                                                password)
         assert result
+
+    def test_prep_shell_environment(self):
+        nova_env = 'prod'
+        nova_creds = {
+            'prod': {
+                'OS_PASSWORD': 'USE_KEYRING'
+            }
+        }
+        result = credentials.prep_shell_environment(nova_env, nova_creds)
+        assert result == {'OS_PASSWORD': 'password from TestKeyring'}
+
+    def test_prep_shell_environment_unicode(self, monkeypatch):
+        def mockreturn(nova_env, param, value):
+            return ('OS_PASSWORD', u'password from TestKeyring')
+        monkeypatch.setattr(credentials, "pull_env_credential", mockreturn)
+        nova_env = 'prod'
+        nova_creds = {
+            'prod': {
+                'OS_PASSWORD': 'USE_KEYRING'
+            }
+        }
+        result = credentials.prep_shell_environment(nova_env, nova_creds)
+        assert result == {'OS_PASSWORD': 'password from TestKeyring'}
