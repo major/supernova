@@ -155,6 +155,19 @@ class TestExecutable(object):
         result = runner.invoke(executable.run_supernova, command)
         assert result.exit_code == 0
 
+    def test_env_regex(self, monkeypatch):
+        envs = []
+
+        def mockreturn(nova_creds, nova_args, supernova_args):
+            envs.append(supernova_args['nova_env'])
+            return 0
+        monkeypatch.setattr(supernova, "run_command", mockreturn)
+        runner = CliRunner()
+        command = ['/^s/', 'list']
+        result = runner.invoke(executable.run_supernova, command)
+        assert result.exit_code == 0
+        assert envs == ['syd', 'someinova']
+
     def test_broken_configuration_file(self):
         runner = CliRunner()
         command = ['-c', 'tests/configs/rax_without_keyring_malformed', 'dfw',
