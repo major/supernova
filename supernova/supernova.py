@@ -83,7 +83,7 @@ def check_for_bypass_url(raw_creds, nova_args):
     """
     if 'BYPASS_URL' in raw_creds.keys():
         bypass_args = ['--bypass-url', raw_creds['BYPASS_URL']]
-        nova_args = bypass_args + nova_args
+        nova_args.insert(0, bypass_args)
 
     return nova_args
 
