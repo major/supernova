@@ -10,6 +10,7 @@ class MockGi(object):
         cls.called += 1
         return True
 
+
 if getattr(sys.version_info, 'major', 2) == 3:
     import builtins
 
