@@ -40,8 +40,8 @@ def execute_executable(nova_args, env_vars):
                                stdout=sys.stdout,
                                stderr=subprocess.PIPE,
                                env=env_vars)
-    process.wait()
-    return process
+    stderr = process.communicate()[1]
+    return process, stderr
 
 
 def check_for_debug(supernova_args, nova_args):
@@ -88,17 +88,15 @@ def check_for_bypass_url(raw_creds, nova_args):
     return nova_args
 
 
-def handle_stderr(stderr_pipe):
+def handle_stderr(stderr):
     """
     Takes stderr from the command's output and displays it AFTER the stdout
     is printed by run_command().
     """
-    stderr_output = stderr_pipe.read()
-
-    if len(stderr_output) > 0:
+    if len(stderr) > 0:
         click.secho("\n__ Error Output {0}".format('_'*62), fg='white',
                     bold=True)
-        click.echo(stderr_output)
+        click.echo(stderr)
 
     return True
 
@@ -141,10 +139,10 @@ def run_command(nova_creds, nova_args, supernova_args):
     # In other news, I hate how python 2.6 does unicode.
     nova_args.insert(0, supernova_args['executable'])
     nova_args = [nova_arg.strip() for nova_arg in nova_args]
-    process = execute_executable(nova_args, env_vars)
+    process, stderr = execute_executable(nova_args, env_vars)
 
     # If the user asked us to be quiet, then let's not print stderr
     if not supernova_args.get('quiet'):
-        handle_stderr(process.stderr)
+        handle_stderr(stderr)
 
     return process.returncode

@@ -96,10 +96,9 @@ class TestSuperNova(object):
         expected_nova_args = ['-d ']
         assert result == expected_nova_args
 
-    def test_handle_stderr(self, tmpdir, capsys):
-        p = tmpdir.mkdir("sub").join("stderr.txt")
-        p.write("This would be in the stderr pipe")
-        result = supernova.handle_stderr(p)
+    def test_handle_stderr(self, capsys):
+        s = "This would be in the stderr pipe"
+        result = supernova.handle_stderr(s)
         out, err = capsys.readouterr()
-        assert "stderr pipe" in out
+        assert s in out
         assert result
